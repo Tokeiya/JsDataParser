@@ -20,10 +20,12 @@
  * 
  */
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Parseq
 {
+	[DebuggerStepThrough]
     public partial class CharStream
         : ITokenStream<Char>
         , IDisposable

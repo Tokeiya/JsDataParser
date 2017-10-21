@@ -39,8 +39,15 @@ namespace JsDatumParser
 		private static readonly CharacterCache Cache = new CharacterCache(1000, 1250);
 
 
-		public static readonly CharEnumerableParser UnarySign = Chars.Char('+').Or(Chars.Char('-')).Optional()
-			.Select(opt => opt.HasValue ? Cache.Get(opt.Value) : Array.Empty<char>());
+		private static CharEnumerableParser BuildUnarySign()
+		{
+			var unaryExpr = Chars.Char('+').Or(Chars.Char('-')).Select(c=>Cache.Get(c));
+			var empty = Chars.Any().Not().Select(_ => (IEnumerable<char>)Array.Empty<char>());
+
+			return unaryExpr.Or(empty);
+		}
+
+		public static readonly CharEnumerableParser UnarySign = BuildUnarySign();
 
 
 

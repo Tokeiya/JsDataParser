@@ -22,6 +22,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using Parseq;
 using Parseq.Combinators;
 
@@ -31,10 +32,22 @@ namespace Playground
     {
         static void Main(string[] args)
         {
-	        var ret = Chars.Char('c').Run("c".AsStream());
+	        var hoge = Chars.Char('-').Or(Chars.Char('+')).Select(c => (IEnumerable<char>) new[] {c});
+	        var piyo = Chars.Any().Not().Select(_ => (IEnumerable<char>)Array.Empty<char>());
 
 
-            Console.WriteLine("Hello World!");
-        }
-    }
+
+	        var ret = hoge.Run("*".AsStream());
+
+	        Console.WriteLine(ret.Case(_ => "Fail", _ => "Success"));
+
+	        ret = piyo.Run("".AsStream());
+	        Console.WriteLine(ret.Case(_ => "Fail", _ => "Success"));
+
+
+
+
+
+		}
+	}
 }

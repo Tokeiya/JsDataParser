@@ -54,7 +54,7 @@ namespace JsDatumParser
 			CacheSize = cacheSize;
 		}
 
-		public char[] Get(char c)
+		public IEnumerable<char> Get(char c)
 		{
 			Debug.Assert(_sizeCoordinator.Count == _cache.Count);
 

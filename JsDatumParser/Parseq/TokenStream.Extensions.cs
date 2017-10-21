@@ -22,9 +22,11 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Parseq
 {
+	[DebuggerStepThrough]
     public static partial class TokenStream
     {
         public static CharStream AsStream(this String inputString)

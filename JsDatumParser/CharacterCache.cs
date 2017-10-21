@@ -20,21 +20,60 @@
  * 
  */
 
-
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 
 namespace JsDatumParser
 {
-	public enum TokenTypes
+	internal class CharacterCache
 	{
-		Text=1,
-		IntegerNumber=2,
-		RealNumber=3,
-		Array=4,
-		Boolean=5,
-		Function=6
-	}
+		private readonly Queue<char> _sizeCoordinator=new Queue<char>();
+		private readonly Dictionary<char, char[]> _cache = new Dictionary<char, char[]>();
 
+		public readonly int Threshold;
+		public  readonly int CacheSize;
+
+		public int CurrentCachSize
+		{
+			get
+			{
+				Debug.Assert(_cache.Count == _sizeCoordinator.Count);
+				return _sizeCoordinator.Count;
+			}
+		} 
+
+		public CharacterCache(int cacheSize, int threshold)
+		{
+			if (cacheSize <= 0) throw new ArgumentOutOfRangeException(nameof(cacheSize));
+			if (threshold <= 0) throw new ArgumentOutOfRangeException(nameof(threshold));
+
+			if (threshold < cacheSize) throw new ArgumentException();
+
+			Threshold = threshold;
+			CacheSize = cacheSize;
+		}
+
+		public char[] Get(char c)
+		{
+			Debug.Assert(_sizeCoordinator.Count == _cache.Count);
+
+			if (_cache.TryGetValue(c, out var ary)) return ary;
+
+			if (_cache.Count > Threshold)
+			{
+				while (_sizeCoordinator.Count == CacheSize)
+				{
+					var tmp = _sizeCoordinator.Dequeue();
+					_cache.Remove(tmp);
+				}
+			}
+
+			var ret = new[] {c};
+			_sizeCoordinator.Enqueue(c);
+			_cache.Add(c, ret);
+
+			return ret;
+		}
+	}
 }

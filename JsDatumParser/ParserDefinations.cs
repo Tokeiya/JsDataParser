@@ -20,10 +20,9 @@
  * 
  */
 
-using System.Runtime.CompilerServices;
 using System;
+using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using System.Text;
 
 [assembly: InternalsVisibleTo("JsDatumPaser")]
 [assembly: InternalsVisibleTo("Playground")]
@@ -31,9 +30,19 @@ using System.Text;
 
 namespace JsDatumParser
 {
-
+	using CharEnumerableParser=Parseq.Parser<char,IEnumerable<char>>;
 
 	internal static class ParserDefinations
 	{
+		private static CharEnumerableParser BuildUnarySign()
+		{
+#warning BuildUnarySign_Is_NotImpl
+			throw new NotImplementedException("BuildUnarySign is not implemented");
+			
+
+		}
+
+		public static readonly CharEnumerableParser UnarySighn;
+		
 	}
 }

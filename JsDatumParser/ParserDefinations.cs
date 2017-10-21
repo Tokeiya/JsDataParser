@@ -37,7 +37,7 @@ namespace JsDatumParser
 {
 	using CharEnumerableParser=Parseq.Parser<char,IEnumerable<char>>;
 
-	internal static class ParserDefinations
+	internal static class LiteralParsers
 	{
 		private static readonly CharacterCache Cache = new CharacterCache(1000, 1250);
 

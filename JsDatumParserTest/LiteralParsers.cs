@@ -5,9 +5,9 @@ using Xunit;
 
 namespace JsDatumParserTest
 {
-	using static ParserDefinations;
+	using static JsDatumParser.LiteralParsers;
 
-	public class ParserDefinationTest
+	public class LiteralParsers
 	{
 		[Fact]
 		public void UnarySignTest()

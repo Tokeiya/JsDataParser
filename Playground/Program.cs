@@ -33,7 +33,7 @@ using JsDatumParser;
 
 namespace Playground
 {
-	using static JsDatumParser.ParserDefinations;
+	using static JsDatumParser.LiteralParsers;
 
 
 	static class Extension

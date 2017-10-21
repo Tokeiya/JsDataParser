@@ -79,7 +79,21 @@ namespace Playground
 				select first.Concat(second);
 
 
-			array.Run("[ 565, 540  , 539 , 567 ]".AsStream()).Dump();
+			var ret = array.Run("[565, 540A, 539, 567]".AsStream());
+
+
+			ret.Case((stream, txt) =>
+				{
+					Console.WriteLine(txt);
+				},
+				(stream, result) =>
+				{
+					Console.WriteLine(result.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString()));
+				});
+
+
+
+			array.Run("[ 565, 540A  , 539 , 567 ]".AsStream()).Dump();
 
 
 

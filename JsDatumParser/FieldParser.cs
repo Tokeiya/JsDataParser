@@ -35,5 +35,18 @@ namespace JsDatumParser
 
 		public static readonly CharEnumerableParser ArrayParser=BuildArray();
 
+		private static CharEnumerableParser BuildIdentifier()
+		{
+#warning BuildIdentifier_Is_NotImpl
+			throw new NotImplementedException("BuildIdentifier is not implemented");
+		}
+
+		public static readonly CharEnumerableParser Identifier;
+
+
+
 	}
+
+
+
 }

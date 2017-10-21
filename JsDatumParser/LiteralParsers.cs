@@ -165,6 +165,25 @@ namespace JsDatumParser
 
 		public static readonly CharEnumerableParser Bool = BuildBool();
 
+		private static CharEnumerableParser BuildTinyFunction()
+		{
+			var function =
+				from functionIdent in Chars.Sequence("function").Ignore()
+				from space0 in Chars.WhiteSpace().Many0().Ignore()
+				from lp in Chars.Char('(').Ignore()
+				from args in Chars.NoneOf(')').Many0()
+				from rp in Chars.Char(')').Ignore()
+				from space1 in Chars.WhiteSpace().Many0()
+				from lcb in Chars.Char('{').Select(c => Cache.Get(c))
+				from contents in Chars.NoneOf('}').Many0()
+				from rcb in Chars.Char('}').Select(c => Cache.Get(c))
+				let header = (IEnumerable<char>) "function ("
+				select header.Concat(args).Concat(") {").Concat(contents).Concat("}");
+
+			return function;
+		}
+
+		public static readonly CharEnumerableParser TinyFunction=BuildTinyFunction();
 
 	}
 }

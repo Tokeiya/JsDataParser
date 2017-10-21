@@ -98,6 +98,15 @@ namespace JsDatumParserTest
 			Bool.Execute("False").AreFail();
 		}
 
+		[Fact]
+		public void TinyFunctionTest()
+		{
+			TinyFunction.Execute(@"function () {
+      return (this.HP / this.maxHP > .5);
+    }").AreSuccess(@"function () {
+      return (this.HP / this.maxHP > .5);
+    }");
+		}
 
 
 	}

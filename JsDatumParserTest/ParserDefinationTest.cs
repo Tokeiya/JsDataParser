@@ -3,7 +3,7 @@ using Xunit;
 
 namespace JsDatumParserTest
 {
-    public class UnitTest1
+    public class ParserDefinationTest
     {
         [Fact]
         public void Test1()

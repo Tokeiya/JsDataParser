@@ -22,6 +22,8 @@
 
 
 using System;
+using Parseq;
+using Parseq.Combinators;
 
 namespace Playground
 {
@@ -29,6 +31,9 @@ namespace Playground
     {
         static void Main(string[] args)
         {
+	        var ret = Chars.Char('c').Run("c".AsStream());
+
+
             Console.WriteLine("Hello World!");
         }
     }

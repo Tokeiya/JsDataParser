@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using Parseq;
 using Parseq.Combinators;
 
-[assembly: InternalsVisibleTo("JsDatumPaser")]
+[assembly: InternalsVisibleTo("JsDatumParserTest")]
 [assembly: InternalsVisibleTo("Playground")]
 
 

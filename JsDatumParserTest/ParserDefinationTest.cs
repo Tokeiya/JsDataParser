@@ -1,4 +1,6 @@
 using System;
+using JsDatumParser;
+using Parseq;
 using Xunit;
 
 namespace JsDatumParserTest
@@ -6,9 +8,14 @@ namespace JsDatumParserTest
     public class ParserDefinationTest
     {
         [Fact]
-        public void Test1()
-        {
+        public void UnarySignTest()
+		{ 
+			ParserDefinations.UnarySign.Run("+".AsStream()).AreSuccess("+");
+			ParserDefinations.UnarySign.Run("-".AsStream()).AreSuccess("-");
+			ParserDefinations.UnarySign.Run("".AsStream()).AreSuccess("");
 
-        }
+			ParserDefinations.UnarySign.Run("1".AsStream()).AreFail();
+
+		}
     }
 }

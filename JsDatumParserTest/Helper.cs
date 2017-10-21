@@ -35,7 +35,7 @@ namespace JsDatumParserTest
 				},
 				seq =>
 				{
-					predicate(seq).IsTrue();
+					Assert.True(predicate(seq),seq.BuildString());
 					return 0;
 				});
 		}

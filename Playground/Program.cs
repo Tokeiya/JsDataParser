@@ -67,24 +67,20 @@ namespace Playground
 			// ReSharper disable once InconsistentNaming
 			var Cache = new CharacterCache(100, 150);
 
-			var function =
-				from functionIdent in Chars.Sequence("function").Ignore()
-				from space0 in Chars.WhiteSpace().Many0().Ignore()
-				from lp in Chars.Char('(').Ignore()
-				from args in Chars.NoneOf(')').Many0()
-				from rp in Chars.Char(')').Ignore()
-				from space1 in Chars.WhiteSpace().Many0()
-				from lcb in Chars.Char('{').Select(c => Cache.Get(c))
-				from contents in Chars.NoneOf('}').Many0()
-				from rcb in Chars.Char('}').Select(c => Cache.Get(c))
-				let header = (IEnumerable<char>)"function ("
-				select header.Concat(args).Concat(") {").Concat(contents).Concat("}");
+			var whiteSpace = Chars.WhiteSpace().Many0().Select(_ => Cache.Get(' '));
+
+			var array =
+				from _ in Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore())
+				from values in Combinator.Sequence(whiteSpace, IntegerNumber, whiteSpace, Chars.Char(',').Select(c => Cache.Get(c))).Many0()
+				from lastValue in Combinator.Sequence(whiteSpace, IntegerNumber, whiteSpace)
+				from __ in Chars.Char(']').Ignore()
+				let first = values.SelectMany(x => x.SelectMany(y => y))
+				let second=lastValue.SelectMany(x=>x)
+				select first.Concat(second);
 
 
+			array.Run("[ 565, 540  , 539 , 567 ]".AsStream()).Dump();
 
-			function.Run(@"function () {
-      return (this.HP / this.maxHP > .5);
-    }".AsStream()).Dump();
 
 
 

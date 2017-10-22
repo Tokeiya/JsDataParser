@@ -186,5 +186,29 @@ namespace JsDatumParser
 
 		public static readonly TypedCharEnumerableParser TinyFunction=BuildTinyFunction();
 
+		private static TypedCharEnumerableParser BuildArray()
+		{
+			var whiteSpace = Chars.WhiteSpace().Many0().Select(_ => Cache.Get(' '));
+
+			var array =
+				from _ in Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore())
+				from values in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x => x.captured), whiteSpace, Chars.Char(',').Select(c => Cache.Get(c))).Many0()
+				from lastValue in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x => x.captured), whiteSpace)
+				from __ in Chars.Char(']').Ignore()
+				let first = values.SelectMany(x => x.SelectMany(y => y))
+				let second = lastValue.SelectMany(x => x)
+				select first.Concat(second);
+
+			var emptyArray = Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore(), Chars.Char(']').Ignore())
+				.Select(_ => Array.Empty<char>());
+
+
+			return Combinator.Choice(emptyArray, array).Select(cap => (cap, TokenTypes.Array));
+		}
+
+		public static readonly TypedCharEnumerableParser ArrayParser = BuildArray();
+
+
+
 	}
 }

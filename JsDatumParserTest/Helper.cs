@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JsDatumParser;
 using Parseq;
 using Xunit;
 
@@ -15,14 +16,16 @@ namespace JsDatumParserTest
 			return source.Aggregate(new StringBuilder(), (b, c) => b.Append(c), b => b.ToString());
 		}
 
-		public static void AreSuccess(this IReply<char, IEnumerable<char>> reply, string expected)
+		public static void AreSuccess(this IReply<char, (IEnumerable<char> captured,TokenTypes tokenType)> reply,
+			string expectedCapture,TokenTypes expectedTokenType)
 		{
 			reply.IsNotNull();
-			expected.IsNotNull();
-			AreSuccess(reply, act => expected.SequenceEqual(act));
+			expectedCapture.IsNotNull();
+			AreSuccess(reply, act => expectedCapture.SequenceEqual(act),expectedTokenType);
 		}
 
-		public static void AreSuccess(this IReply<char, IEnumerable<char>> reply, Func<IEnumerable<char>, bool> predicate)
+		public static void AreSuccess(this IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> reply,
+			Func<IEnumerable<char>, bool> predicate,TokenTypes expectedTokenType)
 		{
 			reply.IsNotNull();
 			predicate.IsNotNull();
@@ -35,12 +38,13 @@ namespace JsDatumParserTest
 				},
 				seq =>
 				{
-					Assert.True(predicate(seq),seq.BuildString());
+					Assert.True(predicate(seq.captured),seq.captured.BuildString());
+
 					return 0;
 				});
 		}
 
-		public static void AreFail(this IReply<char, IEnumerable<char>> reply)
+		public static void AreFail(this IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> reply)
 		{
 			reply.IsNotNull();
 
@@ -50,12 +54,12 @@ namespace JsDatumParserTest
 				return 0;
 			}, seq =>
 			{
-				Assert.False(true, seq.BuildString());
+				Assert.False(true, seq.captured.BuildString());
 				return 0;
 			});
 		}
 
-		public static IReply<char, IEnumerable<char>> Execute(this Parser<char, IEnumerable<char>> parser, string input)
+		public static IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> Execute(this Parser<char, (IEnumerable<char> captured, TokenTypes type)> parser, string input)
 		{
 			parser.IsNotNull();
 			return parser.Run(input.AsStream());

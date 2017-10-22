@@ -35,7 +35,8 @@ using Parseq.Combinators;
 
 namespace JsDatumParser
 {
-	using CharEnumerableParser = Parser<char, (IEnumerable<char> captured, TokenTypes type)>;
+	using TypedCharEnumerableParser = Parser<char, (IEnumerable<char> captured, TokenTypes type)>;
+	using CharEnumerableParser=Parser<char,IEnumerable<char>>;
 
 	internal static class LiteralParsers
 	{
@@ -51,7 +52,7 @@ namespace JsDatumParser
 
 		public static readonly CharEnumerableParser UnarySign = BuildUnarySign();
 
-		private static CharEnumerableParser BuildIntegerNumber()
+		private static TypedCharEnumerableParser BuildIntegerNumber()
 		{
 			//+10
 			//10
@@ -63,13 +64,13 @@ namespace JsDatumParser
 				from sign in UnarySign.Optional()
 				let tmp = sign.HasValue ? sign.Value : Array.Empty<char>()
 				from digit in digits
-				select tmp.Concat(digit);
+				select (tmp.Concat(digit),TokenTypes.IntegerNumber);
 
 		}
 
-		public static readonly CharEnumerableParser IntegerNumber=BuildIntegerNumber();
+		public static readonly TypedCharEnumerableParser IntegerNumber=BuildIntegerNumber();
 
-		private static CharEnumerableParser BuildRealNumber()
+		private static TypedCharEnumerableParser BuildRealNumber()
 		{
 			//1.0
 			//1.
@@ -93,12 +94,12 @@ namespace JsDatumParser
 				select signChar.Concat(integerPart).Concat(decimalDot).Concat(fractionPart);
 
 
-			return  Combinator.Choice(pattern0, pattern1);
+			return  Combinator.Choice(pattern0, pattern1).Select(cap=>(cap,TokenTypes.RealNumber));
 		}
 
-		public static readonly CharEnumerableParser RealNumber = BuildRealNumber();
+		public static readonly TypedCharEnumerableParser RealNumber = BuildRealNumber();
 
-		private static CharEnumerableParser BuildText()
+		private static TypedCharEnumerableParser BuildText()
 		{
 			var dict = new Dictionary<char, char[]>
 			{
@@ -153,19 +154,19 @@ namespace JsDatumParser
 				from _ in Chars.Char(quote)
 				select contents.SelectMany(c => c);
 
-			return text;
+			return text.Select(cap => (cap, TokenTypes.Text));
 		}
 
-		public static readonly CharEnumerableParser Text = BuildText();
+		public static readonly TypedCharEnumerableParser Text = BuildText();
 
-		private static CharEnumerableParser BuildBool()
+		private static TypedCharEnumerableParser BuildBool()
 		{
-			return Chars.Sequence("true").Or(Chars.Sequence("false"));
+			return Chars.Sequence("true").Or(Chars.Sequence("false")).Select(cap=>(cap,TokenTypes.Boolean));
 		}
 
-		public static readonly CharEnumerableParser Bool = BuildBool();
+		public static readonly TypedCharEnumerableParser Bool = BuildBool();
 
-		private static CharEnumerableParser BuildTinyFunction()
+		private static TypedCharEnumerableParser BuildTinyFunction()
 		{
 			var function =
 				from functionIdent in Chars.Sequence("function").Ignore()
@@ -180,10 +181,10 @@ namespace JsDatumParser
 				let header = (IEnumerable<char>) "function ("
 				select header.Concat(args).Concat(") {").Concat(contents).Concat("}");
 
-			return function;
+			return function.Select(cap=>(cap,TokenTypes.Function));
 		}
 
-		public static readonly CharEnumerableParser TinyFunction=BuildTinyFunction();
+		public static readonly TypedCharEnumerableParser TinyFunction=BuildTinyFunction();
 
 	}
 }

@@ -19,8 +19,8 @@ namespace JsDatumParser
 
 			var array =
 				from _ in Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore())
-				from values in Combinator.Sequence(whiteSpace, IntegerNumber, whiteSpace, Chars.Char(',').Select(c => Cache.Get(c))).Many0()
-				from lastValue in Combinator.Sequence(whiteSpace, IntegerNumber, whiteSpace)
+				from values in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x=>x.captured), whiteSpace, Chars.Char(',').Select(c => Cache.Get(c))).Many0()
+				from lastValue in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x=>x.captured), whiteSpace)
 				from __ in Chars.Char(']').Ignore()
 				let first = values.SelectMany(x => x.SelectMany(y => y))
 				let second = lastValue.SelectMany(x => x)
@@ -30,7 +30,7 @@ namespace JsDatumParser
 				.Select(_ => Array.Empty<char>());
 
 
-			return Combinator.Choice(emptyArray, array);
+			return Combinator.Choice(emptyArray, array).Select(cap=>(cap, TokenTypes.Array));
 		}
 
 		public static readonly CharEnumerableParser ArrayParser=BuildArray();

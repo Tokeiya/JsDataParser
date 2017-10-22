@@ -34,7 +34,8 @@ namespace JsDatumParser
 		RealNumber=3,
 		Array=4,
 		Boolean=5,
-		Function=6
+		Function=6,
+		Identifier=7
 	}
 
 }

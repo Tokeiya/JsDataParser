@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace JsDatumParser
 {
-	using CharEnumerableParser = Parseq.Parser<char, IEnumerable<char>>;
+	using CharEnumerableParser = Parser<char,(IEnumerable<char> captured,TokenTypes type)>;
 	using static LiteralParsers;
 	internal static class FieldParser
 	{

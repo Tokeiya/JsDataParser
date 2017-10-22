@@ -35,7 +35,7 @@ using Parseq.Combinators;
 
 namespace JsDatumParser
 {
-	using CharEnumerableParser=Parseq.Parser<char,IEnumerable<char>>;
+	using CharEnumerableParser = Parser<char, (IEnumerable<char> captured, TokenTypes type)>;
 
 	internal static class LiteralParsers
 	{

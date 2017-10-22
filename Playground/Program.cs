@@ -64,6 +64,7 @@ namespace Playground
 	{
 		static void Main()
 		{
+			(int x, int y) tuple = (10, 20);
 			// ReSharper disable once InconsistentNaming
 			var Cache = new CharacterCache(100, 150);
 

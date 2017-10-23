@@ -32,7 +32,7 @@ namespace JsDatumParser
 		Text=1,
 		IntegerNumber=2,
 		RealNumber=3,
-		Array=4,
+		IntegerArray=4,
 		Boolean=5,
 		Function=6,
 		Identifier=7

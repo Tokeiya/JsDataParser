@@ -6,6 +6,8 @@ namespace JsDatumParser
 {
     internal class FieldValue
     {
+	    private readonly object _value;
+
 	    public FieldValue(IEnumerable<char> value, TokenTypes fieldType)
 	    {
 		    throw new NotImplementedException();

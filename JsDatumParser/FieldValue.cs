@@ -10,28 +10,55 @@ namespace JsDatumParser
 
 	    public FieldValue(IEnumerable<char> value, TokenTypes fieldType)
 	    {
-		    throw new NotImplementedException();
+		    _value = value ?? throw new ArgumentNullException(nameof(value));
+
+		    switch (fieldType)
+		    {
+			    case TokenTypes.Boolean:
+			    case TokenTypes.Function:
+			    case TokenTypes.IntegerNumber:
+			    case TokenTypes.RealNumber:
+			    case TokenTypes.Text:
+				    break;
+
+			    default:
+				    throw new ArgumentException(nameof(fieldType));
+
+			}
+
+			FieldType = fieldType;
 	    }
 
 	    public FieldValue(IReadOnlyCollection<IEnumerable<char>> value)
 	    {
-		    throw new NotImplementedException();
+		    _value = value ?? throw new ArgumentNullException(nameof(value));
+		    FieldType = TokenTypes.IntegerArray;
 	    }
 
 	    public IEnumerable<char> Value
 	    {
 		    get
 		    {
-			    throw new NotImplementedException();
+			    switch (FieldType)
+			    {
+					case TokenTypes.Boolean:
+					case TokenTypes.Function:
+					case TokenTypes.IntegerNumber:
+					case TokenTypes.RealNumber:
+					case TokenTypes.Text:
+						return (IEnumerable<char>) _value;
+
+					default:
+						throw new InvalidOperationException();
+			    }
 		    }
 	    }
 
 	    public IReadOnlyCollection<IEnumerable<char>> ArrayValue
-	    {
-		    get
-		    {
-			    throw new NotImplementedException();
-		    }
-	    }
+		    => FieldType == TokenTypes.IntegerArray
+			    ? (IReadOnlyList<IEnumerable<char>>) _value
+			    : throw new InvalidOperationException();
+
+	    public TokenTypes FieldType { get; }
     }
 }

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JsDatumParser;
+using JsDataParser;
 using Parseq;
 using Xunit;
 
-namespace JsDatumParserTest
+namespace JsDataParserTest
 {
 	public static class Helper
 	{

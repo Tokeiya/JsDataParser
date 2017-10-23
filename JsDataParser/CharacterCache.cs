@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace JsDatumParser
+namespace JsDataParser
 {
 	internal class CharacterCache
 	{

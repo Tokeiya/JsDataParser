@@ -25,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JsDatumParser;
 using Parseq;
-using Parseq.Combinators;
 
 namespace Playground
 {
@@ -60,32 +58,11 @@ namespace Playground
 		}
 	}
 
+
 	internal class Program
 	{
 		private static void Main()
 		{
-			// ReSharper disable once InconsistentNaming
-			var Cache = new CharacterCache(100, 150);
-
-			var number = Chars.Digit().Many1().Select(c => c.BuildString());
-
-			var additive = Chars.Char('+')
-				.Select(_ => (ChainFunc) ((l, r) => $"({l}+{r})"));
-
-			var subtractive = Chars.Char('-')
-				.Select(_ => (ChainFunc) ((l, r) => $"({l}-{r})"));
-
-			var expr = number.Chainl(additive.Or(subtractive)).Or(number);
-			var ret = expr.Run("42".AsStream());
-
-			ret.Case((str, txt) => Console.WriteLine(txt),
-				(str, txt) => Console.WriteLine(txt));
-
-
-			ret = expr.Run("42+84-114514".AsStream());
-
-			ret.Case((str, txt) => Console.WriteLine(txt),
-				(str, txt) => Console.WriteLine(txt));
 		}
 	}
 }

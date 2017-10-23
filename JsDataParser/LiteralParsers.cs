@@ -29,11 +29,11 @@ using System.Text;
 using Parseq;
 using Parseq.Combinators;
 
-[assembly: InternalsVisibleTo("JsDatumParserTest")]
+[assembly: InternalsVisibleTo("JsDataParserTest")]
 [assembly: InternalsVisibleTo("Playground")]
 
 
-namespace JsDatumParser
+namespace JsDataParser
 {
 	using TypedCharEnumerableParser = Parser<char, (IEnumerable<char> captured, TokenTypes type)>;
 	using CharEnumerableParser = Parser<char, IEnumerable<char>>;
@@ -205,9 +205,6 @@ namespace JsDatumParser
 
 			var emptyArray = Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore(), Chars.Char(']').Ignore())
 				.Select(_ => (IReadOnlyList<IEnumerable<char>>) Array.Empty<IEnumerable<char>>());
-
-
-			var hoge = emptyArray.Or(array);
 
 
 			return emptyArray.Or(array).Select(cap => (cap, TokenTypes.IntegerArray));

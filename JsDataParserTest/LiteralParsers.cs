@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using JsDatumParser;
+using JsDataParser;
 using Parseq;
 using Xunit;
 
-namespace JsDatumParserTest
+namespace JsDataParserTest
 {
-	using static JsDatumParser.LiteralParsers;
+	using static JsDataParser.LiteralParsers;
 
 	public class LiteralParsers
 	{

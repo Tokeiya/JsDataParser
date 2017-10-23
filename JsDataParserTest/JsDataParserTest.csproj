@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JsDatumParser\JsDatumParser.csproj" />
+    <ProjectReference Include="..\JsDataParser\JsDataParser.csproj" />
   </ItemGroup>
 
 </Project>

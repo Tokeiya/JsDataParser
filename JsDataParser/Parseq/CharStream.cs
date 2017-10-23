@@ -31,8 +31,8 @@ namespace Parseq
 		: ITokenStream<char>
 			, IDisposable
 	{
-		private Reader reader;
 		private readonly IDelayed<ITokenStream<char>> restStream;
+		private Reader reader;
 
 		public CharStream(TextReader inputStringReader)
 			: this(new Reader(inputStringReader))

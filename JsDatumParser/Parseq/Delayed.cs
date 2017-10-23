@@ -19,60 +19,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public interface IDelayed<out T>
-    {
-        T Force();
-    }
+	public interface IDelayed<out T>
+	{
+		T Force();
+	}
 
-    public partial class Delayed
-    {
-        public static IDelayed<T> Return<T>(T value)
-        {
-            return new Delayed.ValueImpl<T>(value);
-        }
+	public partial class Delayed
+	{
+		public static IDelayed<T> Return<T>(T value)
+		{
+			return new ValueImpl<T>(value);
+		}
 
-        public static IDelayed<T> Return<T>(Func<T> valueFactory)
-        {
-            return new Delayed.ValueFactoryImpl<T>(valueFactory);
-        }
-    }
+		public static IDelayed<T> Return<T>(Func<T> valueFactory)
+		{
+			return new ValueFactoryImpl<T>(valueFactory);
+		}
+	}
 
-    public partial class Delayed
-    {
-        class ValueImpl<T>
-            : IDelayed<T>
-        {
-            private readonly T value;
+	public partial class Delayed
+	{
+		private class ValueImpl<T>
+			: IDelayed<T>
+		{
+			private readonly T value;
 
-            public ValueImpl(T value)
-            {
-                this.value = value;
-            }
+			public ValueImpl(T value)
+			{
+				this.value = value;
+			}
 
-            public T Force()
-            {
-                return this.value;
-            }
-        }
+			public T Force()
+			{
+				return value;
+			}
+		}
 
-        class ValueFactoryImpl<T>
-            : IDelayed<T>
-        {
-            private readonly System.Lazy<T> lazyValue;
+		private class ValueFactoryImpl<T>
+			: IDelayed<T>
+		{
+			private readonly Lazy<T> lazyValue;
 
-            public ValueFactoryImpl(Func<T> valueFactory)
-            {
-                this.lazyValue = new Lazy<T>(valueFactory);
-            }
+			public ValueFactoryImpl(Func<T> valueFactory)
+			{
+				lazyValue = new Lazy<T>(valueFactory);
+			}
 
-            public T Force()
-            {
-                return this.lazyValue.Value;
-            }
-        }
-    }
+			public T Force()
+			{
+				return lazyValue.Value;
+			}
+		}
+	}
 }

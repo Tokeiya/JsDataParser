@@ -19,70 +19,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public interface IOption<out T>
-    {
-        Boolean HasValue
-        {
-            get;
-        }
+	public interface IOption<out T>
+	{
+		bool HasValue { get; }
 
-        T Value
-        {
-            get;
-        }
-    }
+		T Value { get; }
+	}
 
-    public static partial class Option
-    {
-        public static IOption<T> Some<T>(T value)
-        {
-            return new Option.SomeImpl<T>(value);
-        }
+	public static partial class Option
+	{
+		public static IOption<T> Some<T>(T value)
+		{
+			return new SomeImpl<T>(value);
+		}
 
-        public static IOption<T> None<T>()
-        {
-            return SingletonClassHelper<NoneImpl<T>>.Instance;
-        }
-    }
+		public static IOption<T> None<T>()
+		{
+			return SingletonClassHelper<NoneImpl<T>>.Instance;
+		}
+	}
 
-    public static partial class Option
-    {
-        class SomeImpl<T>
-            : IOption<T>
-        {
-            public Boolean HasValue
-            {
-                get { return true; }
-            }
+	public static partial class Option
+	{
+		private class SomeImpl<T>
+			: IOption<T>
+		{
+			public SomeImpl(T value)
+			{
+				Value = value;
+			}
 
-            public T Value
-            {
-                get;
-                private set;
-            }
+			public bool HasValue => true;
 
-            public SomeImpl(T value)
-            {
-                this.Value = value;
-            }
-        }
+			public T Value { get; }
+		}
 
-        class NoneImpl<T>
-            : IOption<T>
-        {
-            public Boolean HasValue
-            {
-                get { return false; }
-            }
+		private class NoneImpl<T>
+			: IOption<T>
+		{
+			public bool HasValue => false;
 
-            public T Value
-            {
-                get { throw new InvalidOperationException(); }
-            }
-        }
-    }
+			public T Value => throw new InvalidOperationException();
+		}
+	}
 }

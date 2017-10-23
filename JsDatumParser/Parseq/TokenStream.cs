@@ -19,17 +19,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-using System;
 
 namespace Parseq
 {
-    public interface ITokenStream<out T>
-    {
-        IOption<IPair<T, Position>> Current
-        {
-            get;
-        }
+	public interface ITokenStream<out T>
+	{
+		IOption<IPair<T, Position>> Current { get; }
 
-        ITokenStream<T> MoveNext();
-    }
+		ITokenStream<T> MoveNext();
+	}
 }

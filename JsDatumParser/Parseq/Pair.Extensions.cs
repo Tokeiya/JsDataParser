@@ -19,22 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public static partial class Pair
-    {
-        public static IPair<T0, T1> Return<T0, T1>(T0 item0, T1 item1)
-        {
-            return new Pair<T0, T1>(item0, item1);
-        }
+	public static class Pair
+	{
+		public static IPair<T0, T1> Return<T0, T1>(T0 item0, T1 item1)
+		{
+			return new Pair<T0, T1>(item0, item1);
+		}
 
-        public static TResult Case<T0, T1, TResult>(
-            this IPair<T0, T1> pair,
-                 Func<T0, T1, TResult> func)
-        {
-            return func(pair.Item0, pair.Item1);
-        }
-    }
+		public static TResult Case<T0, T1, TResult>(
+			this IPair<T0, T1> pair,
+			Func<T0, T1, TResult> func)
+		{
+			return func(pair.Item0, pair.Item1);
+		}
+	}
 }

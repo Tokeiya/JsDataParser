@@ -19,64 +19,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 using System.IO;
 
 namespace Parseq
 {
-    public partial class CharStream
-    {
-        class Reader
-            : IDisposable
-        {
-            public const Int32 EOF = -1;
+	public partial class CharStream
+	{
+		private class Reader
+			: IDisposable
+		{
+			public const int EOF = -1;
+			private TextReader baseReader;
 
-            private Position currentPosition;
-            private TextReader baseReader;
+			public Reader(TextReader baseReader)
+			{
+				if (baseReader == null)
+					throw new ArgumentNullException("baseReader");
 
-            public Reader(TextReader baseReader)
-            {
-                if (baseReader == null)
-                    throw new ArgumentNullException("baseReader");
+				CurrentPosition = Position.Zero;
+				this.baseReader = baseReader;
+			}
 
-                this.currentPosition = Position.Zero;
-                this.baseReader = baseReader;
-            }
+			public Position CurrentPosition { get; private set; }
 
-            public Position CurrentPosition
-            {
-                get { return this.currentPosition; }
-            }
+			public void Dispose()
+			{
+				if (baseReader != null)
+				{
+					baseReader.Dispose();
+					baseReader = null;
+				}
+			}
 
-            public Int32 Read()
-            {
-                if (this.baseReader == null)
-                    throw new ObjectDisposedException("baseReader");
+			public int Read()
+			{
+				if (baseReader == null)
+					throw new ObjectDisposedException("baseReader");
 
-                var c = this.baseReader.Read();
+				var c = baseReader.Read();
 
-                this.currentPosition = (c == '\n' || c == '\r' && this.baseReader.Peek() == '\r')
-                    ? new Position(this.currentPosition.Line + 1, 1)
-                    : new Position(this.currentPosition.Line, this.currentPosition.Column + 1);
-                return c;
-            }
+				CurrentPosition = c == '\n' || c == '\r' && baseReader.Peek() == '\r'
+					? new Position(CurrentPosition.Line + 1, 1)
+					: new Position(CurrentPosition.Line, CurrentPosition.Column + 1);
+				return c;
+			}
 
-            public Int32 Peek()
-            {
-                if (this.baseReader == null)
-                    throw new ObjectDisposedException("baseReader");
+			public int Peek()
+			{
+				if (baseReader == null)
+					throw new ObjectDisposedException("baseReader");
 
-                return this.baseReader.Peek();
-            }
-
-            public void Dispose()
-            {
-                if (this.baseReader != null)
-                {
-                    this.baseReader.Dispose();
-                    this.baseReader = null;
-                }
-            }
-        }
-    }
+				return baseReader.Peek();
+			}
+		}
+	}
 }

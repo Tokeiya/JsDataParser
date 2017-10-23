@@ -19,17 +19,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public static class PositionConverter
-    {
-        public static TResult Convert<TResult>(
-            this Position position,
-                 Func<Int32, Int32, TResult> converter)
-        {
-            return converter(position.Line, position.Column);
-        }
-    }
+	public static class PositionConverter
+	{
+		public static TResult Convert<TResult>(
+			this Position position,
+			Func<int, int, TResult> converter)
+		{
+			return converter(position.Line, position.Column);
+		}
+	}
 }

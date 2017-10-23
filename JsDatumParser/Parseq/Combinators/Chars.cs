@@ -19,128 +19,129 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Parseq.Combinators
 {
-    public static class Chars
-    {
-        public static Parser<Char, Unit> EndOfInput()
-        {
-            return stream => stream.Current.HasValue
-                ? Reply.Failure<Char, Unit>(stream, "Failure: Chars.EndOfInput")
-                : Reply.Success<Char, Unit>(stream, Unit.Instance);
-        }
+	public static class Chars
+	{
+		public static Parser<char, Unit> EndOfInput()
+		{
+			return stream => stream.Current.HasValue
+				? Reply.Failure<char, Unit>(stream, "Failure: Chars.EndOfInput")
+				: Reply.Success(stream, Unit.Instance);
+		}
 
-        public static Parser<Char, Char> Any()
-        {
-            return stream => stream.Current.HasValue
-                ? Reply.Success<Char, Char>(stream.MoveNext(), stream.Current.Value.Item0)
-                : Reply.Failure<Char, Char>(stream, "Failure: Chars.Any");
-        }
+		public static Parser<char, char> Any()
+		{
+			return stream => stream.Current.HasValue
+				? Reply.Success(stream.MoveNext(), stream.Current.Value.Item0)
+				: Reply.Failure<char, char>(stream, "Failure: Chars.Any");
+		}
 
-        public static Parser<Char, Char> Char(Char c)
-        {
-            return stream => stream.Current.HasValue && stream.Current.Value.Item0 == c
-                ? Reply.Success<Char, Char>(stream.MoveNext(), c)
-                : Reply.Failure<Char, Char>(stream, "Failure: Chars.Char");
-        }
+		public static Parser<char, char> Char(char c)
+		{
+			return stream => stream.Current.HasValue && stream.Current.Value.Item0 == c
+				? Reply.Success(stream.MoveNext(), c)
+				: Reply.Failure<char, char>(stream, "Failure: Chars.Char");
+		}
 
-        public static Parser<Char, Char> Char(Func<Char, Boolean> predicate)
-        {
-            return stream => stream.Current.HasValue && predicate(stream.Current.Value.Item0)
-                ? Reply.Success<Char, Char>(stream.MoveNext(), stream.Current.Value.Item0)
-                : Reply.Failure<Char, Char>(stream, "Failure: Chars.Char");
-        }
+		public static Parser<char, char> Char(Func<char, bool> predicate)
+		{
+			return stream => stream.Current.HasValue && predicate(stream.Current.Value.Item0)
+				? Reply.Success(stream.MoveNext(), stream.Current.Value.Item0)
+				: Reply.Failure<char, char>(stream, "Failure: Chars.Char");
+		}
 
-        public static Parser<Char, IEnumerable<Char>> Sequence(IEnumerable<Char> enumerble)
-        {
-            return Combinator.Attempt(Combinator.Sequence(enumerble.Select(Chars.Char)));
-        }
+		public static Parser<char, IEnumerable<char>> Sequence(IEnumerable<char> enumerble)
+		{
+			return enumerble.Select(Char).Sequence().Attempt();
+		}
 
-        public static Parser<Char, IEnumerable<Char>> Sequence(params Char[] charArray)
-        {
-            return Chars.Sequence(charArray.AsEnumerable());
-        }
+		public static Parser<char, IEnumerable<char>> Sequence(params char[] charArray)
+		{
+			return Sequence(charArray.AsEnumerable());
+		}
 
-        public static Parser<Char, IEnumerable<Char>> Sequence(String s)
-        {
-            return Chars.Sequence(s.ToCharArray());
-        }
+		public static Parser<char, IEnumerable<char>> Sequence(string s)
+		{
+			return Sequence(s.ToCharArray());
+		}
 
-        public static Parser<Char, Char> OneOf(IEnumerable<Char> candidates)
-        {
-            return Combinator.Choice(candidates.Select(Chars.Char));
-        }
+		public static Parser<char, char> OneOf(IEnumerable<char> candidates)
+		{
+			return candidates.Select(Char).Choice();
+		}
 
-        public static Parser<Char, Char> OneOf(params Char[] candidates)
-        {
-            return Chars.OneOf(candidates.AsEnumerable());
-        }
+		public static Parser<char, char> OneOf(params char[] candidates)
+		{
+			return OneOf(candidates.AsEnumerable());
+		}
 
-        public static Parser<Char, Char> NoneOf(IEnumerable<Char> candidates)
-        {
-            return Combinator.Sequence(candidates.Select(c => Chars.Char(c).Not())).Bindr(Chars.Any());
-        }
+		public static Parser<char, char> NoneOf(IEnumerable<char> candidates)
+		{
+			return candidates.Select(c => Char(c).Not()).Sequence().Bindr(Any());
+		}
 
-        public static Parser<Char, Char> NoneOf(params Char[] candidates)
-        {
-            return Chars.NoneOf(candidates.AsEnumerable());
-        }
+		public static Parser<char, char> NoneOf(params char[] candidates)
+		{
+			return NoneOf(candidates.AsEnumerable());
+		}
 
-        public static Parser<Char, Char> Digit()
-        {
-            return Chars.Char(System.Char.IsDigit);
-        }
+		public static Parser<char, char> Digit()
+		{
+			return Char(char.IsDigit);
+		}
 
-        public static Parser<Char, Char> Letter()
-        {
-            return Chars.Char(System.Char.IsLetter);
-        }
+		public static Parser<char, char> Letter()
+		{
+			return Char(char.IsLetter);
+		}
 
-        public static Parser<Char, Char> LetterOrDigit()
-        {
-            return Chars.Char(System.Char.IsLetterOrDigit);
-        }
+		public static Parser<char, char> LetterOrDigit()
+		{
+			return Char(char.IsLetterOrDigit);
+		}
 
-        public static Parser<Char, Char> Lower()
-        {
-            return Chars.Char(System.Char.IsLower);
-        }
+		public static Parser<char, char> Lower()
+		{
+			return Char(char.IsLower);
+		}
 
-        public static Parser<Char, Char> Upper()
-        {
-            return Chars.Char(System.Char.IsUpper);
-        }
+		public static Parser<char, char> Upper()
+		{
+			return Char(char.IsUpper);
+		}
 
-        public static Parser<Char, Char> WhiteSpace()
-        {
-            return Chars.Char(System.Char.IsWhiteSpace);
-        }
+		public static Parser<char, char> WhiteSpace()
+		{
+			return Char(char.IsWhiteSpace);
+		}
 
-        public static Parser<Char, Char> Oct()
-        {
-            return Chars.OneOf('0', '1', '2', '3', '4', '5', '6', '7');
-        }
+		public static Parser<char, char> Oct()
+		{
+			return OneOf('0', '1', '2', '3', '4', '5', '6', '7');
+		}
 
-        public static Parser<Char, Char> Hex()
-        {
-            return Chars.OneOf(
-                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                'a', 'b', 'c', 'd', 'e', 'f',
-                'A', 'B', 'C', 'D', 'E', 'F');
-        }
+		public static Parser<char, char> Hex()
+		{
+			return OneOf(
+				'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+				'a', 'b', 'c', 'd', 'e', 'f',
+				'A', 'B', 'C', 'D', 'E', 'F');
+		}
 
-        public static Parser<Char, Char> Satisfy(Char c)
-        {
-            return Chars.Char(c);
-        }
+		public static Parser<char, char> Satisfy(char c)
+		{
+			return Char(c);
+		}
 
-        public static Parser<Char, Char> Satisfy(Func<Char, Boolean> predicate)
-        {
-            return Chars.Char(predicate);
-        }
-    }
+		public static Parser<char, char> Satisfy(Func<char, bool> predicate)
+		{
+			return Char(predicate);
+		}
+	}
 }

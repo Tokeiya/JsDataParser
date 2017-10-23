@@ -19,94 +19,96 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Parseq
 {
-    public interface ISeq<T>
-        : IEnumerable<T>
-    {
-        TResult Case<TResult>(
-            Func<TResult> empty,
-            Func<IPair<T, IDelayed<ISeq<T>>>, TResult> headAndTail);
-    }
+	public interface ISeq<T>
+		: IEnumerable<T>
+	{
+		TResult Case<TResult>(
+			Func<TResult> empty,
+			Func<IPair<T, IDelayed<ISeq<T>>>, TResult> headAndTail);
+	}
 
-    public partial class Seq
-    {
-        public static IDelayed<ISeq<T>> Of<T>(IEnumerable<T> enumerable)
-        {
-            return Seq.Of(enumerable.GetEnumerator());
-        }
+	public partial class Seq
+	{
+		public static IDelayed<ISeq<T>> Of<T>(IEnumerable<T> enumerable)
+		{
+			return Of(enumerable.GetEnumerator());
+		}
 
-        public static IDelayed<ISeq<T>> Of<T>(IEnumerator<T> enumerator)
-        {
-            return Delayed.Return(() => enumerator.MoveNext()
-                ? Seq.Cons(enumerator.Current, Delayed.Return(() => Seq.Of(enumerator).Force()))
-                    .Force()
-                : Seq.Empty<T>()
-                    .Force());
-        }
+		public static IDelayed<ISeq<T>> Of<T>(IEnumerator<T> enumerator)
+		{
+			return Delayed.Return(() => enumerator.MoveNext()
+				? Cons(enumerator.Current, Delayed.Return(() => Of(enumerator).Force()))
+					.Force()
+				: Empty<T>()
+					.Force());
+		}
 
-        public static IDelayed<ISeq<T>> Empty<T>()
-        {
-            return Delayed.Return(SingletonClassHelper<Seq.EmptyImpl<T>>.Instance);
-        }
+		public static IDelayed<ISeq<T>> Empty<T>()
+		{
+			return Delayed.Return(SingletonClassHelper<EmptyImpl<T>>.Instance);
+		}
 
-        public static IDelayed<ISeq<T>> Cons<T>(T head, IDelayed<ISeq<T>> tail)
-        {
-            return Delayed.Return(new ConsImpl<T>(head, tail));
-        }
-    }
+		public static IDelayed<ISeq<T>> Cons<T>(T head, IDelayed<ISeq<T>> tail)
+		{
+			return Delayed.Return(new ConsImpl<T>(head, tail));
+		}
+	}
 
-    public partial class Seq
-    {
-        class EmptyImpl<T>
-            : ISeq<T>
-        {
-            public TResult Case<TResult>(Func<TResult> empty, Func<IPair<T, IDelayed<ISeq<T>>>, TResult> cons)
-            {
-                return empty();
-            }
+	public partial class Seq
+	{
+		private class EmptyImpl<T>
+			: ISeq<T>
+		{
+			public TResult Case<TResult>(Func<TResult> empty, Func<IPair<T, IDelayed<ISeq<T>>>, TResult> cons)
+			{
+				return empty();
+			}
 
-            public IEnumerator<T> GetEnumerator()
-            {
-                yield break;
-            }
+			public IEnumerator<T> GetEnumerator()
+			{
+				yield break;
+			}
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
-        }
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+		}
 
-        class ConsImpl<T>
-            : ISeq<T>
-        {
-            private readonly IPair<T, IDelayed<ISeq<T>>> headAndTail;
+		private class ConsImpl<T>
+			: ISeq<T>
+		{
+			private readonly IPair<T, IDelayed<ISeq<T>>> headAndTail;
 
-            public ConsImpl(T head, IDelayed<ISeq<T>> tail)
-            {
-                this.headAndTail = Pair.Return(head, tail);
-            }
+			public ConsImpl(T head, IDelayed<ISeq<T>> tail)
+			{
+				headAndTail = Pair.Return(head, tail);
+			}
 
-            public TResult Case<TResult>(Func<TResult> empty, Func<IPair<T, IDelayed<ISeq<T>>>, TResult> headAndTail)
-            {
-                return headAndTail(this.headAndTail);
-            }
+			public TResult Case<TResult>(Func<TResult> empty, Func<IPair<T, IDelayed<ISeq<T>>>, TResult> headAndTail)
+			{
+				return headAndTail(this.headAndTail);
+			}
 
-            public IEnumerator<T> GetEnumerator()
-            {
-                yield return this.headAndTail.Item0;
+			public IEnumerator<T> GetEnumerator()
+			{
+				yield return headAndTail.Item0;
 
-                foreach (var item in this.headAndTail.Item1.Force())
-                    yield return item;
-            }
+				foreach (var item in headAndTail.Item1.Force())
+					yield return item;
+			}
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
-        }
-    }
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+		}
+	}
 }

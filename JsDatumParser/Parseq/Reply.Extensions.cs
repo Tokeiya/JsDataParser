@@ -19,22 +19,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public static partial class Reply
-    {
-        public static void Case<TToken, T>(
-            this IReply<TToken, T> reply,
-                 Action<ITokenStream<TToken>, String> failure,
-                 Action<ITokenStream<TToken>, T> success)
-        {
-            reply.Case(
-                failure: (stream, errorMessage) =>
-                    { failure(stream, errorMessage); return Unit.Instance; },
-                success: (stream, value) =>
-                    { success(stream, value); return Unit.Instance; });
-        }
-    }
+	public static partial class Reply
+	{
+		public static void Case<TToken, T>(
+			this IReply<TToken, T> reply,
+			Action<ITokenStream<TToken>, string> failure,
+			Action<ITokenStream<TToken>, T> success)
+		{
+			reply.Case(
+				(stream, errorMessage) =>
+				{
+					failure(stream, errorMessage);
+					return Unit.Instance;
+				},
+				(stream, value) =>
+				{
+					success(stream, value);
+					return Unit.Instance;
+				});
+		}
+	}
 }

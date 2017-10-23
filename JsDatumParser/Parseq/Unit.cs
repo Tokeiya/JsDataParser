@@ -19,59 +19,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public partial struct Unit
-        : IComparable<Unit>
-        , IEquatable<Unit>
-    {
-        public static Unit Instance
-        {
-            get;
-            private set;
-        }
+	public struct Unit
+		: IComparable<Unit>
+			, IEquatable<Unit>
+	{
+		public static Unit Instance { get; }
 
-        static Unit()
-        {
-            Unit.Instance = new Unit();
-        }
+		static Unit()
+		{
+			Instance = new Unit();
+		}
 
-        public static Boolean operator ==(Unit lhs, Unit rhs)
-        {
-            /*
-             * return lhs.Equals(rhs);
-             */
-            return true;
-        }
+		public static bool operator ==(Unit lhs, Unit rhs)
+		{
+			/*
+			 * return lhs.Equals(rhs);
+			 */
+			return true;
+		}
 
-        public static Boolean operator !=(Unit lhs, Unit rhs)
-        {
-            /*
-             * return !(lhs == rhs);
-             */
-            return false;
-        }
+		public static bool operator !=(Unit lhs, Unit rhs)
+		{
+			/*
+			 * return !(lhs == rhs);
+			 */
+			return false;
+		}
 
-        public override Int32 GetHashCode()
-        {
-            return 0;
-        }
+		public override int GetHashCode()
+		{
+			return 0;
+		}
 
-        public override Boolean Equals(Object obj)
-        {
-            return obj is Unit;
-        }
+		public override bool Equals(object obj)
+		{
+			return obj is Unit;
+		}
 
-        Int32 IComparable<Unit>.CompareTo(Unit other)
-        {
-            return 0;
-        }
+		int IComparable<Unit>.CompareTo(Unit other)
+		{
+			return 0;
+		}
 
-        Boolean IEquatable<Unit>.Equals(Unit other)
-        {
-            return true;
-        }
-    }
+		bool IEquatable<Unit>.Equals(Unit other)
+		{
+			return true;
+		}
+	}
 }

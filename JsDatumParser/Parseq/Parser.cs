@@ -19,9 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-using System;
 
 namespace Parseq
 {
-    public delegate IReply<TToken, T> Parser<TToken, out T>(ITokenStream<TToken> stream);
+	public delegate IReply<TToken, T> Parser<TToken, out T>(ITokenStream<TToken> stream);
 }

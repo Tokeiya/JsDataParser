@@ -1,83 +1,82 @@
-﻿
-using System;
+﻿using System;
 
 namespace Parseq
 {
-    public interface IReply<out TToken, out T>
-        : IEither<String, T>
-    {
-        TResult Case<TResult>(
-            Func<ITokenStream<TToken>, String, TResult> failure,
-            Func<ITokenStream<TToken>, T, TResult> success);
-    }
+	public interface IReply<out TToken, out T>
+		: IEither<string, T>
+	{
+		TResult Case<TResult>(
+			Func<ITokenStream<TToken>, string, TResult> failure,
+			Func<ITokenStream<TToken>, T, TResult> success);
+	}
 
-    public partial class Reply
-    {
-        public static IReply<TToken, T> Success<TToken, T>(ITokenStream<TToken> restStream, T value)
-        {
-            return new Reply.SuccessImpl<TToken, T>(restStream, value);
-        }
+	public partial class Reply
+	{
+		public static IReply<TToken, T> Success<TToken, T>(ITokenStream<TToken> restStream, T value)
+		{
+			return new SuccessImpl<TToken, T>(restStream, value);
+		}
 
-        public static IReply<TToken, T> Failure<TToken, T>(ITokenStream<TToken> restStream, String errorMessage)
-        {
-            return new Reply.FailureImpl<TToken, T>(restStream, errorMessage);
-        }
-    }
+		public static IReply<TToken, T> Failure<TToken, T>(ITokenStream<TToken> restStream, string errorMessage)
+		{
+			return new FailureImpl<TToken, T>(restStream, errorMessage);
+		}
+	}
 
-    public partial class Reply
-    {
-        class SuccessImpl<TToken, T>
-            : IReply<TToken, T>
-        {
-            private readonly ITokenStream<TToken> restStream;
-            private readonly T value;
+	public partial class Reply
+	{
+		private class SuccessImpl<TToken, T>
+			: IReply<TToken, T>
+		{
+			private readonly ITokenStream<TToken> restStream;
+			private readonly T value;
 
-            public SuccessImpl(ITokenStream<TToken> restStream, T value)
-            {
-                this.restStream = restStream;
-                this.value = value;
-            }
+			public SuccessImpl(ITokenStream<TToken> restStream, T value)
+			{
+				this.restStream = restStream;
+				this.value = value;
+			}
 
-            public TResult Case<TResult>(
-                Func<ITokenStream<TToken>, String, TResult> failure,
-                Func<ITokenStream<TToken>, T, TResult> success)
-            {
-                return success(this.restStream, this.value);
-            }
+			public TResult Case<TResult>(
+				Func<ITokenStream<TToken>, string, TResult> failure,
+				Func<ITokenStream<TToken>, T, TResult> success)
+			{
+				return success(restStream, value);
+			}
 
-            TResult IEither<String, T>.Case<TResult>(
-                Func<String, TResult> left,
-                Func<T, TResult> right)
-            {
-                return right(this.value);
-            }
-        }
+			TResult IEither<string, T>.Case<TResult>(
+				Func<string, TResult> left,
+				Func<T, TResult> right)
+			{
+				return right(value);
+			}
+		}
 
-        class FailureImpl<TToken, T>
-            : IReply<TToken, T>
-        {
-            private readonly ITokenStream<TToken> restStream;
-            private readonly String errorMessage;
+		private class FailureImpl<TToken, T>
+			: IReply<TToken, T>
+		{
+			private readonly string errorMessage;
+			private readonly ITokenStream<TToken> restStream;
 
-            public FailureImpl(ITokenStream<TToken> restStream, String errorMessage)
-            {
-                this.restStream = restStream;
-                this.errorMessage = errorMessage;
-            }
+			public FailureImpl(ITokenStream<TToken> restStream, string errorMessage)
+			{
+				this.restStream = restStream;
+				this.errorMessage = errorMessage;
+			}
 
-            public TResult Case<TResult>(
-                Func<ITokenStream<TToken>, String, TResult> failure,
-                Func<ITokenStream<TToken>, T, TResult> success)
-            {
-                return failure(this.restStream, this.errorMessage);
-            }
+			public TResult Case<TResult>(
+				Func<ITokenStream<TToken>, string, TResult> failure,
+				Func<ITokenStream<TToken>, T, TResult> success)
+			{
+				return failure(restStream, errorMessage);
+			}
 
-            TResult IEither<String, T>.Case<TResult>(
-                Func<String, TResult> left,
-                Func<T, TResult> right)
-            {
-                return left(this.errorMessage);
-            }
-        }
-    }
+			TResult IEither<string, T>.Case<TResult>(
+				Func<string, TResult> left,
+				Func<T, TResult> right)
+			{
+				return left(errorMessage);
+			}
+		}
+	}
 }

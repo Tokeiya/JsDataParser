@@ -16,16 +16,16 @@ namespace JsDatumParserTest
 			return source.Aggregate(new StringBuilder(), (b, c) => b.Append(c), b => b.ToString());
 		}
 
-		public static void AreSuccess(this IReply<char, (IEnumerable<char> captured,TokenTypes tokenType)> reply,
-			string expectedCapture,TokenTypes expectedTokenType)
+		public static void AreSuccess(this IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> reply,
+			string expectedCapture, TokenTypes expectedTokenType)
 		{
 			reply.IsNotNull();
 			expectedCapture.IsNotNull();
-			AreSuccess(reply, act => expectedCapture.SequenceEqual(act),expectedTokenType);
+			AreSuccess(reply, act => expectedCapture.SequenceEqual(act), expectedTokenType);
 		}
 
 		public static void AreSuccess(this IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> reply,
-			Func<IEnumerable<char>, bool> predicate,TokenTypes expectedTokenType)
+			Func<IEnumerable<char>, bool> predicate, TokenTypes expectedTokenType)
 		{
 			reply.IsNotNull();
 			predicate.IsNotNull();
@@ -41,7 +41,7 @@ namespace JsDatumParserTest
 		public static void AreFail(this IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> reply)
 		{
 			reply.IsNotNull();
-			
+
 			reply.Case(_ =>
 			{
 				true.IsTrue();
@@ -53,7 +53,8 @@ namespace JsDatumParserTest
 			});
 		}
 
-		public static IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> Execute(this Parser<char, (IEnumerable<char> captured, TokenTypes type)> parser, string input)
+		public static IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> Execute(
+			this Parser<char, (IEnumerable<char> captured, TokenTypes type)> parser, string input)
 		{
 			parser.IsNotNull();
 			return parser.Run(input.AsStream());

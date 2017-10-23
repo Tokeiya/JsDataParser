@@ -28,20 +28,11 @@ namespace JsDatumParser
 {
 	internal class CharacterCache
 	{
-		private readonly Queue<char> _sizeCoordinator=new Queue<char>();
 		private readonly Dictionary<char, char[]> _cache = new Dictionary<char, char[]>();
+		private readonly Queue<char> _sizeCoordinator = new Queue<char>();
+		public readonly int CacheSize;
 
 		public readonly int Threshold;
-		public  readonly int CacheSize;
-
-		public int CurrentCachSize
-		{
-			get
-			{
-				Debug.Assert(_cache.Count == _sizeCoordinator.Count);
-				return _sizeCoordinator.Count;
-			}
-		} 
 
 		public CharacterCache(int cacheSize, int threshold)
 		{
@@ -54,6 +45,15 @@ namespace JsDatumParser
 			CacheSize = cacheSize;
 		}
 
+		public int CurrentCachSize
+		{
+			get
+			{
+				Debug.Assert(_cache.Count == _sizeCoordinator.Count);
+				return _sizeCoordinator.Count;
+			}
+		}
+
 		public IEnumerable<char> Get(char c)
 		{
 			Debug.Assert(_sizeCoordinator.Count == _cache.Count);
@@ -61,13 +61,11 @@ namespace JsDatumParser
 			if (_cache.TryGetValue(c, out var ary)) return ary;
 
 			if (_cache.Count > Threshold)
-			{
 				while (_sizeCoordinator.Count == CacheSize)
 				{
 					var tmp = _sizeCoordinator.Dequeue();
 					_cache.Remove(tmp);
 				}
-			}
 
 			var ret = new[] {c};
 			_sizeCoordinator.Enqueue(c);

@@ -19,42 +19,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-using System;
 
 namespace Parseq
 {
-    public interface IPair<out T0, out T1>
-    {
-        T0 Item0
-        {
-            get;
-        }
+	public interface IPair<out T0, out T1>
+	{
+		T0 Item0 { get; }
 
-        T1 Item1
-        {
-            get;
-        }
-    }
+		T1 Item1 { get; }
+	}
 
-    public class Pair<T0, T1>
-        : IPair<T0, T1>
-    {
-        public T0 Item0
-        {
-            get;
-            private set;
-        }
+	public class Pair<T0, T1>
+		: IPair<T0, T1>
+	{
+		public Pair(T0 item0, T1 item1)
+		{
+			Item0 = item0;
+			Item1 = item1;
+		}
 
-        public T1 Item1
-        {
-            get;
-            private set;
-        }
+		public T0 Item0 { get; }
 
-        public Pair(T0 item0, T1 item1)
-        {
-            this.Item0 = item0;
-            this.Item1 = item1;
-        }
-    }
+		public T1 Item1 { get; }
+	}
 }

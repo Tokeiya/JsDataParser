@@ -19,18 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-using System;
 
 namespace Parseq
 {
-    class SingletonClassHelper<TClass>
-        where TClass : class, new()
-    {
-        private static TClass instance = null;
+	internal class SingletonClassHelper<TClass>
+		where TClass : class, new()
+	{
+		private static TClass instance;
 
-        public static TClass Instance
-        {
-            get { return instance ?? (instance = new TClass()); }
-        }
-    }
+		public static TClass Instance => instance ?? (instance = new TClass());
+	}
 }

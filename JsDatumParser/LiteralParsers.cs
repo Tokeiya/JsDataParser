@@ -21,10 +21,10 @@
  */
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Parseq;
 using Parseq.Combinators;
@@ -36,21 +36,34 @@ using Parseq.Combinators;
 namespace JsDatumParser
 {
 	using TypedCharEnumerableParser = Parser<char, (IEnumerable<char> captured, TokenTypes type)>;
-	using CharEnumerableParser=Parser<char,IEnumerable<char>>;
+	using CharEnumerableParser = Parser<char, IEnumerable<char>>;
 
 	internal static class LiteralParsers
 	{
 		private static readonly CharacterCache Cache = new CharacterCache(1000, 1250);
 
+		public static readonly CharEnumerableParser UnarySign = BuildUnarySign();
+
+		public static readonly TypedCharEnumerableParser IntegerNumber = BuildIntegerNumber();
+
+		public static readonly TypedCharEnumerableParser RealNumber = BuildRealNumber();
+
+		public static readonly TypedCharEnumerableParser Text = BuildText();
+
+		public static readonly TypedCharEnumerableParser Bool = BuildBool();
+
+		public static readonly TypedCharEnumerableParser TinyFunction = BuildTinyFunction();
+
+		public static readonly Parser<char, (IReadOnlyList<IEnumerable<char>> captured, TokenTypes tokenType)> ArrayParser =
+			BuildArray();
+
 
 		private static CharEnumerableParser BuildUnarySign()
 		{
-			var unaryExpr = Chars.Char('+').Or(Chars.Char('-')).Select(c=>Cache.Get(c));
+			var unaryExpr = Chars.Char('+').Or(Chars.Char('-')).Select(c => Cache.Get(c));
 
 			return unaryExpr;
 		}
-
-		public static readonly CharEnumerableParser UnarySign = BuildUnarySign();
 
 		private static TypedCharEnumerableParser BuildIntegerNumber()
 		{
@@ -64,11 +77,8 @@ namespace JsDatumParser
 				from sign in UnarySign.Optional()
 				let tmp = sign.HasValue ? sign.Value : Array.Empty<char>()
 				from digit in digits
-				select (tmp.Concat(digit),TokenTypes.IntegerNumber);
-
+				select (tmp.Concat(digit), TokenTypes.IntegerNumber);
 		}
-
-		public static readonly TypedCharEnumerableParser IntegerNumber=BuildIntegerNumber();
 
 		private static TypedCharEnumerableParser BuildRealNumber()
 		{
@@ -94,25 +104,23 @@ namespace JsDatumParser
 				select signChar.Concat(integerPart).Concat(decimalDot).Concat(fractionPart);
 
 
-			return  Combinator.Choice(pattern0, pattern1).Select(cap=>(cap,TokenTypes.RealNumber));
+			return Combinator.Choice(pattern0, pattern1).Select(cap => (cap, TokenTypes.RealNumber));
 		}
-
-		public static readonly TypedCharEnumerableParser RealNumber = BuildRealNumber();
 
 		private static TypedCharEnumerableParser BuildText()
 		{
 			var dict = new Dictionary<char, char[]>
 			{
-				['b'] = new[] { '\b' },
-				['t'] = new[] { '\t' },
-				['v'] = new[] { '\v' },
-				['n'] = new[] { '\n' },
-				['r'] = new[] { '\r' },
-				['f'] = new[] { '\f' },
-				['\''] = new[] { '\'' },
-				['\"'] = new[] { '\"' },
-				['\\'] = new[] { '\\' },
-				['0'] = new[] { '\0' },
+				['b'] = new[] {'\b'},
+				['t'] = new[] {'\t'},
+				['v'] = new[] {'\v'},
+				['n'] = new[] {'\n'},
+				['r'] = new[] {'\r'},
+				['f'] = new[] {'\f'},
+				['\''] = new[] {'\''},
+				['\"'] = new[] {'\"'},
+				['\\'] = new[] {'\\'},
+				['0'] = new[] {'\0'}
 			};
 
 
@@ -128,7 +136,7 @@ namespace JsDatumParser
 				from _ in Chars.Char('x')
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex()).Select(seq =>
 					seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString()))
-				let chr = (char)byte.Parse(hexaValue, NumberStyles.HexNumber)
+				let chr = (char) byte.Parse(hexaValue, NumberStyles.HexNumber)
 				select Cache.Get(chr);
 
 			var utf16 =
@@ -136,7 +144,7 @@ namespace JsDatumParser
 				from _ in Chars.Char('u')
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex(), Chars.Hex(), Chars.Hex())
 					.Select(seq => seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), b => b.ToString()))
-				let chr = (char)uint.Parse(hexaValue, NumberStyles.HexNumber)
+				let chr = (char) uint.Parse(hexaValue, NumberStyles.HexNumber)
 				select Cache.Get(chr);
 
 
@@ -157,14 +165,10 @@ namespace JsDatumParser
 			return text.Select(cap => (cap, TokenTypes.Text));
 		}
 
-		public static readonly TypedCharEnumerableParser Text = BuildText();
-
 		private static TypedCharEnumerableParser BuildBool()
 		{
-			return Chars.Sequence("true").Or(Chars.Sequence("false")).Select(cap=>(cap,TokenTypes.Boolean));
+			return Chars.Sequence("true").Or(Chars.Sequence("false")).Select(cap => (cap, TokenTypes.Boolean));
 		}
-
-		public static readonly TypedCharEnumerableParser Bool = BuildBool();
 
 		private static TypedCharEnumerableParser BuildTinyFunction()
 		{
@@ -181,12 +185,10 @@ namespace JsDatumParser
 				let header = (IEnumerable<char>) "function ("
 				select header.Concat(args).Concat(") {").Concat(contents).Concat("}");
 
-			return function.Select(cap=>(cap,TokenTypes.Function));
+			return function.Select(cap => (cap, TokenTypes.Function));
 		}
 
-		public static readonly TypedCharEnumerableParser TinyFunction=BuildTinyFunction();
-
-		private static Parser<char,(IReadOnlyList<IEnumerable<char>> captured,TokenTypes tokenType)> BuildArray()
+		private static Parser<char, (IReadOnlyList<IEnumerable<char>> captured, TokenTypes tokenType)> BuildArray()
 		{
 			var whiteSpace = Chars.WhiteSpace().Many0().Select(_ => Cache.Get(' '));
 
@@ -199,10 +201,10 @@ namespace JsDatumParser
 					.Select(cap => cap.Skip(1).Take(1))
 				from __ in Chars.Char(']').Ignore()
 				let fwd = values.SelectMany(x => x)
-				select (IReadOnlyList<IEnumerable<char>>)fwd.Concat(lastValue).ToArray();
+				select (IReadOnlyList<IEnumerable<char>>) fwd.Concat(lastValue).ToArray();
 
 			var emptyArray = Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore(), Chars.Char(']').Ignore())
-				.Select(_ => (IReadOnlyList<IEnumerable<char>>)Array.Empty<IEnumerable<char>>());
+				.Select(_ => (IReadOnlyList<IEnumerable<char>>) Array.Empty<IEnumerable<char>>());
 
 
 			var hoge = emptyArray.Or(array);
@@ -210,10 +212,5 @@ namespace JsDatumParser
 
 			return emptyArray.Or(array).Select(cap => (cap, TokenTypes.IntegerArray));
 		}
-
-		public static readonly Parser<char, (IReadOnlyList<IEnumerable<char>> captured, TokenTypes tokenType)> ArrayParser = BuildArray();
-
-
-
 	}
 }

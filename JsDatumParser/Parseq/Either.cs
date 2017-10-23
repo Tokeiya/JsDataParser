@@ -19,60 +19,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public interface IEither<out TLeft, out TRight>
-    {
-        TResult Case<TResult>(Func<TLeft, TResult> left, Func<TRight, TResult> right);
-    }
+	public interface IEither<out TLeft, out TRight>
+	{
+		TResult Case<TResult>(Func<TLeft, TResult> left, Func<TRight, TResult> right);
+	}
 
-    public partial class Either
-    {
-        public static IEither<TLeft, TRight> Left<TLeft, TRight>(TLeft value)
-        {
-            return new Either.LeftImpl<TLeft, TRight>(value);
-        }
+	public partial class Either
+	{
+		public static IEither<TLeft, TRight> Left<TLeft, TRight>(TLeft value)
+		{
+			return new LeftImpl<TLeft, TRight>(value);
+		}
 
-        public static IEither<TLeft, TRight> Right<TLeft, TRight>(TRight value)
-        {
-            return new Either.RightImpl<TLeft, TRight>(value);
-        }
-    }
+		public static IEither<TLeft, TRight> Right<TLeft, TRight>(TRight value)
+		{
+			return new RightImpl<TLeft, TRight>(value);
+		}
+	}
 
-    public partial class Either
-    {
-        class LeftImpl<TLeft, TRight>
-            : IEither<TLeft, TRight>
-        {
-            private readonly TLeft value;
+	public partial class Either
+	{
+		private class LeftImpl<TLeft, TRight>
+			: IEither<TLeft, TRight>
+		{
+			private readonly TLeft value;
 
-            public LeftImpl(TLeft value)
-            {
-                this.value = value;
-            }
+			public LeftImpl(TLeft value)
+			{
+				this.value = value;
+			}
 
-            public TResult Case<TResult>(Func<TLeft, TResult> left, Func<TRight, TResult> right)
-            {
-                return left(this.value);
-            }
-        }
+			public TResult Case<TResult>(Func<TLeft, TResult> left, Func<TRight, TResult> right)
+			{
+				return left(value);
+			}
+		}
 
-        class RightImpl<TLeft, TRight>
-            : IEither<TLeft, TRight>
-        {
-            private readonly TRight value;
+		private class RightImpl<TLeft, TRight>
+			: IEither<TLeft, TRight>
+		{
+			private readonly TRight value;
 
-            public RightImpl(TRight value)
-            {
-                this.value = value;
-            }
+			public RightImpl(TRight value)
+			{
+				this.value = value;
+			}
 
-            public TResult Case<TResult>(Func<TLeft, TResult> left, Func<TRight, TResult> right)
-            {
-                return right(this.value);
-            }
-        }
-    }
+			public TResult Case<TResult>(Func<TLeft, TResult> left, Func<TRight, TResult> right)
+			{
+				return right(value);
+			}
+		}
+	}
 }

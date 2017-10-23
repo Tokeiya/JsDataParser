@@ -21,21 +21,16 @@
  */
 
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace JsDatumParser
 {
 	public enum TokenTypes
 	{
-		Text=1,
-		IntegerNumber=2,
-		RealNumber=3,
-		IntegerArray=4,
-		Boolean=5,
-		Function=6,
-		Identifier=7
+		Text = 1,
+		IntegerNumber = 2,
+		RealNumber = 3,
+		IntegerArray = 4,
+		Boolean = 5,
+		Function = 6,
+		FieldName = 7
 	}
-
 }

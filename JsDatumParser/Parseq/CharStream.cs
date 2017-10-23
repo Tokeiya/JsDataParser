@@ -19,6 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -26,60 +27,54 @@ using System.IO;
 namespace Parseq
 {
 	[DebuggerStepThrough]
-    public partial class CharStream
-        : ITokenStream<Char>
-        , IDisposable
-    {
-        private IDelayed<ITokenStream<Char>> restStream;
-        private CharStream.Reader reader;
+	public partial class CharStream
+		: ITokenStream<char>
+			, IDisposable
+	{
+		private Reader reader;
+		private readonly IDelayed<ITokenStream<char>> restStream;
 
-        public CharStream(TextReader inputStringReader)
-            : this(new CharStream.Reader(inputStringReader))
-        {
+		public CharStream(TextReader inputStringReader)
+			: this(new Reader(inputStringReader))
+		{
+		}
 
-        }
+		public CharStream(string inputString)
+			: this(new StringReader(inputString))
+		{
+		}
 
-        public CharStream(String inputString)
-            : this(new StringReader(inputString))
-        {
+		private CharStream(Reader reader)
+		{
+			if (reader == null)
+				throw new ObjectDisposedException("reader");
 
-        }
+			this.reader = reader;
+			var currentPosition = this.reader.CurrentPosition;
+			var current = this.reader.Peek() == Reader.EOF
+				? Option.None<IPair<char, Position>>()
+				: Option.Some(
+					Pair.Return((char) this.reader.Read(), currentPosition));
 
-        CharStream(CharStream.Reader reader)
-        {
-            if (reader == null)
-                throw new ObjectDisposedException("reader");
+			Current = current;
+			restStream = Delayed.Return(() =>
+				new CharStream(this.reader));
+		}
 
-            this.reader = reader;
-            var currentPosition = this.reader.CurrentPosition;
-            var current = (this.reader.Peek() == CharStream.Reader.EOF)
-                ? Option.None<IPair<Char, Position>>()
-                : Option.Some<IPair<Char, Position>>(
-                    Pair.Return<Char, Position>((Char)this.reader.Read(), currentPosition));
+		public void Dispose()
+		{
+			if (reader != null)
+			{
+				reader.Dispose();
+				reader = null;
+			}
+		}
 
-            this.Current = current;
-            this.restStream = Delayed.Return(() => 
-                new CharStream(this.reader));
-        }
+		public IOption<IPair<char, Position>> Current { get; }
 
-        public IOption<IPair<Char, Position>> Current
-        {
-            get;
-            private set;
-        }
-
-        public ITokenStream<Char> MoveNext()
-        {
-            return this.restStream.Force();
-        }
-
-        public void Dispose()
-        {
-            if (this.reader != null)
-            {
-                this.reader.Dispose();
-                this.reader = null;
-            }
-        }
-    }
+		public ITokenStream<char> MoveNext()
+		{
+			return restStream.Force();
+		}
+	}
 }

@@ -19,208 +19,205 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Parseq
 {
-    internal static partial class InternalCombinator
-    {
-        public static Parser<TToken, IEnumerable<T>> Sequence_Optimized<TToken, T>(
-            IEnumerable<Parser<TToken, T>> parsers)
-        {
-            return stream =>
-                {
-                    var resultStream = stream;
-                    var resultValue = new List<T>();
-                    String errorMessage = null;
-                    foreach (var parser in parsers)
-                    {
-                        var successful = parser(resultStream)
-                            .Case(
-                                failure: (restStream, value) =>
-                                    {
-                                        resultStream = restStream;
-                                        errorMessage = value;
-                                        return false;
-                                    },
-                                success: (restStream, value) =>
-                                    {
-                                        resultStream = restStream;
-                                        resultValue.Add(value);
-                                        return true;
-                                    });
+	internal static partial class InternalCombinator
+	{
+		public static Parser<TToken, IEnumerable<T>> Sequence_Optimized<TToken, T>(
+			IEnumerable<Parser<TToken, T>> parsers)
+		{
+			return stream =>
+			{
+				var resultStream = stream;
+				var resultValue = new List<T>();
+				string errorMessage = null;
+				foreach (var parser in parsers)
+				{
+					var successful = parser(resultStream)
+						.Case(
+							(restStream, value) =>
+							{
+								resultStream = restStream;
+								errorMessage = value;
+								return false;
+							},
+							(restStream, value) =>
+							{
+								resultStream = restStream;
+								resultValue.Add(value);
+								return true;
+							});
 
-                        if (!successful)
-                            return Reply.Failure<TToken, IEnumerable<T>>(resultStream, errorMessage);
-                    }
-                    return Reply.Success<TToken, IEnumerable<T>>(resultStream, resultValue);
-                };
-        }
+					if (!successful)
+						return Reply.Failure<TToken, IEnumerable<T>>(resultStream, errorMessage);
+				}
+				return Reply.Success<TToken, IEnumerable<T>>(resultStream, resultValue);
+			};
+		}
 
-        public static Parser<TToken, T> Choice_Optimized<TToken, T>(
-            IEnumerable<Parser<TToken, T>> parsers)
-        {
-            return stream =>
-            {
-                var resultStream = stream;
-                var resultValue = default(T);
-                String errorMessage = null;
-                foreach (var parser in parsers)
-                {
-                    var successful = parser(resultStream)
-                        .Case(
-                            failure: (restStream, value) =>
-                            {
-                                resultStream = stream;
-                                errorMessage = value;
-                                return false;
-                            },
-                            success: (restStream, value) =>
-                            {
-                                resultStream = restStream;
-                                resultValue = value;
-                                return true;
-                            });
+		public static Parser<TToken, T> Choice_Optimized<TToken, T>(
+			IEnumerable<Parser<TToken, T>> parsers)
+		{
+			return stream =>
+			{
+				var resultStream = stream;
+				var resultValue = default(T);
+				string errorMessage = null;
+				foreach (var parser in parsers)
+				{
+					var successful = parser(resultStream)
+						.Case(
+							(restStream, value) =>
+							{
+								resultStream = stream;
+								errorMessage = value;
+								return false;
+							},
+							(restStream, value) =>
+							{
+								resultStream = restStream;
+								resultValue = value;
+								return true;
+							});
 
-                    if (successful)
-                        return Reply.Success<TToken, T>(resultStream, resultValue);
-                }
-                return Reply.Failure<TToken, T>(resultStream, errorMessage);
-            };
-        }
+					if (successful)
+						return Reply.Success(resultStream, resultValue);
+				}
+				return Reply.Failure<TToken, T>(resultStream, errorMessage);
+			};
+		}
 
-        public static Parser<TToken, IEnumerable<T>> Many0_Optimized<TToken, T>(
-            Parser<TToken, T> parser)
-        {
-            return stream =>
-            {
-                var resultStream = stream;
-                var resultValue = new List<T>();
-                while(true)
-                {
-                    var successful = parser(resultStream)
-                        .Case(
-                            failure: (restStream, value) =>
-                            {
-                                return false;
-                            },
-                            success: (restStream, value) =>
-                            {
-                                resultStream = restStream;
-                                resultValue.Add(value);
-                                return true;
-                            });
+		public static Parser<TToken, IEnumerable<T>> Many0_Optimized<TToken, T>(
+			Parser<TToken, T> parser)
+		{
+			return stream =>
+			{
+				var resultStream = stream;
+				var resultValue = new List<T>();
+				while (true)
+				{
+					var successful = parser(resultStream)
+						.Case(
+							(restStream, value) => { return false; },
+							(restStream, value) =>
+							{
+								resultStream = restStream;
+								resultValue.Add(value);
+								return true;
+							});
 
-                    if (!successful)
-                        return Reply.Success<TToken, IEnumerable<T>>(resultStream, resultValue);
-                }
-            };
-        }
+					if (!successful)
+						return Reply.Success<TToken, IEnumerable<T>>(resultStream, resultValue);
+				}
+			};
+		}
 
-        public static Parser<TToken, IEnumerable<T>> Many1_Optimized<TToken, T>(
-            Parser<TToken, T> parser)
-        {
-            return parser.Pipe(InternalCombinator.Many0_Optimized(parser),
-                (head, tail) => Enumerable.Concat(new[] { head }, tail));
-        }
+		public static Parser<TToken, IEnumerable<T>> Many1_Optimized<TToken, T>(
+			Parser<TToken, T> parser)
+		{
+			return parser.Pipe(Many0_Optimized(parser),
+				(head, tail) => new[] {head}.Concat(tail));
+		}
 
-        public static Parser<TToken, IEnumerable<T>> ManyTill_Optimized<TToken, T>(
-            Parser<TToken, T> parser,
-            Parser<TToken, Unit> terminater)
-        {
-            return stream =>
-            {
-                var resultStream = stream;
-                var resultValue = new List<T>();
-                String errorMessage = null;
-                while (true)
-                {
-                    Boolean successful;
-                    successful = terminater(resultStream)
-                        .Case(
-                            failure: (restStream, value) => false,
-                            success: (restStream, value) =>
-                                {
-                                    resultStream = restStream;
-                                    return true;
-                                });
+		public static Parser<TToken, IEnumerable<T>> ManyTill_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			Parser<TToken, Unit> terminater)
+		{
+			return stream =>
+			{
+				var resultStream = stream;
+				var resultValue = new List<T>();
+				string errorMessage = null;
+				while (true)
+				{
+					bool successful;
+					successful = terminater(resultStream)
+						.Case(
+							(restStream, value) => false,
+							(restStream, value) =>
+							{
+								resultStream = restStream;
+								return true;
+							});
 
-                    if (successful)
-                        return Reply.Success<TToken, IEnumerable<T>>(resultStream, resultValue);
+					if (successful)
+						return Reply.Success<TToken, IEnumerable<T>>(resultStream, resultValue);
 
-                    successful = parser(resultStream)
-                        .Case(
-                            failure: (restStream, value) =>
-                                {
-                                    resultStream = restStream;
-                                    errorMessage = value;
-                                    return false;
-                                },
-                            success: (restStream, value) =>
-                                {
-                                    resultStream = restStream;
-                                    resultValue.Add(value);
-                                    return true;
-                                });
-                    if (!successful)
-                        return Reply.Failure<TToken, IEnumerable<T>>(resultStream, errorMessage);
-                }
-            };
-        }
+					successful = parser(resultStream)
+						.Case(
+							(restStream, value) =>
+							{
+								resultStream = restStream;
+								errorMessage = value;
+								return false;
+							},
+							(restStream, value) =>
+							{
+								resultStream = restStream;
+								resultValue.Add(value);
+								return true;
+							});
+					if (!successful)
+						return Reply.Failure<TToken, IEnumerable<T>>(resultStream, errorMessage);
+				}
+			};
+		}
 
-        public static Parser<TToken, IEnumerable<T>> Repeat_Optimized<TToken, T>(
-            Parser<TToken, T> parser,
-            Int32 count)
-        {
-            return InternalCombinator.Sequence_Optimized(Enumerable.Repeat(parser, count));
-        }
+		public static Parser<TToken, IEnumerable<T>> Repeat_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			int count)
+		{
+			return Sequence_Optimized(Enumerable.Repeat(parser, count));
+		}
 
-        public static Parser<TToken, IEnumerable<T>> SepBy0_Optimized<TToken, T>(
-            Parser<TToken, T> parser,
-            Parser<TToken, Unit> sep)
-        {
-            return InternalCombinator.SepBy1_Optimized(parser, sep)
-                .Or(Parser.Return<TToken, IEnumerable<T>>(Enumerable.Empty<T>()));
-        }
+		public static Parser<TToken, IEnumerable<T>> SepBy0_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			Parser<TToken, Unit> sep)
+		{
+			return SepBy1_Optimized(parser, sep)
+				.Or(Parser.Return<TToken, IEnumerable<T>>(Enumerable.Empty<T>()));
+		}
 
-        public static Parser<TToken, IEnumerable<T>> SepBy1_Optimized<TToken, T>(
-            Parser<TToken, T> parser,
-            Parser<TToken, Unit> sep)
-        {
-            return parser.Pipe(InternalCombinator.Many0_Optimized(sep.Bindr(parser)),
-                (head, tail) => Enumerable.Concat(new[] { head }, tail));
-        }
+		public static Parser<TToken, IEnumerable<T>> SepBy1_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			Parser<TToken, Unit> sep)
+		{
+			return parser.Pipe(Many0_Optimized(sep.Bindr(parser)),
+				(head, tail) => new[] {head}.Concat(tail));
+		}
 
-        public static Parser<TToken, IEnumerable<T>> EndBy0_Optimized<TToken, T>(
-            Parser<TToken, T> parser,
-            Parser<TToken, Unit> sep)
-        {
-            return InternalCombinator.Many0_Optimized(parser.Bindl(sep));
-        }
+		public static Parser<TToken, IEnumerable<T>> EndBy0_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			Parser<TToken, Unit> sep)
+		{
+			return Many0_Optimized(parser.Bindl(sep));
+		}
 
-        public static Parser<TToken, IEnumerable<T>> EndBy1_Optimized<TToken, T>(
-            Parser<TToken, T> parser,
-            Parser<TToken, Unit> sep)
-        {
-            return InternalCombinator.Many1_Optimized(parser.Bindl(sep));
-        }
+		public static Parser<TToken, IEnumerable<T>> EndBy1_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			Parser<TToken, Unit> sep)
+		{
+			return Many1_Optimized(parser.Bindl(sep));
+		}
 
-        public static Parser<TToken, IEnumerable<T>> SepEndBy0_Optimized<TToken, T>(
-            Parser<TToken, T> parser,
-            Parser<TToken, Unit> sep)
-        {
-            return InternalCombinator.SepBy0_Optimized(parser, sep)
-                .Bindl(sep.Optional());
-        }
+		public static Parser<TToken, IEnumerable<T>> SepEndBy0_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			Parser<TToken, Unit> sep)
+		{
+			return SepBy0_Optimized(parser, sep)
+				.Bindl(sep.Optional());
+		}
 
-        public static Parser<TToken, IEnumerable<T>> SepEndBy1_Optimized<TToken, T>(
-           Parser<TToken, T> parser,
-           Parser<TToken, Unit> sep)
-        {
-            return InternalCombinator.SepBy1_Optimized(parser, sep)
-                .Bindl(sep.Optional());
-        }
-    }
+		public static Parser<TToken, IEnumerable<T>> SepEndBy1_Optimized<TToken, T>(
+			Parser<TToken, T> parser,
+			Parser<TToken, Unit> sep)
+		{
+			return SepBy1_Optimized(parser, sep)
+				.Bindl(sep.Optional());
+		}
+	}
 }

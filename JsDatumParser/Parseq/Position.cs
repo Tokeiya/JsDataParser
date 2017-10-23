@@ -19,99 +19,92 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 
 namespace Parseq
 {
-    public struct Position
-        : IComparable<Position>
-        , IEquatable<Position>
-    {
-        public readonly static Position Zero = new Position(1, 1);    
+	public struct Position
+		: IComparable<Position>
+			, IEquatable<Position>
+	{
+		public static readonly Position Zero = new Position(1, 1);
 
-        public Int32 Line
-        {
-            get;
-            private set;
-        }
+		public int Line { get; }
 
-        public Int32 Column
-        {
-            get;
-            private set;
-        }
+		public int Column { get; }
 
-        public Position(Int32 line, Int32 column)
-            : this()
-        {
-            if (line < 1)
-                throw new ArgumentOutOfRangeException("line");
-            if (column < 1)
-                throw new ArgumentOutOfRangeException("column");
+		public Position(int line, int column)
+			: this()
+		{
+			if (line < 1)
+				throw new ArgumentOutOfRangeException("line");
+			if (column < 1)
+				throw new ArgumentOutOfRangeException("column");
 
-            this.Line = line;
-            this.Column = column;
-        }
+			Line = line;
+			Column = column;
+		}
 
-        public Int32 CompareTo(Position other)
-        {
-            var distance = (this.Line == other.Line)
-                ? this.Column - other.Column
-                : this.Line - other.Line;
-            /*
-            return
-                (distance > 0) ? +1 :
-                (distance < 0) ? -1 :
-                0;
-             */
-            return distance;
-        }
+		public int CompareTo(Position other)
+		{
+			var distance = Line == other.Line
+				? Column - other.Column
+				: Line - other.Line;
+			/*
+			return
+			    (distance > 0) ? +1 :
+			    (distance < 0) ? -1 :
+			    0;
+			 */
+			return distance;
+		}
 
-        public Boolean Equals(Position other)
-        {
-            return this.CompareTo(other) == 0;
-        }
+		public bool Equals(Position other)
+		{
+			return CompareTo(other) == 0;
+		}
 
-        public override Int32 GetHashCode()
-        {
-            const Int32 magic = 117;
-            return unchecked((this.Line.GetHashCode() * magic)
-                ^ this.Column.GetHashCode());
-        }
+		public override int GetHashCode()
+		{
+			const int magic = 117;
+			return unchecked((Line.GetHashCode() * magic)
+			                 ^ Column.GetHashCode());
+		}
 
-        public override Boolean Equals(Object obj)
-        {
-            return obj != null && this.Equals((Position)obj);
-        }
+		public override bool Equals(object obj)
+		{
+			return obj != null && Equals((Position) obj);
+		}
 
-        public static Boolean operator ==(Position lhs, Position rhs)
-        {
-            return lhs.Equals(rhs);
-        }
+		public static bool operator ==(Position lhs, Position rhs)
+		{
+			return lhs.Equals(rhs);
+		}
 
-        public static Boolean operator !=(Position lhs, Position rhs)
-        {
-            return !(lhs == rhs);
-        }
+		public static bool operator !=(Position lhs, Position rhs)
+		{
+			return !(lhs == rhs);
+		}
 
-        public static Boolean operator >(Position lhs, Position rhs)
-        {
-            return lhs.CompareTo(rhs) > 0;
-        }
+		public static bool operator >(Position lhs, Position rhs)
+		{
+			return lhs.CompareTo(rhs) > 0;
+		}
 
-        public static Boolean operator <(Position lhs, Position rhs)
-        {
-            return lhs.CompareTo(rhs) < 0;
-        }
+		public static bool operator <(Position lhs, Position rhs)
+		{
+			return lhs.CompareTo(rhs) < 0;
+		}
 
-        public static Boolean operator >=(Position lhs, Position rhs)
-        {
-            return !(lhs < rhs);
-        }
+		public static bool operator >=(Position lhs, Position rhs)
+		{
+			return !(lhs < rhs);
+		}
 
-        public static Boolean operator <=(Position lhs, Position rhs)
-        {
-            return !(lhs > rhs);
-        }
-    }
+		public static bool operator <=(Position lhs, Position rhs)
+		{
+			return !(lhs > rhs);
+		}
+	}
 }

@@ -19,67 +19,68 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
 using System.ComponentModel;
 
 namespace Parseq
 {
-    public static partial class Either
-    {
-        public static T Force<TException, T>(this IEither<TException, T> either)
-            where TException : Exception
-        {
-            return either.Case(
-                left: exception => { throw exception; },
-                right: value => value);
-        }
+	public static partial class Either
+	{
+		public static T Force<TException, T>(this IEither<TException, T> either)
+			where TException : Exception
+		{
+			return either.Case(
+				exception => { throw exception; },
+				value => value);
+		}
 
-        public static IEither<TException, T> Throw<TException, T>(TException exception)
-        {
-            return Either.Left<TException, T>(exception);
-        }
+		public static IEither<TException, T> Throw<TException, T>(TException exception)
+		{
+			return Left<TException, T>(exception);
+		}
 
-        public static IEither<TException, T> Catch<TException, T>(Func<T> valueFactory)
-            where TException : Exception
-        {
-            try
-            {
-                return Either.Right<TException, T>(valueFactory());
-            }
-            catch (TException exception)
-            {
-                return Either.Left<TException, T>(exception);
-            }
-        }
-    }
+		public static IEither<TException, T> Catch<TException, T>(Func<T> valueFactory)
+			where TException : Exception
+		{
+			try
+			{
+				return Right<TException, T>(valueFactory());
+			}
+			catch (TException exception)
+			{
+				return Left<TException, T>(exception);
+			}
+		}
+	}
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static class EitherExtensions
-    {
-        public static IEither<TException, T1> Select<TException, T0, T1>(
-            this IEither<TException, T0> either,
-                 Func<T0, T1> selector)
-        {
-            return either.Case(
-                left: exception => Either.Left<TException, T1>(exception),
-                right: value => Either.Right<TException, T1>(selector(value)));
-        }
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class EitherExtensions
+	{
+		public static IEither<TException, T1> Select<TException, T0, T1>(
+			this IEither<TException, T0> either,
+			Func<T0, T1> selector)
+		{
+			return either.Case(
+				exception => Either.Left<TException, T1>(exception),
+				value => Either.Right<TException, T1>(selector(value)));
+		}
 
-        public static IEither<TException, T1> SelectMany<TException, T0, T1>(
-            this IEither<TException, T0> either,
-                 Func<T0, IEither<TException, T1>> selector)
-        {
-            return either.Case(
-                left: exception => Either.Left<TException, T1>(exception),
-                right: value => selector(value));
-        }
+		public static IEither<TException, T1> SelectMany<TException, T0, T1>(
+			this IEither<TException, T0> either,
+			Func<T0, IEither<TException, T1>> selector)
+		{
+			return either.Case(
+				exception => Either.Left<TException, T1>(exception),
+				value => selector(value));
+		}
 
-        public static IEither<TException, T2> SelectMany<TException, T0, T1, T2>(
-            this IEither<TException, T0> either,
-                 Func<T0, IEither<TException, T1>> selector,
-                 Func<T0, T1, T2> projector)
-        {
-            return either.SelectMany(value0 => selector(value0).Select(value1 => projector(value0, value1)));
-        }
-    }
+		public static IEither<TException, T2> SelectMany<TException, T0, T1, T2>(
+			this IEither<TException, T0> either,
+			Func<T0, IEither<TException, T1>> selector,
+			Func<T0, T1, T2> projector)
+		{
+			return either.SelectMany(value0 => selector(value0).Select(value1 => projector(value0, value1)));
+		}
+	}
 }

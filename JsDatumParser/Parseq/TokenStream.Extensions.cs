@@ -19,132 +19,126 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace Parseq
 {
 	[DebuggerStepThrough]
-    public static partial class TokenStream
-    {
-        public static CharStream AsStream(this String inputString)
-        {
-            return new CharStream(inputString);
-        }
+	public static partial class TokenStream
+	{
+		public static CharStream AsStream(this string inputString)
+		{
+			return new CharStream(inputString);
+		}
 
-        public static CharStream AsStream(this TextReader inputStringReader)
-        {
-            return new CharStream(inputStringReader);
-        }
+		public static CharStream AsStream(this TextReader inputStringReader)
+		{
+			return new CharStream(inputStringReader);
+		}
 
-        public static CharStream AsStream(this IEnumerable<Char> enumerable)
-        {
-            return TokenStream.AsStream(new TextReaderAdapter(enumerable));
-        }
+		public static CharStream AsStream(this IEnumerable<char> enumerable)
+		{
+			return new TextReaderAdapter(enumerable).AsStream();
+		}
 
-        public static ITokenStream<T> AsStream<T>(this IEnumerable<T> enumerable)
-        {
-            return new TokenStreamImpl<T>(enumerable);
-        }
-    }
+		public static ITokenStream<T> AsStream<T>(this IEnumerable<T> enumerable)
+		{
+			return new TokenStreamImpl<T>(enumerable);
+		}
+	}
 
-    public static partial class TokenStream
-    {
-        class TokenStreamImpl<T>
-            : ITokenStream<T>
-        {
-            public IOption<IPair<T, Position>> Current
-            {
-                get;
-                private set;
-            }
-            
-            private IEnumerator<T> enumerator;
-            private IDelayed<ITokenStream<T>> restStream;
+	public static partial class TokenStream
+	{
+		private class TokenStreamImpl<T>
+			: ITokenStream<T>
+		{
+			private readonly IEnumerator<T> enumerator;
+			private readonly IDelayed<ITokenStream<T>> restStream;
 
-            public TokenStreamImpl(IEnumerable<T> enumerable)
-                : this(enumerable.GetEnumerator())
-            {
-                
-            }
+			public TokenStreamImpl(IEnumerable<T> enumerable)
+				: this(enumerable.GetEnumerator())
+			{
+			}
 
-            public TokenStreamImpl(IEnumerator<T> enumerator)
-                : this(enumerator, Position.Zero)
-            {
+			public TokenStreamImpl(IEnumerator<T> enumerator)
+				: this(enumerator, Position.Zero)
+			{
+			}
 
-            }
+			private TokenStreamImpl(IEnumerator<T> enumerator, Position currentPosition)
+			{
+				this.enumerator = enumerator;
+				Current = this.enumerator.MoveNext()
+					? Option.Some(Pair.Return(this.enumerator.Current, currentPosition))
+					: Option.None<IPair<T, Position>>();
+				restStream = Delayed.Return(() =>
+					new TokenStreamImpl<T>(enumerator, new Position(currentPosition.Line, currentPosition.Column + 1)));
+			}
 
-            TokenStreamImpl(IEnumerator<T> enumerator, Position currentPosition)
-            {
-                this.enumerator = enumerator;
-                this.Current = this.enumerator.MoveNext()
-                    ? Option.Some<IPair<T, Position>>(Pair.Return(this.enumerator.Current, currentPosition))
-                    : Option.None<IPair<T, Position>>();
-                this.restStream = Delayed.Return(() =>
-                    new TokenStreamImpl<T>(enumerator, new Position(currentPosition.Line, currentPosition.Column + 1)));
-            }
+			public IOption<IPair<T, Position>> Current { get; }
 
-            public ITokenStream<T> MoveNext()
-            {
-                return this.restStream.Force();
-            }
-        }
+			public ITokenStream<T> MoveNext()
+			{
+				return restStream.Force();
+			}
+		}
 
-        class TextReaderAdapter
-            : TextReader
-        {
-            public const Int32 EOF = -1;
+		private class TextReaderAdapter
+			: TextReader
+		{
+			public const int EOF = -1;
+			private IOption<char> current;
 
-            private IEnumerator<Char> enumerator;
-            private IOption<Char> current;
+			private IEnumerator<char> enumerator;
 
-            public TextReaderAdapter(IEnumerable<Char> enumerable)
-                : this(enumerable.GetEnumerator())
-            {
+			public TextReaderAdapter(IEnumerable<char> enumerable)
+				: this(enumerable.GetEnumerator())
+			{
+			}
 
-            }
+			public TextReaderAdapter(IEnumerator<char> enumerator)
+			{
+				this.enumerator = enumerator;
+				current = this.enumerator.MoveNext()
+					? Option.Some(this.enumerator.Current)
+					: Option.None<char>();
+			}
 
-            public TextReaderAdapter(IEnumerator<Char> enumerator)
-            {
-                this.enumerator = enumerator;
-                this.current = this.enumerator.MoveNext()
-                    ? Option.Some<Char>(this.enumerator.Current)
-                    : Option.None<Char>();
-            }
+			public override int Peek()
+			{
+				if (enumerator == null)
+					throw new ObjectDisposedException("enumerator");
 
-            public override Int32 Peek()
-            {
-                if (this.enumerator == null)
-                    throw new ObjectDisposedException("enumerator");
-                
-                return this.current.Case(
-                    none: () => EOF,
-                    some: value => (Int32)value);
-            }
+				return current.Case(
+					() => EOF,
+					value => (int) value);
+			}
 
-            public override Int32 Read()
-            {
-                if (this.enumerator == null)
-                    throw new ObjectDisposedException("enumerator");
+			public override int Read()
+			{
+				if (enumerator == null)
+					throw new ObjectDisposedException("enumerator");
 
-                var c = this.Peek();
+				var c = Peek();
 
-                this.current = this.enumerator.MoveNext()
-                    ? Option.Some<Char>(this.enumerator.Current)
-                    : Option.None<Char>();
-                return c;
-            }
+				current = enumerator.MoveNext()
+					? Option.Some(enumerator.Current)
+					: Option.None<char>();
+				return c;
+			}
 
-            protected override void Dispose(Boolean disposing)
-            {
-                if (disposing && this.enumerator != null)
-                {
-                    this.enumerator.Dispose();
-                    this.enumerator = null;
-                }
-            }
-        }
-    }
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing && enumerator != null)
+				{
+					enumerator.Dispose();
+					enumerator = null;
+				}
+			}
+		}
+	}
 }

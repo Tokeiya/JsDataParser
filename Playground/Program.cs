@@ -33,7 +33,8 @@ using JsDatumParser;
 
 namespace Playground
 {
-	using static JsDatumParser.LiteralParsers;
+	using CharEnumerable=IEnumerable<char>;
+	using ChainFunc=Func<string,string,string>;
 
 
 	static class Extension
@@ -58,44 +59,37 @@ namespace Playground
 				Console.WriteLine("Fail!");
 			}
 		}
+
+		public static string BuildString(this IEnumerable<char> source)
+			=> source.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString());
 	}
 
 	class Program
 	{
 		static void Main()
 		{
-			(int x, int y) tuple = (10, 20);
 			// ReSharper disable once InconsistentNaming
 			var Cache = new CharacterCache(100, 150);
 
-			var whiteSpace = Chars.WhiteSpace().Many0().Select(_ => Cache.Get(' '));
+			var number = Chars.Digit().Many1().Select(c=>c.BuildString());
 
-			var array =
-				from _ in Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore())
-				from values in Combinator.Sequence(whiteSpace, IntegerNumber, whiteSpace, Chars.Char(',').Select(c => Cache.Get(c))).Many0()
-				from lastValue in Combinator.Sequence(whiteSpace, IntegerNumber, whiteSpace)
-				from __ in Chars.Char(']').Ignore()
-				let first = values.SelectMany(x => x.SelectMany(y => y))
-				let second=lastValue.SelectMany(x=>x)
-				select first.Concat(second);
+			var additive = Chars.Char('+')
+				.Select(_ => (ChainFunc) ((l, r) => $"({l}+{r})"));
 
+			var subtractive = Chars.Char('-')
+				.Select(_ => (ChainFunc) ((l, r) => $"({l}-{r})"));
 
-			var ret = array.Run("[565, 540A, 539, 567]".AsStream());
+			var expr = number.Chainl(additive.Or(subtractive)).Or(number);
+			var ret = expr.Run("42".AsStream());
 
-
-			ret.Case((stream, txt) =>
-				{
-					Console.WriteLine(txt);
-				},
-				(stream, result) =>
-				{
-					Console.WriteLine(result.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString()));
-				});
+			ret.Case((str, txt) => Console.WriteLine(txt),
+				(str, txt) => Console.WriteLine(txt));
 
 
+			ret = expr.Run("42+84-114514".AsStream());
 
-			array.Run("[ 565, 540A  , 539 , 567 ]".AsStream()).Dump();
-
+			ret.Case((str, txt) => Console.WriteLine(txt),
+				(str, txt) => Console.WriteLine(txt));
 
 
 

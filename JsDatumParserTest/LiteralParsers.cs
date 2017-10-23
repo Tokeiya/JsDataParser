@@ -22,9 +22,9 @@ namespace JsDatumParserTest
 		[Fact]
 		public void IntegerNumberTest()
 		{
-			IntegerNumber.Run("114514".AsStream()).AreSuccess("114514");
-			IntegerNumber.Run("-42".AsStream()).AreSuccess("-42");
-			IntegerNumber.Run("+11".AsStream()).AreSuccess("+11");
+			IntegerNumber.Run("114514".AsStream()).AreSuccess("114514",TokenTypes.IntegerNumber);
+			IntegerNumber.Run("-42".AsStream()).AreSuccess("-42",TokenTypes.IntegerNumber);
+			IntegerNumber.Run("+11".AsStream()).AreSuccess("+11",TokenTypes.IntegerNumber);
 
 			IntegerNumber.Run("++10".AsStream()).AreFail();
 
@@ -33,12 +33,12 @@ namespace JsDatumParserTest
 		[Fact]
 		public void RealNumberTest()
 		{
-			RealNumber.Run("-.0".AsStream()).AreSuccess("-.0");
-			RealNumber.Run("-0.".AsStream()).AreSuccess("-0.");
-			RealNumber.Run("0.".AsStream()).AreSuccess("0.");
-			RealNumber.Run(".0".AsStream()).AreSuccess(".0");
-			RealNumber.Run("+0.".AsStream()).AreSuccess("+0.");
-			RealNumber.Run("+.0".AsStream()).AreSuccess("+.0");
+			RealNumber.Run("-.0".AsStream()).AreSuccess("-.0",TokenTypes.RealNumber);
+			RealNumber.Run("-0.".AsStream()).AreSuccess("-0.",TokenTypes.RealNumber);
+			RealNumber.Run("0.".AsStream()).AreSuccess("0.",TokenTypes.RealNumber);
+			RealNumber.Run(".0".AsStream()).AreSuccess(".0",TokenTypes.RealNumber);
+			RealNumber.Run("+0.".AsStream()).AreSuccess("+0.",TokenTypes.RealNumber);
+			RealNumber.Run("+.0".AsStream()).AreSuccess("+.0",TokenTypes.RealNumber);
 
 			RealNumber.Run(".".AsStream()).AreFail();
 			RealNumber.Run("-.".AsStream()).AreFail();

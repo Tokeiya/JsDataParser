@@ -30,24 +30,18 @@ namespace JsDatumParserTest
 			reply.IsNotNull();
 			predicate.IsNotNull();
 
-			reply.Case(
-				_ =>
+			reply.Case((str, txt) => Assert.False(true, txt),
+				(str, cap) =>
 				{
-					false.IsTrue();
-					return 0;
-				},
-				seq =>
-				{
-					Assert.True(predicate(seq.captured),seq.captured.BuildString());
-
-					return 0;
+					predicate(cap.captured).IsTrue();
+					(cap.tokenType == expectedTokenType).IsTrue();
 				});
 		}
 
 		public static void AreFail(this IReply<char, (IEnumerable<char> captured, TokenTypes tokenType)> reply)
 		{
 			reply.IsNotNull();
-
+			
 			reply.Case(_ =>
 			{
 				true.IsTrue();

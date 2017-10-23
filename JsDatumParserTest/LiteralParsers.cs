@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using JsDatumParser;
 using Parseq;
 using Xunit;
@@ -12,11 +13,12 @@ namespace JsDatumParserTest
 		[Fact]
 		public void UnarySignTest()
 		{ 
-			UnarySign.Run("+".AsStream()).AreSuccess("+");
-			UnarySign.Run("-".AsStream()).AreSuccess("-");
+			UnarySign.Run("+".AsStream()).Case((_, __) => Assert.True(false), (_, seq) => seq.SequenceEqual("+").IsTrue());
+			UnarySign.Run("-".AsStream()).Case((_, __) => Assert.True(false), (_, seq) => seq.SequenceEqual("-").IsTrue());
 
-			UnarySign.Run("".AsStream()).AreFail();
-			UnarySign.Run("1".AsStream()).AreFail();
+			UnarySign.Run("".AsStream()).Case((_, __) => Assert.True(true), (_, seq) => Assert.True(false));
+			UnarySign.Run("1".AsStream()).Case((_, __) => Assert.True(true), (_, seq) => Assert.True(false));
+
 		}
 
 		[Fact]
@@ -50,26 +52,26 @@ namespace JsDatumParserTest
 		public void NormalTextTest()
 		{
 
-			Text.Run("\"hello\"".AsStream()).AreSuccess("hello");
-			Text.Run("\'hello\'".AsStream()).AreSuccess("hello");
+			Text.Run("\"hello\"".AsStream()).AreSuccess("hello",TokenTypes.Text);
+			Text.Run("\'hello\'".AsStream()).AreSuccess("hello",TokenTypes.Text);
 			Text.Run("\'hello\"".AsStream()).AreFail();
 			Text.Run("\"hello\'".AsStream()).AreFail();
 
 
 			//successRunner("\\b");
-			Text.Execute("''").AreSuccess("");
+			Text.Execute("''").AreSuccess("",TokenTypes.Text);
 
 		}
 
 		[Fact]
 		public void EscapeSequenceTest()
 		{
-			Text.Execute("'\\b\\t\\v'").AreSuccess("\b\t\v");
-			Text.Execute("'\\n\\r\\f'").AreSuccess("\n\r\f");
+			Text.Execute("'\\b\\t\\v'").AreSuccess("\b\t\v",TokenTypes.Text);
+			Text.Execute("'\\n\\r\\f'").AreSuccess("\n\r\f",TokenTypes.Text);
 
-			Text.Execute("'\\'\\\"'").AreSuccess("'\"");
-			Text.Execute("'\\\\'").AreSuccess("\\");
-			Text.Execute("'\\0'").AreSuccess("\0");
+			Text.Execute("'\\'\\\"'").AreSuccess("'\"",TokenTypes.Text);
+			Text.Execute("'\\\\'").AreSuccess("\\",TokenTypes.Text);
+			Text.Execute("'\\0'").AreSuccess("\0",TokenTypes.Text);
 
 			Text.Execute("'\\h'").AreFail();
 		}
@@ -77,22 +79,22 @@ namespace JsDatumParserTest
 		[Fact]
 		public void Latain1Test()
 		{
-			Text.Execute("'\\x41'").AreSuccess("A");
-			Text.Execute("'\\xD1'").AreSuccess("Ñ");
+			Text.Execute("'\\x41'").AreSuccess("A",TokenTypes.Text);
+			Text.Execute("'\\xD1'").AreSuccess("Ñ",TokenTypes.Text);
 		}
 
 		[Fact]
 		public void Utf16Test()
 		{
-			Text.Execute("'\\u304A'").AreSuccess("お");
+			Text.Execute("'\\u304A'").AreSuccess("お",TokenTypes.Text);
 
 		}
 
 		[Fact]
 		public void BooleanTest()
 		{
-			Bool.Execute("true").AreSuccess("true");
-			Bool.Execute("false").AreSuccess("false");
+			Bool.Execute("true").AreSuccess("true",TokenTypes.Boolean);
+			Bool.Execute("false").AreSuccess("false",TokenTypes.Boolean);
 
 			Bool.Execute("True").AreFail();
 			Bool.Execute("False").AreFail();
@@ -105,18 +107,18 @@ namespace JsDatumParserTest
 	  return (this.HP / this.maxHP > .5);
 	}").AreSuccess(@"function () {
 	  return (this.HP / this.maxHP > .5);
-	}");
+	}",TokenTypes.Function);
 		}
 
 
 		[Fact]
 		public void ArrayTest()
 		{
-			ArrayParser.Execute("[565, 540, 539, 567]").AreSuccess(" 565 , 540 , 539 , 567 ");
-			ArrayParser.Execute("[ 56 ]").AreSuccess(" 56 ");
+			ArrayParser.Execute("[565, 540, 539, 567]").AreSuccess(" 565 , 540 , 539 , 567 ",TokenTypes.Array);
+			ArrayParser.Execute("[ 56 ]").AreSuccess(" 56 ",TokenTypes.Array);
 
-			ArrayParser.Execute("[]").AreSuccess("");
-			ArrayParser.Execute("[		]").AreSuccess("");
+			ArrayParser.Execute("[]").AreSuccess("",TokenTypes.Array);
+			ArrayParser.Execute("[		]").AreSuccess("",TokenTypes.Array);
 		}
 
 

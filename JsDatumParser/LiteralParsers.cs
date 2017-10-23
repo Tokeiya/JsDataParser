@@ -186,29 +186,28 @@ namespace JsDatumParser
 
 		public static readonly TypedCharEnumerableParser TinyFunction=BuildTinyFunction();
 
-		private static TypedCharEnumerableParser BuildArray()
+		private static Parser<char,(IReadOnlyList<IEnumerable<char>> captured,TokenTypes tokenType)> BuildArray()
 		{
 			var whiteSpace = Chars.WhiteSpace().Many0().Select(_ => Cache.Get(' '));
 
 			var array =
 				from _ in Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore())
-				from values in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x => x.captured), whiteSpace, Chars.Char(',').Select(c => Cache.Get(c))).Many0()
+				from values in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x => x.captured), whiteSpace,
+					Chars.Char(',').Select(c => Cache.Get(c))).Select(cap=>cap.Skip(1).Take(1)).Many0()
 				from lastValue in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x => x.captured), whiteSpace)
+					.Select(cap=>cap.Skip(1).Take(1))
 				from __ in Chars.Char(']').Ignore()
-				let first = values.SelectMany(x => x.SelectMany(y => y))
-				let second = lastValue.SelectMany(x => x)
-				select first.Concat(second);
+				let fwd = values.SelectMany(x => x)
+				select fwd.Concat(lastValue).ToArray();
+
 
 			var emptyArray = Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore(), Chars.Char(']').Ignore())
-				.Select(_ => Array.Empty<char>());
+				.Select(_ => Array.Empty<IEnumerable<char>>());
 
 
-			return Combinator.Choice(emptyArray, array).Select(cap => (cap, TokenTypes.Array));
+			return Combinator.Choice(emptyArray, array).Select(cap => ((IReadOnlyList<IEnumerable<char>>)cap, TokenTypes.IntegerArray));
 		}
 
-		public static readonly TypedCharEnumerableParser ArrayParser = BuildArray();
-
-
-
+		public static readonly Parser<char, (IReadOnlyList<IEnumerable<char>> captured, TokenTypes tokenType)> ArrayParser = BuildArray();
 	}
 }

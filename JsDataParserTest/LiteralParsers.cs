@@ -145,5 +145,17 @@ namespace JsDataParserTest
 		{
 			Text.Execute("'\\u304A'").AreSuccess("お", TokenTypes.Text);
 		}
+
+		[Fact]
+		public void CommentTest()
+		{
+			Comment.Run("//hello world\n".AsStream()).Case(
+				(_, __) => Assert.False(true),
+				(_, cap) =>
+				{
+					cap.type.Is(TokenTypes.Comment);
+					cap.captured.SequenceEqual("hello world").IsTrue();
+				});
+		}
 	}
 }

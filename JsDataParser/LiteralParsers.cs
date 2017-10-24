@@ -58,6 +58,30 @@ namespace JsDataParser
 			BuildArray();
 
 
+
+		private static TypedCharEnumerableParser BuildComment()
+		{
+			var nl = Combinator.Choice(
+				Chars.Sequence("\r\n").Ignore(),
+				Chars.Char('\n').Ignore(),
+				Chars.Char('\r').Ignore());
+
+			var text = (from _ in nl.Not()
+				from c in Chars.Any()
+				select c).Many0();
+
+			return from _ in Combinator.Sequence(Chars.WhiteSpace().Many0(), Chars.Sequence("//"))
+				from cmnt in text
+				from __ in nl
+				select (cmnt, TokenTypes.Comment);
+
+
+		}
+
+		public static readonly TypedCharEnumerableParser Comment = BuildComment();
+
+
+
 		private static CharEnumerableParser BuildUnarySign()
 		{
 			var unaryExpr = Chars.Char('+').Or(Chars.Char('-')).Select(c => Cache.Get(c));

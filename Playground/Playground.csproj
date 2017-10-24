@@ -15,9 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Samples\HugeSample.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Samples\Sample.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

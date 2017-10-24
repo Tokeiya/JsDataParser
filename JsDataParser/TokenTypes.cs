@@ -31,6 +31,7 @@ namespace JsDataParser
 		IntegerArray = 4,
 		Boolean = 5,
 		Function = 6,
-		FieldName = 7
+		FieldName = 7,
+		Comment=8
 	}
 }

@@ -16,7 +16,6 @@ namespace JsDataParser
 		public static readonly Parser<char, FieldExpression> Field =
 			BuildField();
 
-		public static readonly Parser<char, ObjectExpression> Datum = BuildDatum();
 
 		public static Parser<char, FieldExpression> BuildField()
 		{
@@ -52,7 +51,6 @@ namespace JsDataParser
 				from __ in Sequence(whiteSpace, Chars.Char(',').Ignore())
 				select fld;
 
-
 			var parser =
 				from idx in index
 				from _ in Sequence(whiteSpace, Chars.Char(':').Ignore(), whiteSpace, Chars.Char('{').Ignore())
@@ -62,5 +60,30 @@ namespace JsDataParser
 
 			return parser;
 		}
+
+		public static readonly Parser<char, ObjectExpression> Datum = BuildDatum();
+
+		public static Parser<char,IEnumerable<ObjectExpression>> BuildData()
+		{
+			var whiteSpace = Chars.WhiteSpace().Many0().Ignore();
+
+			var datumParser =
+				from _ in whiteSpace
+				from datum in Datum
+				from __ in Sequence(whiteSpace, Chars.Char(',').Ignore())
+				select datum;
+
+			var parser =
+				from _ in Sequence(whiteSpace, Chars.Char('{').Ignore(), whiteSpace)
+				from data in datumParser.Many0()
+				from __ in Sequence(whiteSpace, Chars.Char('}').Ignore())
+				select data;
+
+
+			return parser;
+		}
+
+		public static readonly Parser<char, IEnumerable<ObjectExpression>> Data = BuildData();
+
 	}
 }

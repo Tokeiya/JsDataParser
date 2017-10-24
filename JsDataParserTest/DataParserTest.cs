@@ -3,6 +3,7 @@ using JsDataParser;
 using Parseq;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 using static JsDataParser.DataParser;
 
 namespace JsDataParserTest
@@ -145,6 +146,86 @@ namespace JsDataParserTest
 						for (var i = 0; i < 5; i++)
 							cap.ArraySource[i].SequenceEqual(i.ToString()).IsTrue();
 					});
+		}
+
+		[Fact]
+		public void DataTest()
+		{
+			#region sample
+			var sample = @"
+{
+1657: {
+		name: 'foo 2',
+		nameJP: 'foo-壊',
+		image: 'foo.jpg',
+		type: 'Installation',
+		installtype: 3,
+		divebombWeak: 2.1,
+		HP: 430,
+		FP: 160,
+		TP: 98,
+		AA: 80,
+		AR: 160,
+		EV: 20,
+		ASW: 0,
+		LOS: 90,
+		LUK: 70,
+		unknownstats: true,
+		RNG: 3,
+		SPD: 0,
+		TACC: 70,
+		SLOTS: [24, 24, 12, 12],
+		EQUIPS: [562, 562, 561, 561],
+		fuel: 0,
+		ammo: 0,
+		canTorp: function() { return (this.HP/this.maxHP > .5); },
+	},
+	1658: {
+		name: 'foo Damaged 3',
+		nameJP: 'foo',
+		image: 'foo.jpg',
+		type: 'Installation',
+		installtype: 3,
+		divebombWeak: 2.1,
+		HP: 480,
+		FP: 190,
+		TP: 118,
+		AA: 80,
+		AR: 190,
+		EV: 25,
+		ASW: 0,
+		LOS: 90,
+		LUK: 75,
+		unknownstats: true,
+		RNG: 1,
+		SPD: 0,
+		TACC: 75,
+		SLOTS: [36, 24, 24, 12],
+		EQUIPS: [562, 562, 562, 561],
+		fuel: 0,
+		ammo: 0,
+		canTorp: function() { return (this.HP/this.maxHP > .5); },
+	},
+  }
+".AsStream();
+			#endregion
+
+			var actual = Data.Run(sample);
+
+			actual.Case(
+				(_, __) => Assert.False(true),
+				(_, cap) =>
+				{
+					var ary = cap.ToArray();
+					ary.Length.Is(2);
+
+					ary[0].Id.Is(1657);
+					ary[1].Id.Is(1658);
+
+
+				});
+
+
 		}
 	}
 }

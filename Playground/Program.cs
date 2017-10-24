@@ -23,7 +23,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Parseq;
 
@@ -63,6 +65,27 @@ namespace Playground
 	{
 		private static void Main()
 		{
+			string scr;
+
+			using (var rdr = new StreamReader(".//Samples//Sample.txt"))
+			{
+				scr = rdr.ReadToEnd();
+			}
+
+			var reply = JsDataParser.DataParser.Data.Run(scr.AsStream());
+
+			reply.Case(
+				(str, txt) =>
+				{
+					Console.WriteLine(txt);
+					Console.WriteLine("Line:"+str.Current.Value.Item1.Line);
+					Console.WriteLine("Column:" + str.Current.Value.Item1.Column);
+
+
+				},
+				(_, cap) => Console.WriteLine("success"));
+
+
 		}
 	}
 }

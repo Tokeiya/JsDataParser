@@ -22,17 +22,12 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using JsDataParser;
 using JsDataParser.DataLoader;
 using JsDataParser.Parser;
 using Parseq;
-using Parseq.Combinators;
 
 namespace Playground
 {
@@ -47,14 +42,37 @@ namespace Playground
 
 	internal class Program
 	{
-		
-
 		private static void Main()
 		{
-			var data = Loader.LoadLooseDynamic(".\\Samples\\HugeSample.txt").ToArray();
+			var data = Loader.LoadDatumExpression(".\\Samples\\HugeSample.txt");
 
-			var tmp = data[0];
+			var dict = new Dictionary<string, int>();
 
+
+			foreach (var elem in data.Select(x=>x.Fields).Select(x=>x.Keys))
+			{
+				foreach (var name in elem)
+				{
+					if (dict.ContainsKey(name))
+					{
+						dict[name]++;
+					}
+					else
+					{
+						dict.Add(name, 1);
+					}
+				}
+			}
+
+
+			using (var wtr = new StreamWriter("E:\\Fields.txt"))
+			{
+				wtr.WriteLine("Name\tCount");
+				foreach (var elem in dict)
+				{
+					wtr.WriteLine($"{elem.Key}\t{elem.Value}");
+				}
+			}
 
 
 

@@ -29,6 +29,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using JsDataParser;
+using JsDataParser.DataLoader;
 using JsDataParser.Parser;
 using Parseq;
 using Parseq.Combinators;
@@ -50,6 +51,10 @@ namespace Playground
 
 		private static void Main()
 		{
+			var data = Loader.LoadLooseDynamic(".\\Samples\\HugeSample.txt").ToArray();
+
+			var tmp = data[0];
+
 
 
 

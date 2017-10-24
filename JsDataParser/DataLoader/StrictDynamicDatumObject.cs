@@ -8,7 +8,7 @@ using JsDataParser.Parser;
 
 namespace JsDataParser.DataLoader
 {
-	internal class DynamicDatumObject:DynamicObject
+	internal class StrictDynamicDatumObject : DynamicObject
 	{
 
 		private bool TryParse(FieldValueExpression datum, Type targetType,out object result)
@@ -49,7 +49,7 @@ namespace JsDataParser.DataLoader
 
 					case TokenTypes.Text:
 					case TokenTypes.Function:
-						return datum.Source;
+						return buildString(datum.Source);
 
 					case TokenTypes.IntegerNumber:
 						return int.Parse(buildString(datum.Source));
@@ -108,7 +108,7 @@ namespace JsDataParser.DataLoader
 		}
 
 		private readonly DatumExpression _datum;
-		public DynamicDatumObject(DatumExpression datum)=>_datum = datum ?? throw new ArgumentNullException(nameof(datum));
+		public StrictDynamicDatumObject(DatumExpression datum)=>_datum = datum ?? throw new ArgumentNullException(nameof(datum));
 
 		private bool TryGetMemberIgnoreCaseSensitive(GetMemberBinder binder, out object result)
 		{

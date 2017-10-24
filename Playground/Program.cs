@@ -51,11 +51,6 @@ namespace Playground
 		private static void Main()
 		{
 
-			var ret = JsDataParser.DataLoader.PrimitiveLoader.LoadDatumExpression(".//Samples//HugeSample.txt");
-
-			Console.WriteLine(ret.Count());
-
-			var hoge = ret.ToArray();
 
 
 		}

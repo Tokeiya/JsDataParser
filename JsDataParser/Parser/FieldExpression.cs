@@ -19,49 +19,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using JsDataParser;
-using JsDataParser.Parser;
-using Xunit;
+using System.Text;
 
-namespace JsDataParserTest
+namespace JsDataParser.Parser
 {
-	public class FieldValueExpressionTest
+	public class FieldExpression : FieldValueExpression
 	{
-		[Fact]
-		public void CtorTest()
+		public FieldExpression(string name, IEnumerable<char> source, TokenTypes fieldType)
+			: base(source, fieldType)
 		{
-			Assert.Throws<ArgumentNullException>(() => new FieldValueExpression(null, TokenTypes.Boolean));
-			Assert.Throws<ArgumentException>(() => new FieldValueExpression("hello", TokenTypes.FieldName));
+			if (name == null) throw new ArgumentNullException(nameof(name));
+			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException(nameof(name));
+
+			Name = name;
 		}
 
-		[Fact]
-		public void FieldTypeTest()
+		public FieldExpression(string name, IReadOnlyCollection<IEnumerable<char>> source)
+			: base(source)
 		{
-			var target = new FieldValueExpression("hello", TokenTypes.Boolean);
-			target.FieldType.Is(TokenTypes.Boolean);
+			if (name == null) throw new ArgumentNullException(nameof(name));
+			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException(nameof(name));
 
-			target = new FieldValueExpression(new[] {"1", "2"});
-			target.FieldType.Is(TokenTypes.IntegerArray);
+			Name = name;
 		}
 
-		[Fact]
-		public void SourceArrayTest()
+		public string Name { get; }
+
+		public static FieldExpression Create(IEnumerable<char> name, FieldValueExpression value)
 		{
-			var target = new FieldValueExpression(new[] {"1", "2"});
+			if (value == null) throw new ArgumentException(nameof(value));
+			if (name == null) throw new ArgumentNullException(nameof(name));
 
-			target.ArraySource.SequenceEqual(new[] {"1", "2"}).IsTrue();
-			Assert.Throws<InvalidOperationException>(() => target.Source);
-		}
+			var tmp = name.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString());
 
-		[Fact]
-		public void SourceTest()
-		{
-			var target = new FieldValueExpression("hello", TokenTypes.Text);
 
-			target.Source.SequenceEqual("hello").IsTrue();
-			Assert.Throws<InvalidOperationException>(() => target.ArraySource);
+			if (value.FieldType == TokenTypes.IntegerArray)
+				return new FieldExpression(tmp, value.ArraySource);
+
+			return new FieldExpression(tmp, value.Source, value.FieldType);
 		}
 	}
 }

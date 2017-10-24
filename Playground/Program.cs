@@ -29,6 +29,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using JsDataParser;
+using JsDataParser.Parser;
 using Parseq;
 using Parseq.Combinators;
 
@@ -38,116 +39,23 @@ namespace Playground
 	using ChainFunc = Func<string, string, string>;
 
 	using static Parseq.Combinator;
-	using static JsDataParser.DataParser;
+	using static DataParser;
 
 
 
 
 	internal class Program
 	{
-		private class Envelope<T> : IEnumerable<T>
-		{
-
-			private readonly T _value;
-
-
-			public Envelope(T value)
-			{
-				_value = value;
-			}
-
-
-			public IEnumerator<T> GetEnumerator()
-			{
-				yield return _value;
-			}
-
-			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-		}
-
-		private static Envelope<T> CreateEnvelope<T>(T value) => new Envelope<T>(value);
-
+		
 
 		private static void Main()
 		{
-			TotalTest();
 
-			var whiteSpace = Chars.WhiteSpace().Many0().Ignore();
+			var ret = JsDataParser.DataLoader.PrimitiveLoader.LoadDatumExpression(".//Samples//HugeSample.txt");
 
-			var index = Chars.Digit().Many1().Select(x =>
-				int.Parse(x.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString())));
+			Console.WriteLine(ret.Count());
 
-			var aField =
-				from _ in whiteSpace
-				from fld in Field
-				from __ in Sequence(whiteSpace, Chars.Char(',').Ignore())
-				select fld;
-
-			var tmp = Choice(
-				aField.Select(CreateEnvelope),
-				LiteralParsers.Comment.Select(_ => Enumerable.Empty<FieldExpression>())
-			);
-
-
-			var lastField =
-				(from _ in whiteSpace
-					from fld in Field
-					from __ in Sequence(whiteSpace, Chars.Char('}').Ignore()).And()
-					select fld).Optional()
-				.Select(opt => opt.HasValue ? CreateEnvelope(opt.Value) : Enumerable.Empty<FieldExpression>());
-
-			var parser =
-				from idx in index
-				from _ in Sequence(whiteSpace, Chars.Char(':').Ignore(), whiteSpace, Chars.Char('{').Ignore())
-				from fld in tmp.Many0()
-				from lastFld in lastField
-				let f = fld.SelectMany(x => x).Concat(lastFld)
-				from __ in Sequence(whiteSpace, Chars.Char('}').Ignore())
-				select new ObjectExpression(idx, f);
-
-
-
-
-			var sample = @"1628: {
-name: 'name609',
-nameJP: 'name610Jp',
-image: 'name610.png',
-	type: 'DD',
-	//hasBuiltInFD: true,
-	HP: 255,
-	FP: 130,
-	TP: 85,
-	AA: 300,
-	AR: 273,
-	EV: 80,
-	ASW: 0,
-	LOS: 70,
-	LUK: 80,
-	RNG: 1,
-	SPD: 10,
-	TACC: 60,
-	SLOTS: [0, 0, 0],
-	EQUIPS: [553, 553, 531],
-	fuel: 0,
-	ammo: 0,
-  }".AsStream();
-
-			parser.Run(sample).Case(
-				(str, txt) =>
-				{
-					Console.WriteLine(txt);
-					Console.WriteLine("Line:" + str.Current.Value.Item1.Line);
-					Console.WriteLine("Column:" + str.Current.Value.Item1.Column);
-				},
-				(_, cap) =>
-				{
-					Console.WriteLine("sucesss");
-				}
-			);
-
-			Console.WriteLine("Press enter to exit.");
-			Console.ReadLine();
-
+			var hoge = ret.ToArray();
 
 
 		}
@@ -162,7 +70,7 @@ image: 'name610.png',
 				scr = rdr.ReadToEnd();
 			}
 
-			var reply = JsDataParser.DataParser.Data.Run(scr.AsStream());
+			var reply = DataParser.Data.Run(scr.AsStream());
 
 			reply.Case(
 				(str, txt) =>

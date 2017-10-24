@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace JsDataParser
+namespace JsDataParser.Parser
 {
 	internal class CharacterCache
 	{

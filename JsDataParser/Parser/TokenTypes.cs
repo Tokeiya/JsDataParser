@@ -21,7 +21,7 @@
  */
 
 
-namespace JsDataParser
+namespace JsDataParser.Parser
 {
 	public enum TokenTypes
 	{

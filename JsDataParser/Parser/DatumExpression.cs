@@ -19,49 +19,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
+
 using System;
-using System.Linq;
-using JsDataParser;
-using JsDataParser.Parser;
-using Xunit;
+using System.Collections.Generic;
 
-namespace JsDataParserTest
+namespace JsDataParser.Parser
 {
-	public class FieldValueExpressionTest
+	public class DatumExpression
 	{
-		[Fact]
-		public void CtorTest()
+		private readonly Dictionary<string, FieldValueExpression> _dict = new Dictionary<string, FieldValueExpression>();
+
+		public DatumExpression(int id, IEnumerable<FieldExpression> fields)
 		{
-			Assert.Throws<ArgumentNullException>(() => new FieldValueExpression(null, TokenTypes.Boolean));
-			Assert.Throws<ArgumentException>(() => new FieldValueExpression("hello", TokenTypes.FieldName));
+			if (fields == null) throw new ArgumentNullException(nameof(fields));
+
+			Id = id;
+
+			try
+			{
+				foreach (var field in fields)
+					_dict.Add(field.Name, field);
+			}
+			catch (NullReferenceException ex)
+			{
+				throw new ArgumentException($"{nameof(fields)} contains null value.", ex);
+			}
+			catch (ArgumentException ex)
+			{
+				throw new ArgumentException("Detect field name duplication!", ex);
+			}
 		}
 
-		[Fact]
-		public void FieldTypeTest()
-		{
-			var target = new FieldValueExpression("hello", TokenTypes.Boolean);
-			target.FieldType.Is(TokenTypes.Boolean);
-
-			target = new FieldValueExpression(new[] {"1", "2"});
-			target.FieldType.Is(TokenTypes.IntegerArray);
-		}
-
-		[Fact]
-		public void SourceArrayTest()
-		{
-			var target = new FieldValueExpression(new[] {"1", "2"});
-
-			target.ArraySource.SequenceEqual(new[] {"1", "2"}).IsTrue();
-			Assert.Throws<InvalidOperationException>(() => target.Source);
-		}
-
-		[Fact]
-		public void SourceTest()
-		{
-			var target = new FieldValueExpression("hello", TokenTypes.Text);
-
-			target.Source.SequenceEqual("hello").IsTrue();
-			Assert.Throws<InvalidOperationException>(() => target.ArraySource);
-		}
+		public int Id { get; }
+		public IReadOnlyDictionary<string, FieldValueExpression> Fields => _dict;
 	}
 }

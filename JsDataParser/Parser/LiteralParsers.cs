@@ -33,7 +33,7 @@ using Parseq.Combinators;
 [assembly: InternalsVisibleTo("Playground")]
 
 
-namespace JsDataParser
+namespace JsDataParser.Parser
 {
 	using TypedCharEnumerableParser = Parser<char, (IEnumerable<char> captured, TokenTypes type)>;
 	using CharEnumerableParser = Parser<char, IEnumerable<char>>;

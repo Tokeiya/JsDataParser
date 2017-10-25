@@ -32,6 +32,28 @@ namespace JsDataParserTest
 	public class LiteralParsers
 	{
 		[Fact]
+		public void FieldnameTeset()
+		{
+			var target = IdentifierName;
+
+			target.Run("field".AsStream())
+				.Case((_, __) => Assert.False(true),
+					(_, seq) => seq.SequenceEqual("field").IsTrue());
+
+			target.Run("Field".AsStream())
+				.Case((_, __) => Assert.False(true),
+					(_, seq) => seq.SequenceEqual("Field").IsTrue());
+
+			target.Run("1field".AsStream())
+				.Case((_, __) => Assert.False(false), (_, __) => Assert.True(false));
+
+			target.Run("_field_".AsStream())
+				.Case((_, __) => Assert.True(false),
+					(_, cap) => cap.SequenceEqual("_field_").IsTrue());
+		}
+
+
+		[Fact]
 		public void ArrayTest()
 		{
 			ArrayParser.Run("[1,   2,3,4	,5]".AsStream())

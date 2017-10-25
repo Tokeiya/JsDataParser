@@ -87,22 +87,6 @@ namespace JsDataParserTest
 				});
 		}
 
-		[Fact]
-		public void FieldnameTeset()
-		{
-			var target = JsDataParser.Parser.LiteralParsers.IdentifierName;
-
-			target.Run("field".AsStream())
-				.Case((_, __) => Assert.False(true),
-					(_, seq) => seq.SequenceEqual("field").IsTrue());
-
-			target.Run("Field".AsStream())
-				.Case((_, __) => Assert.False(true),
-					(_, seq) => seq.SequenceEqual("Field").IsTrue());
-
-			target.Run("1field".AsStream())
-				.Case((_, __) => Assert.False(false), (_, __) => Assert.True(false));
-		}
 
 		[Fact]
 		public void FieldTest()

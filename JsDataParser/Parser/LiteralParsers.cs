@@ -57,6 +57,10 @@ namespace JsDataParser.Parser
 		public static readonly Parser<char, (IReadOnlyList<IEnumerable<char>> captured, TokenTypes tokenType)> ArrayParser =
 			BuildArray();
 
+		public static readonly TypedCharEnumerableParser Comment = BuildComment();
+
+		public static readonly CharEnumerableParser IdentifierName =
+			Combinator.Choice(Chars.Letter(), Chars.Char('_')).Many1();
 
 
 		private static TypedCharEnumerableParser BuildComment()
@@ -74,12 +78,7 @@ namespace JsDataParser.Parser
 				from cmnt in text
 				from __ in nl
 				select (cmnt, TokenTypes.Comment);
-
-
 		}
-
-		public static readonly TypedCharEnumerableParser Comment = BuildComment();
-
 
 
 		private static CharEnumerableParser BuildUnarySign()
@@ -160,7 +159,7 @@ namespace JsDataParser.Parser
 				from _ in Chars.Char('x')
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex()).Select(seq =>
 					seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString()))
-				let chr = (char) Byte.Parse(hexaValue, NumberStyles.HexNumber)
+				let chr = (char) byte.Parse(hexaValue, NumberStyles.HexNumber)
 				select Cache.Get(chr);
 
 			var utf16 =
@@ -168,7 +167,7 @@ namespace JsDataParser.Parser
 				from _ in Chars.Char('u')
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex(), Chars.Hex(), Chars.Hex())
 					.Select(seq => seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), b => b.ToString()))
-				let chr = (char) UInt32.Parse(hexaValue, NumberStyles.HexNumber)
+				let chr = (char) uint.Parse(hexaValue, NumberStyles.HexNumber)
 				select Cache.Get(chr);
 
 
@@ -233,7 +232,5 @@ namespace JsDataParser.Parser
 
 			return emptyArray.Or(array).Select(cap => (cap, TokenTypes.IntegerArray));
 		}
-
-		public static readonly CharEnumerableParser IdentifierName = Chars.Letter().Many1();
 	}
 }

@@ -54,7 +54,7 @@ namespace JsDataParser.DataLoader
 
 			var data = LoadDatumExpression(reader);
 
-			return data.Select(x => new LooseDynamicDatumObject(x));
+			return data.Select(x => new DynamicDatumObject(x));
 		}
 
 		public static IEnumerable<dynamic> LoadDynamic(string path)

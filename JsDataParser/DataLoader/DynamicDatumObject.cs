@@ -9,12 +9,12 @@ using JsDataParser.Parser;
 
 namespace JsDataParser.DataLoader
 {
-	internal class LooseDynamicDatumObject:DynamicObject
+	internal class DynamicDatumObject:DynamicObject
 	{
 		private readonly int _id;
 		private readonly Dictionary<string, FieldValueExpression> _fields = new Dictionary<string, FieldValueExpression>();
 
-		public LooseDynamicDatumObject(DatumExpression datum)
+		public DynamicDatumObject(DatumExpression datum)
 		{
 			if (datum == null) throw new ArgumentNullException(nameof(datum));
 

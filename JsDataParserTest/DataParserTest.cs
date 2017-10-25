@@ -90,7 +90,7 @@ namespace JsDataParserTest
 		[Fact]
 		public void FieldnameTeset()
 		{
-			var target = FieldName;
+			var target = JsDataParser.Parser.LiteralParsers.IdentifierName;
 
 			target.Run("field".AsStream())
 				.Case((_, __) => Assert.False(true),

@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using JsDataParser.DataLoader;
@@ -37,6 +38,19 @@ namespace Playground
 	using static Parseq.Combinator;
 	using static DataParser;
 
+	class DynamicSample : DynamicObject
+	{
+		public override bool TryConvert(ConvertBinder binder, out object result)
+		{
+			return base.TryConvert(binder, out result);
+		}
+
+		public override bool TryGetMember(GetMemberBinder binder, out object result)
+		{
+			result = 0;
+			return true;
+		}
+	}
 
 
 
@@ -44,37 +58,9 @@ namespace Playground
 	{
 		private static void Main()
 		{
-			var data = Loader.LoadDatumExpression(".\\Samples\\HugeSample.txt");
+			dynamic d=new DynamicSample();
 
-			var dict = new Dictionary<string, int>();
-
-
-			foreach (var elem in data.Select(x=>x.Fields).Select(x=>x.Keys))
-			{
-				foreach (var name in elem)
-				{
-					if (dict.ContainsKey(name))
-					{
-						dict[name]++;
-					}
-					else
-					{
-						dict.Add(name, 1);
-					}
-				}
-			}
-
-
-			using (var wtr = new StreamWriter("E:\\Fields.txt"))
-			{
-				wtr.WriteLine("Name\tCount");
-				foreach (var elem in dict)
-				{
-					wtr.WriteLine($"{elem.Key}\t{elem.Value}");
-				}
-			}
-
-
+			int i =(int) d;
 
 		}
 

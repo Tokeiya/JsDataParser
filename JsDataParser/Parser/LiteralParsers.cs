@@ -160,7 +160,7 @@ namespace JsDataParser.Parser
 				from _ in Chars.Char('x')
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex()).Select(seq =>
 					seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString()))
-				let chr = (char) byte.Parse(hexaValue, NumberStyles.HexNumber)
+				let chr = (char) Byte.Parse(hexaValue, NumberStyles.HexNumber)
 				select Cache.Get(chr);
 
 			var utf16 =
@@ -168,7 +168,7 @@ namespace JsDataParser.Parser
 				from _ in Chars.Char('u')
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex(), Chars.Hex(), Chars.Hex())
 					.Select(seq => seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), b => b.ToString()))
-				let chr = (char) uint.Parse(hexaValue, NumberStyles.HexNumber)
+				let chr = (char) UInt32.Parse(hexaValue, NumberStyles.HexNumber)
 				select Cache.Get(chr);
 
 
@@ -233,5 +233,7 @@ namespace JsDataParser.Parser
 
 			return emptyArray.Or(array).Select(cap => (cap, TokenTypes.IntegerArray));
 		}
+
+		public static readonly CharEnumerableParser IdentifierName = Chars.Letter().Many1();
 	}
 }

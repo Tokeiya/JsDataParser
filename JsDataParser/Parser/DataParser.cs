@@ -33,33 +33,17 @@ namespace JsDataParser.Parser
 
 	internal static class DataParser
 	{
-
-		private class Envelope<T> : IEnumerable<T>
-		{
-			
-			private readonly T _value;
-
-
-			public Envelope(T value)
-			{
-				_value = value;
-			}
-
-
-			public IEnumerator<T> GetEnumerator()
-			{
-				yield return _value;
-			}
-
-			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-		}
-
-		private static Envelope<T> CreateEnvelope<T>(T value) => new Envelope<T>(value);
-
-		public static readonly CharEnumerableParser FieldName = Chars.Letter().Many1();
-
 		public static readonly Parser<char, FieldExpression> Field =
 			BuildField();
+
+		public static readonly Parser<char, DatumExpression> Datum = BuildDatum();
+
+		public static readonly Parser<char, IEnumerable<DatumExpression>> Data = BuildData();
+
+		private static Envelope<T> CreateEnvelope<T>(T value)
+		{
+			return new Envelope<T>(value);
+		}
 
 
 		public static Parser<char, FieldExpression> BuildField()
@@ -75,7 +59,7 @@ namespace JsDataParser.Parser
 
 			var whiteSpace = Chars.WhiteSpace().Many0().Ignore();
 
-			var ret = from name in FieldName
+			var ret = from name in LiteralParsers.IdentifierName
 				from _ in Combinator.Sequence(whiteSpace, Chars.Char(':').Ignore(), whiteSpace)
 				from value in fieldValues
 				select FieldExpression.Create(name, value);
@@ -121,9 +105,7 @@ namespace JsDataParser.Parser
 			return parser;
 		}
 
-		public static readonly Parser<char, DatumExpression> Datum = BuildDatum();
-
-		public static Parser<char,IEnumerable<DatumExpression>> BuildData()
+		public static Parser<char, IEnumerable<DatumExpression>> BuildData()
 		{
 			var whiteSpace = Chars.WhiteSpace().Many0().Ignore();
 
@@ -143,7 +125,26 @@ namespace JsDataParser.Parser
 			return parser;
 		}
 
-		public static readonly Parser<char, IEnumerable<DatumExpression>> Data = BuildData();
+		private class Envelope<T> : IEnumerable<T>
+		{
+			private readonly T _value;
 
+
+			public Envelope(T value)
+			{
+				_value = value;
+			}
+
+
+			public IEnumerator<T> GetEnumerator()
+			{
+				yield return _value;
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+		}
 	}
 }

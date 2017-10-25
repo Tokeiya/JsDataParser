@@ -59,8 +59,8 @@ namespace JsDataParser.Parser
 
 		public static readonly TypedCharEnumerableParser Comment = BuildComment();
 
-		public static readonly CharEnumerableParser IdentifierName =
-			Combinator.Choice(Chars.Letter(), Chars.Char('_')).Many1();
+		public static readonly TypedCharEnumerableParser IdentifierName =
+			Combinator.Choice(Chars.Letter(), Chars.Char('_')).Many1().Select(cap => (cap, TokenTypes.IdentifierName));
 
 
 		private static TypedCharEnumerableParser BuildComment()

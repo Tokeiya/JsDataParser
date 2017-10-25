@@ -1,126 +1,126 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Transactions;
-using JsDataParser.Parser;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Dynamic;
+//using System.Linq;
+//using System.Runtime.CompilerServices;
+//using System.Text;
+//using System.Transactions;
+//using JsDataParser.Parser;
 
-namespace JsDataParser.DataLoader
-{
-	internal class DynamicDatumObject:DynamicObject
-	{
-		private readonly int _id;
-		private readonly Dictionary<string, FieldValueExpression> _fields = new Dictionary<string, FieldValueExpression>();
+//namespace JsDataParser.DataLoader
+//{
+//	internal class DynamicDatumObject:DynamicObject
+//	{
+//		private readonly int _id;
+//		private readonly Dictionary<string, FieldValueExpression> _fields = new Dictionary<string, FieldValueExpression>();
 
-		public DynamicDatumObject(DatumExpression datum)
-		{
-			if (datum == null) throw new ArgumentNullException(nameof(datum));
+//		public DynamicDatumObject(DatumExpression datum)
+//		{
+//			if (datum == null) throw new ArgumentNullException(nameof(datum));
 
 
-			_id = datum.Id;
+//			_id = datum.Id;
 
-			foreach (var elem in datum.Fields)
-			{
-				_fields.Add(elem.Key.ToLower(), elem.Value);
-			}
-		}
+//			foreach (var elem in datum.Fields)
+//			{
+//				_fields.Add(elem.Key.ToLower(), elem.Value);
+//			}
+//		}
 
-		public override bool TryGetMember(GetMemberBinder binder, out object result)
-		{
-			string buildString(IEnumerable<char> source)
-			{
-				var bld = new StringBuilder();
+//		public override bool TryGetMember(GetMemberBinder binder, out object result)
+//		{
+//			string buildString(IEnumerable<char> source)
+//			{
+//				var bld = new StringBuilder();
 
-				foreach (var c in source)
-				{
-					bld.Append(c);
-				}
+//				foreach (var c in source)
+//				{
+//					bld.Append(c);
+//				}
 
-				return bld.ToString();
-			}
+//				return bld.ToString();
+//			}
 
-			Type convert(FieldValueExpression datum)
-			{
-				switch (datum.FieldType)
-				{
-					case TokenTypes.Boolean:
-						return typeof(bool);
+//			Type convert(FieldValueExpression datum)
+//			{
+//				switch (datum.FieldType)
+//				{
+//					case TokenTypes.Boolean:
+//						return typeof(bool);
 
-					case TokenTypes.Function:
-					case TokenTypes.Text:
-					case TokenTypes.IdentifierName:
-						return typeof(string);
+//					case TokenTypes.Function:
+//					case TokenTypes.Text:
+//					case TokenTypes.IdentifierName:
+//						return typeof(string);
 
-					case TokenTypes.IntegerArray:
-						return typeof(int[]);
+//					case TokenTypes.IntegerArray:
+//						return typeof(int[]);
 
-					case TokenTypes.IntegerNumber:
-						return typeof(int);
+//					case TokenTypes.IntegerNumber:
+//						return typeof(int);
 
-					case TokenTypes.RealNumber:
-						return typeof(double);
+//					case TokenTypes.RealNumber:
+//						return typeof(double);
 
-					default:
-						throw new InvalidOperationException($"{datum.FieldType} is unexpected.");
-				}
-			}
+//					default:
+//						throw new InvalidOperationException($"{datum.FieldType} is unexpected.");
+//				}
+//			}
 
-			object parse(FieldValueExpression datum)
-			{
-				switch (datum.FieldType)
-				{
-					case TokenTypes.Boolean:
-						return bool.Parse(buildString(datum.Source));
+//			object parse(FieldValueExpression datum)
+//			{
+//				switch (datum.FieldType)
+//				{
+//					case TokenTypes.Boolean:
+//						return bool.Parse(buildString(datum.Source));
 
-					case TokenTypes.Function:
-					case TokenTypes.Text:
-						return buildString(datum.Source);
+//					case TokenTypes.Function:
+//					case TokenTypes.Text:
+//						return buildString(datum.Source);
 
-					case TokenTypes.IntegerArray:
-						return datum.ArraySource.Count == 0
-							? Array.Empty<int>()
-							: datum.ArraySource.Select(x => int.Parse(buildString(x))).ToArray();
+//					case TokenTypes.IntegerArray:
+//						return datum.ArraySource.Count == 0
+//							? Array.Empty<int>()
+//							: datum.ArraySource.Select(x => int.Parse(buildString(x))).ToArray();
 
-					case TokenTypes.IntegerNumber:
-						return int.Parse(buildString(datum.Source));
+//					case TokenTypes.IntegerNumber:
+//						return int.Parse(buildString(datum.Source));
 
-					case TokenTypes.RealNumber:
-						return double.Parse(buildString(datum.Source));
+//					case TokenTypes.RealNumber:
+//						return double.Parse(buildString(datum.Source));
 
-					default:
-						throw new InvalidOperationException($"{datum.FieldType} is unexpected.");
-				}
-			}
+//					default:
+//						throw new InvalidOperationException($"{datum.FieldType} is unexpected.");
+//				}
+//			}
 
-			if (binder.Name.ToLower() == "id")
-			{
-				result = _id;
-				return true;
-			}
-			else if (_fields.TryGetValue(binder.Name.ToLower(), out var fldDatum))
-			{
-				var type = convert(fldDatum);
+//			if (binder.Name.ToLower() == "id")
+//			{
+//				result = _id;
+//				return true;
+//			}
+//			else if (_fields.TryGetValue(binder.Name.ToLower(), out var fldDatum))
+//			{
+//				var type = convert(fldDatum);
 
-				if (binder.ReturnType.IsAssignableFrom(type))
-				{
-					result = parse(fldDatum);
-					return true;
-				}
-				else
-				{
-					result = binder.ReturnType.IsValueType ? Activator.CreateInstance(binder.ReturnType) : null;
-					return true;
-				}
-			}
-			else
-			{
-				result = binder.ReturnType.IsValueType ? Activator.CreateInstance(binder.ReturnType) : null;
-				return true;
-			}
-		}
-	}
-}
+//				if (binder.ReturnType.IsAssignableFrom(type))
+//				{
+//					result = parse(fldDatum);
+//					return true;
+//				}
+//				else
+//				{
+//					result = binder.ReturnType.IsValueType ? Activator.CreateInstance(binder.ReturnType) : null;
+//					return true;
+//				}
+//			}
+//			else
+//			{
+//				result = binder.ReturnType.IsValueType ? Activator.CreateInstance(binder.ReturnType) : null;
+//				return true;
+//			}
+//		}
+//	}
+//}
 
 

@@ -22,56 +22,29 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace JsDataParser.Parser
 {
 	public class PropertyEntity
 	{
-		private readonly IEnumerable<char> _value;
-		private readonly ObjectEntity _nestedObject;
-		private readonly IReadOnlyList<IEnumerable<char>> _arrayValue;
-
-		public PropertyEntity(string name, IEnumerable<char> value)
+		public PropertyEntity(IEnumerable<char> name, ValueEntity value)
 		{
 			if (name == null) throw new ArgumentNullException(nameof(name));
-			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException($"name is empty");
+			if (value == null) throw new ArgumentNullException(nameof(value));
 
-			Name = name;
-			_value = value ?? throw new ArgumentNullException(nameof(value));
-		}
+			var bld = new StringBuilder();
 
-		public PropertyEntity(string name, ObjectEntity nestedObject)
-		{
-			if (name == null) throw new ArgumentNullException(nameof(name));
-			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException($"name is empty");
+			foreach (var c in name)
+			{
+				bld.Append(c);
+			}
 
-			Name = name;
-			_nestedObject = nestedObject ?? throw new ArgumentNullException(nameof(nestedObject));
-		}
-
-		public PropertyEntity(string name, IReadOnlyList<IEnumerable<char>> arrayValue)
-		{
-			if (name == null) throw new ArgumentNullException(nameof(name));
-			if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException($"name is empty");
-
-			if (arrayValue == null) throw new ArgumentNullException(nameof(arrayValue));
-			if (arrayValue.Any(x => x == null)) throw new ArgumentException($"{nameof(arrayValue)} contains null.");
-
-			Name = name;
-			_arrayValue = arrayValue;
-
+			Name = bld.ToString();
+			Value = value;
 		}
 
 		public string Name { get; }
-
-		public IEnumerable<char> Value => _value ?? throw new InvalidOperationException();
-
-		public string ValueToString() =>
-			Value.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString());
-
-		public ObjectEntity NestedObject => _nestedObject ?? throw new InvalidOperationException();
-
+		public ValueEntity Value { get; }
 	}
 }

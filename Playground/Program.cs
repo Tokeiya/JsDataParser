@@ -22,40 +22,24 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.IO;
 using System.Linq;
-using JsDataParser.DataLoader;
-using JsDataParser.Parser;
 using Parseq;
+using Parseq.Combinators;
 
 namespace Playground
 {
-	using CharEnumerable = IEnumerable<char>;
-	using ChainFunc = Func<string, string, string>;
+	using static Chars;
 
-	using static Parseq.Combinator;
-	using static DataParser;
-	using static Parseq.Combinators.Chars;
+
+
 
 
 	internal class Program
 	{
 		private static void Main()
 		{
-
-
-
-
-
-
-
-
-
+			RecursionSample.Sample();
 		}
-
-
 	}
 }

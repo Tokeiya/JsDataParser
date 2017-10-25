@@ -1,20 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace JsDataParser.Parser
 {
-	public enum ValueTypes
-	{
-		String = 1,
-		Integer,
-		Real,
-		Boolean,
-		Function,
-		ConstantName,
-		Object,
-		Array
-	}
+
 
 
 	public class ValueEntity
@@ -23,7 +12,7 @@ namespace JsDataParser.Parser
 		private readonly IEnumerable<char> _value;
 
 
-	    public ValueEntity(ObjectEntity nestedObject)
+		public ValueEntity(ObjectEntity nestedObject)
 		{
 			_nestedObject = nestedObject ?? throw new ArgumentNullException(nameof(nestedObject));
 			ValueType = ValueTypes.Object;
@@ -35,23 +24,23 @@ namespace JsDataParser.Parser
 			ValueType = valueType;
 		}
 
-	    public ValueEntity(IReadOnlyList<(IEnumerable<char> captured, ValueTypes type)> arrayValue)
-	    {
-		    if (arrayValue == null) throw new ArgumentNullException(nameof(arrayValue));
+		public ValueEntity(IEnumerable<ValueEntity> arrayValue)
+		{
+			if (arrayValue == null) throw new ArgumentNullException(nameof(arrayValue));
 
-		    var list = new List<ValueEntity>();
+			var list = new List<ValueEntity>();
 
-		    foreach (var elem in arrayValue)
-		    {
-			    if (elem.captured == null) throw new ArgumentException($"{nameof(arrayValue)} contains null");
-			    list.Add(new ValueEntity(elem.captured, elem.type));
-		    }
+			foreach (var elem in arrayValue)
+			{
+				if (elem == null) throw new ArgumentException($"{nameof(arrayValue)} contains null");
+				list.Add(elem);
+			}
 
 			list.TrimExcess();
-		    ArrayValue = list;
+			ArrayValue = list;
 
-		    ValueType = ValueTypes.Array;
-	    }
+			ValueType = ValueTypes.Array;
+		}
 
 		public ValueTypes ValueType { get; }
 
@@ -60,7 +49,5 @@ namespace JsDataParser.Parser
 		public IReadOnlyList<ValueEntity> ArrayValue { get; }
 
 		public ObjectEntity NestedObject => _nestedObject ?? throw new InvalidOperationException();
-
-
 	}
 }

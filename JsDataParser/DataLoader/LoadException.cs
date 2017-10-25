@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace JsDataParser.DataLoader
 {
 	[Serializable]
-	public sealed class LoadException:Exception
+	public sealed class LoadException : Exception
 	{
 		private const string lineNumberId = "LoadExceptionLineNumber";
 		private const string columnId = "LoadExceptionColumn";
 		private const string nearTextId = "LoadExceptionNearText";
 
 
-		public LoadException(int lineNumber, int column,string nearText)
+		public LoadException(int lineNumber, int column, string nearText)
 		{
 			LineNumber = lineNumber;
 			Column = column;
@@ -29,8 +27,6 @@ namespace JsDataParser.DataLoader
 		}
 
 
-
-
 		public int LineNumber { get; }
 		public int Column { get; }
 		public string NearText { get; }
@@ -41,10 +37,9 @@ namespace JsDataParser.DataLoader
 		{
 			info.AddValue(lineNumberId, LineNumber);
 			info.AddValue(columnId, Column);
-			info.AddValue(nearTextId,NearText);
+			info.AddValue(nearTextId, NearText);
 
 			base.GetObjectData(info, context);
 		}
-
 	}
 }

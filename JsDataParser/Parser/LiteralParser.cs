@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2017 Hikotaro Abe <net_seed@hotmail.com> All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,35 +35,29 @@ using Parseq.Combinators;
 
 namespace JsDataParser.Parser
 {
-	using TypedCharEnumerableParser = Parser<char, (IEnumerable<char> captured, TokenTypes type)>;
 	using CharEnumerableParser = Parser<char, IEnumerable<char>>;
 
-	internal static class LiteralParsers
+	internal static class LiteralParser
 	{
-		private static readonly CharacterCache Cache = new CharacterCache(1000, 1250);
-
 		public static readonly CharEnumerableParser UnarySign = BuildUnarySign();
 
-		public static readonly TypedCharEnumerableParser IntegerNumber = BuildIntegerNumber();
+		public static readonly CharEnumerableParser IntegerNumber = BuildIntegerNumber();
 
-		public static readonly TypedCharEnumerableParser RealNumber = BuildRealNumber();
+		public static readonly CharEnumerableParser RealNumber = BuildRealNumber();
 
-		public static readonly TypedCharEnumerableParser Text = BuildText();
+		public static readonly CharEnumerableParser String = BuildString();
 
-		public static readonly TypedCharEnumerableParser Bool = BuildBool();
+		public static readonly CharEnumerableParser Bool = BuildBool();
 
-		public static readonly TypedCharEnumerableParser TinyFunction = BuildTinyFunction();
+		public static readonly CharEnumerableParser TinyFunction = BuildTinyFunction();
 
-		public static readonly Parser<char, (IReadOnlyList<IEnumerable<char>> captured, TokenTypes tokenType)> ArrayParser =
-			BuildArray();
+		public static readonly CharEnumerableParser Comment = BuildComment();
 
-		public static readonly TypedCharEnumerableParser Comment = BuildComment();
-
-		public static readonly TypedCharEnumerableParser IdentifierName =
-			Combinator.Choice(Chars.Letter(), Chars.Char('_')).Many1().Select(cap => (cap, TokenTypes.IdentifierName));
+		public static readonly CharEnumerableParser IdentifierName =
+			Combinator.Choice(Chars.Letter(), Chars.Char('_')).Many1();
 
 
-		private static TypedCharEnumerableParser BuildComment()
+		private static CharEnumerableParser BuildComment()
 		{
 			var nl = Combinator.Choice(
 				Chars.Sequence("\r\n").Ignore(),
@@ -77,18 +71,18 @@ namespace JsDataParser.Parser
 			return from _ in Combinator.Sequence(Chars.WhiteSpace().Many0(), Chars.Sequence("//"))
 				from cmnt in text
 				from __ in nl
-				select (cmnt, TokenTypes.Comment);
+				select cmnt;
 		}
 
 
 		private static CharEnumerableParser BuildUnarySign()
 		{
-			var unaryExpr = Chars.Char('+').Or(Chars.Char('-')).Select(c => Cache.Get(c));
+			var unaryExpr = Chars.Char('+').Or(Chars.Char('-')).Select(c => CharacterCache.DefaultCache.Get(c));
 
 			return unaryExpr;
 		}
 
-		private static TypedCharEnumerableParser BuildIntegerNumber()
+		private static CharEnumerableParser BuildIntegerNumber()
 		{
 			//+10
 			//10
@@ -100,10 +94,10 @@ namespace JsDataParser.Parser
 				from sign in UnarySign.Optional()
 				let tmp = sign.HasValue ? sign.Value : Array.Empty<char>()
 				from digit in digits
-				select (tmp.Concat(digit), TokenTypes.IntegerNumber);
+				select tmp.Concat(digit);
 		}
 
-		private static TypedCharEnumerableParser BuildRealNumber()
+		private static CharEnumerableParser BuildRealNumber()
 		{
 			//1.0
 			//1.
@@ -113,7 +107,7 @@ namespace JsDataParser.Parser
 				from sign in UnarySign.Optional()
 				let signChar = sign.HasValue ? sign.Value : Array.Empty<char>()
 				from integerPart in Chars.Digit().Many1()
-				from decimalDot in Chars.Char('.').Select(c => Cache.Get('.'))
+				from decimalDot in Chars.Char('.').Select(c => CharacterCache.DefaultCache.Get('.'))
 				from fractionPart in Chars.Digit().Many0()
 				select signChar.Concat(integerPart).Concat(decimalDot).Concat(fractionPart);
 
@@ -122,15 +116,15 @@ namespace JsDataParser.Parser
 				from sign in UnarySign.Optional()
 				let signChar = sign.HasValue ? sign.Value : Array.Empty<char>()
 				from integerPart in Chars.Digit().Many0()
-				from decimalDot in Chars.Char('.').Select(c => Cache.Get('.'))
+				from decimalDot in Chars.Char('.').Select(c => CharacterCache.DefaultCache.Get('.'))
 				from fractionPart in Chars.Digit().Many1()
 				select signChar.Concat(integerPart).Concat(decimalDot).Concat(fractionPart);
 
 
-			return Combinator.Choice(pattern0, pattern1).Select(cap => (cap, TokenTypes.RealNumber));
+			return Combinator.Choice(pattern0, pattern1);
 		}
 
-		private static TypedCharEnumerableParser BuildText()
+		private static CharEnumerableParser BuildString()
 		{
 			var dict = new Dictionary<char, char[]>
 			{
@@ -160,7 +154,7 @@ namespace JsDataParser.Parser
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex()).Select(seq =>
 					seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), bld => bld.ToString()))
 				let chr = (char) byte.Parse(hexaValue, NumberStyles.HexNumber)
-				select Cache.Get(chr);
+				select CharacterCache.DefaultCache.Get(chr);
 
 			var utf16 =
 				from quote in Chars.Char('\\')
@@ -168,10 +162,10 @@ namespace JsDataParser.Parser
 				from hexaValue in Combinator.Sequence(Chars.Hex(), Chars.Hex(), Chars.Hex(), Chars.Hex())
 					.Select(seq => seq.Aggregate(new StringBuilder(), (bld, c) => bld.Append(c), b => b.ToString()))
 				let chr = (char) uint.Parse(hexaValue, NumberStyles.HexNumber)
-				select Cache.Get(chr);
+				select CharacterCache.DefaultCache.Get(chr);
 
 
-			var nonEscapeCharacter = Chars.NoneOf('\\', '\'', '\"').Select(c => Cache.Get(c));
+			var nonEscapeCharacter = Chars.NoneOf('\\', '\'', '\"').Select(c => CharacterCache.DefaultCache.Get(c));
 
 			var synth = Combinator.Choice(
 				nonEscapeCharacter,
@@ -185,15 +179,15 @@ namespace JsDataParser.Parser
 				from _ in Chars.Char(quote)
 				select contents.SelectMany(c => c);
 
-			return text.Select(cap => (cap, TokenTypes.Text));
+			return text;
 		}
 
-		private static TypedCharEnumerableParser BuildBool()
+		private static CharEnumerableParser BuildBool()
 		{
-			return Chars.Sequence("true").Or(Chars.Sequence("false")).Select(cap => (cap, TokenTypes.Boolean));
+			return Chars.Sequence("true").Or(Chars.Sequence("false"));
 		}
 
-		private static TypedCharEnumerableParser BuildTinyFunction()
+		private static CharEnumerableParser BuildTinyFunction()
 		{
 			var function =
 				from functionIdent in Chars.Sequence("function").Ignore()
@@ -202,35 +196,13 @@ namespace JsDataParser.Parser
 				from args in Chars.NoneOf(')').Many0()
 				from rp in Chars.Char(')').Ignore()
 				from space1 in Chars.WhiteSpace().Many0()
-				from lcb in Chars.Char('{').Select(c => Cache.Get(c))
+				from lcb in Chars.Char('{').Select(c => CharacterCache.DefaultCache.Get(c))
 				from contents in Chars.NoneOf('}').Many0()
-				from rcb in Chars.Char('}').Select(c => Cache.Get(c))
+				from rcb in Chars.Char('}').Select(c => CharacterCache.DefaultCache.Get(c))
 				let header = (IEnumerable<char>) "function ("
 				select header.Concat(args).Concat(") {").Concat(contents).Concat("}");
 
-			return function.Select(cap => (cap, TokenTypes.Function));
-		}
-
-		private static Parser<char, (IReadOnlyList<IEnumerable<char>> captured, TokenTypes tokenType)> BuildArray()
-		{
-			var whiteSpace = Chars.WhiteSpace().Many0().Select(_ => Cache.Get(' '));
-
-			var array =
-				from _ in Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore())
-				from values in Combinator.Sequence(whiteSpace, IntegerNumber
-						.Select(x => x.captured), whiteSpace, Chars.Char(',').Select(c => Cache.Get(c)))
-					.Select(cap => cap.Skip(1).Take(1)).Many0()
-				from lastValue in Combinator.Sequence(whiteSpace, IntegerNumber.Select(x => x.captured), whiteSpace)
-					.Select(cap => cap.Skip(1).Take(1))
-				from __ in Chars.Char(']').Ignore()
-				let fwd = values.SelectMany(x => x)
-				select (IReadOnlyList<IEnumerable<char>>) fwd.Concat(lastValue).ToArray();
-
-			var emptyArray = Combinator.Sequence(Chars.Char('[').Ignore(), whiteSpace.Ignore(), Chars.Char(']').Ignore())
-				.Select(_ => (IReadOnlyList<IEnumerable<char>>) Array.Empty<IEnumerable<char>>());
-
-
-			return emptyArray.Or(array).Select(cap => (cap, TokenTypes.IntegerArray));
+			return function;
 		}
 	}
 }

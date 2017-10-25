@@ -30,7 +30,7 @@ namespace JsDataParser.Parser
 	{
 		private readonly Dictionary<string, PropertyEntity> _properties = new Dictionary<string, PropertyEntity>();
 
-		public ObjectEntity(int id, IEnumerable<PropertyEntity> properties)
+		public ObjectEntity(ValueEntity id, IEnumerable<PropertyEntity> properties)
 		{
 			if (properties == null) throw new ArgumentNullException(nameof(properties));
 			Id = id;
@@ -44,12 +44,10 @@ namespace JsDataParser.Parser
 
 				_properties.Add(elem.Name, elem);
 			}
-
 		}
 
-		public int Id { get; }
+		public ValueEntity Id { get; }
 
 		public IReadOnlyDictionary<string, PropertyEntity> Properties => _properties;
-
 	}
 }

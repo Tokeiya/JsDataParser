@@ -45,6 +45,8 @@ namespace JsDataParser.Parser
 			CacheSize = cacheSize;
 		}
 
+		public static CharacterCache DefaultCache => new CharacterCache(1000, 1250);
+
 		public int CurrentCachSize
 		{
 			get

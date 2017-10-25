@@ -152,6 +152,16 @@ namespace JsDataParserTest
 						for (var i = 0; i < 5; i++)
 							cap.ArraySource[i].SequenceEqual(i.ToString()).IsTrue();
 					});
+
+
+			Field.Run("TACC: HO_GE".AsStream())
+				.Case((_, __) => Assert.True(false),
+					(_, cap) =>
+					{
+						cap.Name.Is("TACC");
+						cap.FieldType.Is(TokenTypes.IdentifierName);
+						cap.Source.SequenceEqual("HO_GE").IsTrue();
+					});
 		}
 
 		[Fact]

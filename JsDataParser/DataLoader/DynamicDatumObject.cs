@@ -50,6 +50,7 @@ namespace JsDataParser.DataLoader
 
 					case TokenTypes.Function:
 					case TokenTypes.Text:
+					case TokenTypes.IdentifierName:
 						return typeof(string);
 
 					case TokenTypes.IntegerArray:

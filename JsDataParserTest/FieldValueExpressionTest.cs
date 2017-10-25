@@ -33,7 +33,7 @@ namespace JsDataParserTest
 		public void CtorTest()
 		{
 			Assert.Throws<ArgumentNullException>(() => new FieldValueExpression(null, TokenTypes.Boolean));
-			Assert.Throws<ArgumentException>(() => new FieldValueExpression("hello", TokenTypes.FieldName));
+			Assert.Throws<ArgumentException>(() => new FieldValueExpression("hello", TokenTypes.IdentifierName));
 		}
 
 		[Fact]

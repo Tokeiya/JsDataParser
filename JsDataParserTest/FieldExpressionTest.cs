@@ -36,7 +36,7 @@ namespace JsDataParserTest
 			Assert.Throws<ArgumentException>(() => new FieldExpression("", "hello", TokenTypes.Text));
 
 
-			Assert.Throws<ArgumentException>(() => new FieldExpression("name", "hello", TokenTypes.FieldName));
+			Assert.Throws<ArgumentException>(() => new FieldExpression("name", "hello", TokenTypes.IdentifierName));
 		}
 
 		[Fact]

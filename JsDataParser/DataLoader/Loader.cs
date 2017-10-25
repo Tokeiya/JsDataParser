@@ -20,7 +20,7 @@ namespace JsDataParser.DataLoader
 					{
 						if (str.Current.HasValue)
 						{
-							throw new LoadException(str.Current.Value.Item1.Line, str.Current.Value.Item1.Line, "");
+							throw new LoadException(str.Current.Value.Item1.Line, str.Current.Value.Item1.Column, "");
 						}
 						else
 						{

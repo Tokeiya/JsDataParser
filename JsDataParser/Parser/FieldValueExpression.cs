@@ -41,6 +41,7 @@ namespace JsDataParser.Parser
 				case TokenTypes.IntegerNumber:
 				case TokenTypes.RealNumber:
 				case TokenTypes.Text:
+				case TokenTypes.IdentifierName:
 					break;
 
 				default:

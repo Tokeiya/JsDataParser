@@ -22,6 +22,7 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -37,56 +38,24 @@ namespace Playground
 
 	using static Parseq.Combinator;
 	using static DataParser;
-
-	class DynamicSample : DynamicObject
-	{
-		public override bool TryConvert(ConvertBinder binder, out object result)
-		{
-			return base.TryConvert(binder, out result);
-		}
-
-		public override bool TryGetMember(GetMemberBinder binder, out object result)
-		{
-			result = 0;
-			return true;
-		}
-	}
-
+	using static Parseq.Combinators.Chars;
 
 
 	internal class Program
 	{
 		private static void Main()
 		{
-			dynamic d=new DynamicSample();
 
-			int i =(int) d;
+
+
+
+
+
+
+
 
 		}
 
 
-		private static void TotalTest()
-		{
-			string scr;
-
-			using (var rdr = new StreamReader(".//Samples//HugeSample.txt"))
-			{
-				scr = rdr.ReadToEnd();
-			}
-
-			var reply = DataParser.Data.Run(scr.AsStream());
-
-			reply.Case(
-				(str, txt) =>
-				{
-					Console.WriteLine(txt);
-					Console.WriteLine("Line:" + str.Current.Value.Item1.Line);
-					Console.WriteLine("Column:" + str.Current.Value.Item1.Column);
-				},
-				(_, cap) => Console.WriteLine("success"));
-
-			Console.WriteLine("Press enter to exit.");
-			Console.ReadLine();
-		}
 	}
 }

@@ -47,24 +47,8 @@ namespace JsDataParser.DataLoader
 			}
 		}
 
-		public static IEnumerable<dynamic> LoadStrictDynamic(TextReader reader)
-		{
-			var data = LoadDatumExpression(reader);
 
-			return data.Select(x => new StrictDynamicDatumObject(x));
-		}
-
-		public static IEnumerable<dynamic> LoadStrictDynamic(string path)
-		{
-			if (path == null) throw new ArgumentNullException(nameof(path));
-
-			using (var rdr = new StreamReader(path))
-			{
-				return LoadStrictDynamic(rdr);
-			}
-		}
-
-		public static IEnumerable<dynamic> LoadLooseDynamic(TextReader reader)
+		public static IEnumerable<dynamic> LoadDynamic(TextReader reader)
 		{
 			if (reader == null) throw new ArgumentNullException(nameof(reader));
 
@@ -73,13 +57,13 @@ namespace JsDataParser.DataLoader
 			return data.Select(x => new LooseDynamicDatumObject(x));
 		}
 
-		public static IEnumerable<dynamic> LoadLooseDynamic(string path)
+		public static IEnumerable<dynamic> LoadDynamic(string path)
 		{
 			if (path == null) throw new ArgumentNullException(nameof(path));
 
 			using (var rdr=new StreamReader(path))
 			{
-				return LoadLooseDynamic(rdr);
+				return LoadDynamic(rdr);
 			}
 		}
 

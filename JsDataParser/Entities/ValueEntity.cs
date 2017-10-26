@@ -10,8 +10,8 @@ namespace JsDataParser.Entities
 	public class ValueEntity
 	{
 		private readonly ObjectEntity _nestedObject;
-		private readonly IEnumerable<char> _value;
-
+		private readonly ValueEntity[] _array;
+		private readonly object _value;
 
 		public ValueEntity(ObjectEntity nestedObject)
 		{
@@ -21,31 +21,26 @@ namespace JsDataParser.Entities
 
 		public ValueEntity(IEnumerable<char> value, ValueTypes valueType)
 		{
-			_value = value ?? throw new ArgumentNullException(nameof(value));
-			ValueType = valueType;
+#warning ValueEntity_Is_NotImpl
+			throw new NotImplementedException("ValueEntity is not implemented");
 		}
 
 		public ValueEntity(IEnumerable<ValueEntity> arrayValue)
 		{
-			if (arrayValue == null) throw new ArgumentNullException(nameof(arrayValue));
-
-			var list = new List<ValueEntity>();
-
-			foreach (var elem in arrayValue)
-			{
-				if (elem == null) throw new ArgumentException($"{nameof(arrayValue)} contains null");
-				list.Add(elem);
-			}
-
-			list.TrimExcess();
-			ArrayValue = list;
-
-			ValueType = ValueTypes.Array;
+#warning ValueEntity_Is_NotImpl
+			throw new NotImplementedException("ValueEntity is not implemented");
 		}
 
 		public ValueTypes ValueType { get; }
 
-		public IEnumerable<char> Value => _value ?? throw new InvalidOperationException();
+		public object Value
+		{
+			get
+			{
+#warning Value_Is_NotImpl
+				throw new NotImplementedException("Value is not implemented");
+			}
+		}
 
 		public IReadOnlyList<ValueEntity> ArrayValue { get; }
 

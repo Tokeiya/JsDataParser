@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Text;
+using JsDataParser.Entities;
 
 namespace JsDataParser
 {
-    internal static class VerifyExtensions
-    {
-		private static Dictionary<Type,int[]> _dict=new Dictionary<Type, int[]>();
-		public static bool VerifyEnum<TEnum>(this TEnum value) where TEnum:struct 
-	    {
-		    if (_dict.TryGetValue(typeof(TEnum), out var array))
-		    {
-				return Array.BinarySearch(array,(int)value)
-		    }
-	    }
-    }
+	internal static class VerifyExtensions
+	{
+		public static bool Verify(this IdentifierTypes type)
+		{
+#warning Verify_Is_NotImpl
+			throw new NotImplementedException("Verify is not implemented");
+		}
+
+		public static bool Verify(this ValueTypes type)
+		{
+#warning Verify_Is_NotImpl
+			throw new NotImplementedException("Verify is not implemented");
+		}
+	}
 }

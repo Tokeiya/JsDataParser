@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using JsDataParser.Parser;
 
-namespace JsDataParser.Parser
+namespace JsDataParser.Entities
 {
 
 

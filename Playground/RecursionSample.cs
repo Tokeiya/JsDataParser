@@ -118,7 +118,7 @@ namespace Playground
 			fix.FixedParser = entity;
 
 
-			var sample = "{1,2,{1,2,3},5}".AsStream();
+			var sample = "{1,2,{1,{2},3},5}".AsStream();
 
 
 			entity.Run(sample)

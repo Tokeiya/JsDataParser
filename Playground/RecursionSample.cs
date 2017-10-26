@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using Parseq;
 
-namespace Playground
+// ReSharper disable once CheckNamespace
+namespace Playground.NaiveSample
 {
 	using static Parseq.Combinators.Chars;
 

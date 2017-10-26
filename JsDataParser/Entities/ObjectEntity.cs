@@ -20,31 +20,32 @@
  * 
  */
 
+
 using System;
 using System.Collections.Generic;
-using System.Text;
+using JsDataParser.Parser;
 
-namespace JsDataParser.Parser
+namespace JsDataParser.Entities
 {
-	public class PropertyEntity
+	public class ObjectEntity
 	{
-		public PropertyEntity(IEnumerable<char> name, ValueEntity value)
+		private readonly Dictionary<string, PropertyEntity> _properties = new Dictionary<string, PropertyEntity>();
+
+		public ObjectEntity(IEnumerable<PropertyEntity> properties)
 		{
-			if (name == null) throw new ArgumentNullException(nameof(name));
-			if (value == null) throw new ArgumentNullException(nameof(value));
+			if (properties == null) throw new ArgumentNullException(nameof(properties));
 
-			var bld = new StringBuilder();
-
-			foreach (var c in name)
+			foreach (var elem in properties)
 			{
-				bld.Append(c);
-			}
+				if (elem == null) throw new ArgumentException($"{nameof(properties)} contains null value");
 
-			Name = bld.ToString();
-			Value = value;
+				if (_properties.ContainsKey(elem.Name))
+					throw new InvalidOperationException($"property name {elem.Name} is duplicated.");
+
+				_properties.Add(elem.Name, elem);
+			}
 		}
 
-		public string Name { get; }
-		public ValueEntity Value { get; }
+		public IReadOnlyDictionary<string, PropertyEntity> Properties => _properties;
 	}
 }

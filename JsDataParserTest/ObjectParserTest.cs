@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
 using Xunit;

@@ -40,7 +40,18 @@ namespace Playground
 	{
 		private static void Main()
 		{
-			RecursionSample.Sample();
+			object a = 10;
+			object b = 10;
+
+			Console.WriteLine(a == b);
+
+			var dict = new Dictionary<object, object>();
+
+			dict.Add(10,10);
+			dict.Add(true, "hello");
+
+			Console.WriteLine(dict.ContainsKey(10));
+			Console.WriteLine(dict.ContainsKey(true));
 		}
 	}
 }

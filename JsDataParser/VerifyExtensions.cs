@@ -8,6 +8,8 @@ namespace JsDataParser
 {
 	internal static class VerifyExtensions
 	{
+
+
 		public static bool Verify(this IdentifierTypes type)
 		{
 #warning Verify_Is_NotImpl

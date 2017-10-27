@@ -9,14 +9,14 @@ using JsDataParser.Entities;
 namespace JsDataParserTest
 {
 
-    public class VerifyExtensionsTest
-    {
-	    [Fact]
-	    public void ValueTypesTest()
-	    {
-		    VerifyExtensions.Verify((ValueTypes)0).IsFalse();
+	public class VerifyExtensionsTest
+	{
+		[Fact]
+		public void ValueTypesTest()
+		{
+			Extensions.Verify((ValueTypes)0).IsFalse();
 
 
-	    }
-    }
+		}
+	}
 }

@@ -8,7 +8,7 @@ using JsDataParser.Entities;
 
 namespace JsDataParser
 {
-	internal static class VerifyExtensions
+	internal static class Extensions
 	{
 		private static readonly IdentifierTypes[] _identifierTypeses =
 			(IdentifierTypes[]) Enum.GetValues(typeof(IdentifierTypes));
@@ -21,5 +21,20 @@ namespace JsDataParser
 
 		public static bool Verify(this ValueTypes type)
 			=> _valueTypes.Any(x => x == type);
+
+
+		public static string BuildString(this IEnumerable<char> source)
+		{
+			if (source == null) throw new ArgumentNullException(nameof(source));
+
+			var bld = new StringBuilder();
+
+			foreach (var c in source)
+			{
+				bld.Append(c);
+			}
+
+			return bld.ToString();
+		}
 	}
 }

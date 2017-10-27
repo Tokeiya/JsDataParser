@@ -8,6 +8,8 @@ namespace JsDataParser.Entities
 	{
 		String=1,
 		Integer,
-		Real
+		Real,
+		Boolean,
+		Constant
 	}
 }

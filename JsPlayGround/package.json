@@ -1,0 +1,9 @@
+{
+  "name": "js-play-ground",
+  "version": "0.0.0",
+  "description": "JsPlayGround",
+  "main": "app.js",
+  "author": {
+    "name": "net_s"
+  }
+}

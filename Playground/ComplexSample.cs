@@ -6,6 +6,12 @@ using System.Text;
 // ReSharper disable once CheckNamespace
 namespace Playground.ComplexSample
 {
+	class TinyIdentifier
+	{
+		public 
+	}
+
+
 	class TinyValue
 	{
 		
@@ -32,7 +38,7 @@ namespace Playground.ComplexSample
 		}
 	}
 
-    class ComplexSample
-    {
-    }
+	class ComplexSample
+	{
+	}
 }

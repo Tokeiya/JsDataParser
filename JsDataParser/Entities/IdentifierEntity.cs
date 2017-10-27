@@ -138,7 +138,15 @@ namespace JsDataParser.Entities
 			{
 #warning Value_Is_NotImpl
 				throw new NotImplementedException("Value is not implemented");
+			}
+		}
 
+		public object Object
+		{
+			get
+			{
+#warning Equals_Is_NotImpl
+				throw new NotImplementedException("Equals is not implemented");
 			}
 		}
 

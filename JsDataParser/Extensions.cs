@@ -36,5 +36,58 @@ namespace JsDataParser
 
 			return bld.ToString();
 		}
+
+
+		//新型のNull/IsNull
+		public static bool IsNull<T>(this T value) => NullChecker<T>.IsNull(value);
+		public static bool IsNotNull<T>(this T value) => !IsNull(value);
+
+		private static class NullChecker<T>
+		{
+			private static readonly TypeType _type;
+
+			static NullChecker()
+			{
+				var type = typeof(T);
+
+				if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+				{
+					_type = TypeType.Nullable;
+				}
+				else if (type.IsValueType)
+				{
+					_type = TypeType.Value;
+				}
+				else
+				{
+					_type = TypeType.Reference;
+				}
+			}
+
+			public static bool IsNull(T value)
+			{
+				switch (_type)
+				{
+					case TypeType.Value:
+						return false;
+
+					case TypeType.Reference:
+						return value == null;
+
+					case TypeType.Nullable:
+						return value.Equals(null);
+
+					default:
+						throw new InvalidOperationException("Unexpected type");
+				}
+			}
+
+			private enum TypeType
+			{
+				Value,
+				Reference,
+				Nullable
+			}
+		}
 	}
 }

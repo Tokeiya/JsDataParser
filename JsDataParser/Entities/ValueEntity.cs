@@ -116,6 +116,16 @@ namespace JsDataParser.Entities
 			}
 		}
 
+		public object Object
+		{
+			get
+			{
+#warning Equals_Is_NotImpl
+				throw new NotImplementedException("Equals is not implemented");
+
+			}
+		}
+
 		public ObjectEntity NestedObject => _nestedObject ?? throw new InvalidOperationException();
 	}
 }

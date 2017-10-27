@@ -24,15 +24,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using JsDataParser;
 
 namespace JsDataParser.Entities
 {
 	public class IdentifierEntity : IEquatable<IdentifierEntity>
 	{
+		private readonly bool _boolValue;
 		private readonly int _intValue;
 		private readonly double _realValue;
-		private readonly bool _boolValue;
 		private readonly string _stringValue;
 
 
@@ -74,12 +73,38 @@ namespace JsDataParser.Entities
 			IdentityType = identityType;
 
 #warning IdentifierEntity_Is_NotImpl
-	throw
-
-	new NotImplementedException("IdentifierEntity is not implemented");
+			throw
+				new NotImplementedException("IdentifierEntity is not implemented");
 		}
 
-		public object Identity { get; }
+		public object Identity
+		{
+			get
+			{
+				switch (IdentityType)
+				{
+					case IdentifierTypes.Boolean:
+						return _boolValue;
+
+					case IdentifierTypes.Constant:
+					case IdentifierTypes.String:
+						return _stringValue;
+
+					case IdentifierTypes.Integer:
+						return _intValue;
+
+					case IdentifierTypes.Real:
+						return _realValue;
+
+					default:
+						Trace.Assert(false);
+						break;
+				}
+
+				Trace.Assert(false);
+				return null;
+			}
+		}
 
 		public int Integer
 		{
@@ -118,8 +143,10 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning StringIdentity_Is_NotImpl
-				throw new NotImplementedException("StringIdentity is not implemented");
+				if (IdentityType != IdentifierTypes.String)
+					throw new InvalidOperationException("This instance is't String identity");
+
+				return _stringValue;
 			}
 		}
 
@@ -127,26 +154,40 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning ConstantIdentity_Is_NotImpl
-				throw new NotImplementedException("ConstantIdentity is not implemented");
+				if (IdentityType != IdentifierTypes.Constant)
+					throw new InvalidOperationException("This instance isn't Constant identity.");
+
+				return _stringValue;
 			}
 		}
 
-		public dynamic Dynamic
-		{
-			get
-			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
-			}
-		}
+		public dynamic Dynamic => Object;
 
 		public object Object
 		{
 			get
 			{
-#warning Equals_Is_NotImpl
-				throw new NotImplementedException("Equals is not implemented");
+				switch (IdentityType)
+				{
+					case IdentifierTypes.Constant:
+					case IdentifierTypes.String:
+						return _stringValue;
+
+					case IdentifierTypes.Boolean:
+						return _boolValue;
+
+					case IdentifierTypes.Integer:
+						return _intValue;
+
+					case IdentifierTypes.Real:
+						return _realValue;
+
+					default:
+						break;
+				}
+
+				Trace.Assert(false);
+				return default;
 			}
 		}
 
@@ -194,7 +235,7 @@ namespace JsDataParser.Entities
 
 		public override int GetHashCode()
 		{
-			int tmp = 0;
+			var tmp = 0;
 			unchecked
 			{
 				switch (IdentityType)
@@ -221,7 +262,7 @@ namespace JsDataParser.Entities
 						break;
 				}
 
-				return tmp * 397 ^ (int) IdentityType;
+				return (tmp * 397) ^ (int) IdentityType;
 			}
 		}
 
@@ -234,11 +275,11 @@ namespace JsDataParser.Entities
 			if (xNull || yNull) return false;
 
 			return x.Equals(y);
-
 		}
 
 		public static bool operator !=(IdentifierEntity x, IdentifierEntity y)
-			=> !(x == y);
-
+		{
+			return !(x == y);
+		}
 	}
 }

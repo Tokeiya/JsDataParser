@@ -90,13 +90,15 @@ namespace JsDataParser.Parser
 			//Array
 			{
 				var foward =
+					from _ in whiteSpace
 					from value in (Parser<char,ValueEntity>)valueFixedPoint.Parse
-					from _ in Combinator.Sequence(whiteSpace, Char(',').Ignore())
+					from __ in Combinator.Sequence(whiteSpace, Char(',').Ignore())
 					select value;
 
 				var last =
-					from value in ((Parser<char,ValueEntity>)valueFixedPoint.Parse)
 					from _ in whiteSpace
+					from value in (Parser<char,ValueEntity>)valueFixedPoint.Parse
+					from __ in whiteSpace
 					select value;
 
 
@@ -167,9 +169,14 @@ namespace JsDataParser.Parser
 					from __ in Combinator.Sequence(whiteSpace.Ignore(), Char(',').Ignore())
 					select prop;
 
+				var lstProp =
+					from _ in whiteSpace
+					from prop in Property.Optional()
+					select prop;
+
 				var contents =
 					from props in fwdProp.Many0()
-					from last in Property.Optional()
+					from last in lstProp
 					select Concat(props, last);
 
 

@@ -68,17 +68,46 @@ namespace Playground
 
 		private static void Main()
 		{
+			GetValue();
 
+			var sample = @"{
+ 1: {
+	SLOTS: [0, 0],
+  },
+  }".AsStream();
 
+			ObjectParser.LiteralObject.Run(sample)
+				.Case(
+					(s, __) => Console.WriteLine($"Line:{s.Current.Value.Item1.Line} Col:{s.Current.Value.Item1.Column}"),
+					(_, cap) =>
+					{
+						Console.WriteLine("success");
+					});
 
+			Console.ReadLine();
+		}
 
+		private static void GetValue()
+		{
+			using (var rdr = new StreamReader(".\\Samples\\HugeSample.txt"))
+			{
+				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
+					(stream, __) =>
+					{
+						try
+						{
+							Console.WriteLine(
+								$"Line:{stream.Current.Value.Item1.Line} Column:{stream.Current.Value.Item1.Column} Token:{stream.Current.Value.Item0}");
+						}
+						catch (Exception)
+						{
+							Console.WriteLine("empty");
+						}
+					},
+					(_, __) => { Console.WriteLine("success"); });
+			}
 
-
-
-
-
-
-
+			Console.ReadLine();
 		}
 	}
 }

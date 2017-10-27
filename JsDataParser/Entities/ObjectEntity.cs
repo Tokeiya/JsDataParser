@@ -29,23 +29,19 @@ namespace JsDataParser.Entities
 {
 	public class ObjectEntity
 	{
-		private readonly Dictionary<string, PropertyEntity> _properties = new Dictionary<string, PropertyEntity>();
-
-		public ObjectEntity(IEnumerable<PropertyEntity> properties)
+		public ObjectEntity(IEnumerable<(IdentifierEntity identity, ValueEntity value)> properties)
 		{
-			if (properties == null) throw new ArgumentNullException(nameof(properties));
-
-			foreach (var elem in properties)
-			{
-				if (elem == null) throw new ArgumentException($"{nameof(properties)} contains null value");
-
-				if (_properties.ContainsKey(elem.Name))
-					throw new InvalidOperationException($"property name {elem.Name} is duplicated.");
-
-				_properties.Add(elem.Name, elem);
-			}
+#warning ObjectEntity_Is_NotImpl
+			throw new NotImplementedException("ObjectEntity is not implemented");
 		}
 
-		public IReadOnlyDictionary<string, PropertyEntity> Properties => _properties;
+		public IReadOnlyDictionary<IdentifierEntity, ValueEntity> Properties
+		{
+			get
+			{
+#warning Properties_Is_NotImpl
+				throw new NotImplementedException("Properties is not implemented");
+			}
+		}
 	}
 }

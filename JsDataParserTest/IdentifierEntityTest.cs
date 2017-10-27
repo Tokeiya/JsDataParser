@@ -25,14 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JsDataParser.Entities
+namespace JsDataParserTest
 {
-	public enum IdentifierTypes
-	{
-		String=1,
-		Integer,
-		Real,
-		Boolean,
-		Constant
-	}
+    class IdentifierEntityTest
+    {
+    }
 }

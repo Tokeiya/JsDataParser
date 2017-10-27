@@ -24,10 +24,66 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using JsDataParser.Entities;
+using Xunit;
 
 namespace JsDataParserTest
 {
-    class IdentifierEntityTest
-    {
-    }
+	public class IdentifierEntityTest
+	{
+		[Fact]
+		public void CtorTest()
+		{
+			Assert.Throws<ArgumentNullException>(() => new IdentifierEntity(null, IdentifierTypes.Boolean));
+			Assert.Throws<ArgumentException>(() => new IdentifierEntity("hello", 0));
+
+		}
+
+		[Fact]
+		public void IntegerValue()
+		{
+			var target = new IdentifierEntity("11", IdentifierTypes.Integer);
+			target.IdentityType.Is(IdentifierTypes.Integer);
+
+			target.Integer.Is(11);
+
+			Assert.Throws<InvalidOperationException>(() => target.Boolean);
+			Assert.Throws<InvalidOperationException>(() => target.Constant);
+			Assert.Throws<InvalidOperationException>(() => target.Real);
+			Assert.Throws<InvalidOperationException>(() => target.String);
+
+			var tmp = new IdentifierEntity("11", IdentifierTypes.Integer);
+
+
+			(target==tmp).IsTrue();
+			(target != tmp).IsFalse();
+
+			(target.Equals(tmp)).IsTrue();
+			(tmp.Equals(target)).IsTrue();
+
+			target.GetHashCode().Is(tmp.GetHashCode());
+
+			tmp = new IdentifierEntity("11", IdentifierTypes.Real);
+
+			(target==tmp).IsFalse();
+			(target!=tmp).IsTrue();
+			
+
+			target.Equals(tmp).IsFalse();
+			tmp.Equals(target).IsFalse();
+
+			target.Equals(null).IsFalse();
+
+		}
+
+		[Fact]
+		public void StringValue()
+		{
+			var target = new IdentifierEntity("Hoge", IdentifierTypes.String);
+			var constant = new IdentifierEntity("Hoge", IdentifierTypes.Constant);
+
+
+			target.Equals(constant).IsFalse();
+		}
+	}
 }

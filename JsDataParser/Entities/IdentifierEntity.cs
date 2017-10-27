@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace JsDataParser.Entities
 {
@@ -40,69 +41,33 @@ namespace JsDataParser.Entities
 			if (!identityType.Verify()) throw new ArgumentException($"{nameof(identityType)} is unexpected value.");
 			if (source == null) throw new ArgumentNullException(nameof(source));
 
-			var value = source.BuildString();
 
+
+			var value = source.BuildString();
+			IdentityType = identityType;
 
 			switch (identityType)
 			{
 				case IdentifierTypes.Boolean:
-#warning IdentifierEntity_Is_NotImpl
-					throw new NotImplementedException("IdentifierEntity is not implemented");
+					_boolValue = bool.Parse(source.BuildString());
+					break;
 
 				case IdentifierTypes.Integer:
-#warning IdentifierEntity_Is_NotImpl
-					throw new NotImplementedException("IdentifierEntity is not implemented");
+					_intValue = int.Parse(source.BuildString());
+					break;
 
 				case IdentifierTypes.Real:
-#warning IdentifierEntity_Is_NotImpl
-					throw new NotImplementedException("IdentifierEntity is not implemented");
-
+					_realValue = double.Parse(source.BuildString());
+					break;
 
 				case IdentifierTypes.String:
-#warning IdentifierEntity_Is_NotImpl
-					throw new NotImplementedException("IdentifierEntity is not implemented");
-
 				case IdentifierTypes.Constant:
-#warning IdentifierEntity_Is_NotImpl
-					throw new NotImplementedException("IdentifierEntity is not implemented");
+					_stringValue = source.BuildString();
+					break;
+
 
 				default:
 					throw new ArgumentException($"{identityType} is unrecognized.");
-			}
-
-			IdentityType = identityType;
-
-#warning IdentifierEntity_Is_NotImpl
-			throw
-				new NotImplementedException("IdentifierEntity is not implemented");
-		}
-
-		public object Identity
-		{
-			get
-			{
-				switch (IdentityType)
-				{
-					case IdentifierTypes.Boolean:
-						return _boolValue;
-
-					case IdentifierTypes.Constant:
-					case IdentifierTypes.String:
-						return _stringValue;
-
-					case IdentifierTypes.Integer:
-						return _intValue;
-
-					case IdentifierTypes.Real:
-						return _realValue;
-
-					default:
-						Trace.Assert(false);
-						break;
-				}
-
-				Trace.Assert(false);
-				return null;
 			}
 		}
 

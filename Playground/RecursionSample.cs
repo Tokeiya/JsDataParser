@@ -43,7 +43,7 @@ namespace Playground.NaiveSample
 
 	class RecursionSample
 	{
-		public class FixedPoint<TToken, T>
+		private class FixedPoint<TToken, T>
 		{
 			private Parser<TToken, T> _fixedParser;
 

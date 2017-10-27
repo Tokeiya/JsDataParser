@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Serialization;
 using JsDataParser.Entities;
@@ -34,5 +35,160 @@ namespace JsDataParser.Parser
 
 	internal static class ObjectParser
 	{
+		public static readonly Parser<char, IdentifierEntity> Identifier;
+		public static readonly Parser<char, IReadOnlyList<ValueEntity>> ArrayLiteral;
+		public static readonly Parser<char, ValueEntity> Value;
+		public static readonly Parser<char, (IdentifierEntity identifier, ValueEntity value)> Property;
+		public static readonly Parser<char, ObjectEntity> LiteralObject;
+
+
+		private static IEnumerable<T> Concat<T>(IEnumerable<T> foward, T last)
+		{
+			foreach (var elem in foward)
+			{
+				yield return elem;
+			}
+			yield return last;
+		}
+
+		private static IEnumerable<T> Concat<T>(IEnumerable<T> foward, IOption<T> last)
+		{
+			foreach (var elem in foward)
+			{
+				yield return elem;
+			}
+
+			if (last.HasValue) yield return last.Value;
+
+		}
+
+
+
+		static ObjectParser()
+		{
+
+			var whiteSpace = WhiteSpace().Many0().Ignore();
+
+			var objectFixedPoint = new FixedPoint<char, ObjectEntity>("obj");
+
+			var valueFixedPoint = new FixedPoint<char, ValueEntity>("value");
+
+			var arrayFixedPoint = new FixedPoint<char, IReadOnlyList<ValueEntity>>("Array");
+
+
+			//Identifier
+			{
+				Identifier = Combinator.Choice(
+					LiteralParser.RealNumber.Select(x => new IdentifierEntity(x, IdentifierTypes.Real)),
+					LiteralParser.IntegerNumber.Select(x => new IdentifierEntity(x, IdentifierTypes.Integer)),
+					LiteralParser.Bool.Select(x => new IdentifierEntity(x, IdentifierTypes.Boolean)),
+					LiteralParser.IdentifierName.Select(x => new IdentifierEntity(x, IdentifierTypes.Constant)),
+					LiteralParser.String.Select(x => new IdentifierEntity(x, IdentifierTypes.String))
+				);
+			}
+
+			//Array
+			{
+				var foward =
+					from value in (Parser<char,ValueEntity>)valueFixedPoint.Parse
+					from _ in Combinator.Sequence(whiteSpace, Char(',').Ignore())
+					select value;
+
+				var last =
+					from value in ((Parser<char,ValueEntity>)valueFixedPoint.Parse)
+					from _ in whiteSpace
+					select value;
+
+
+				var tmp =
+					from _ in Char('[')
+					from __ in whiteSpace
+					from fowards in foward.Many0()
+					from l in last
+					from ___ in Char(']')
+					select (IReadOnlyList<ValueEntity>)Concat(fowards, l).ToArray();
+
+
+				var empty =
+					from _ in Char('[')
+					from __ in whiteSpace
+					from ___ in Char(']')
+					select (IReadOnlyList<ValueEntity>)Array.Empty<ValueEntity>();
+
+				arrayFixedPoint.FixedParser = Combinator.Choice(tmp, empty);
+
+				ArrayLiteral = arrayFixedPoint.Parse;
+
+			}
+
+
+			//Value
+			{
+				var naiveValue = Combinator.Choice(
+					LiteralParser.TinyFunction.Select(x => new ValueEntity(x, ValueTypes.Function)),
+					LiteralParser.RealNumber.Select(x => new ValueEntity(x, ValueTypes.Real)),
+					LiteralParser.IntegerNumber.Select(x => new ValueEntity(x, ValueTypes.Integer)),
+					LiteralParser.Bool.Select(x => new ValueEntity(x, ValueTypes.Boolean)),
+					LiteralParser.String.Select(x => new ValueEntity(x, ValueTypes.String)),
+					LiteralParser.IdentifierName.Select(x => new ValueEntity(x, ValueTypes.ConstantName))
+				);
+
+				var arrayValue = ArrayLiteral.Select(x => new ValueEntity(x));
+				var nestedObjectValue = ((Parser<char,ObjectEntity>)objectFixedPoint.Parse).Select(x => new ValueEntity(x));
+
+
+				valueFixedPoint.FixedParser = Combinator.Choice(
+					arrayValue,
+					naiveValue,
+					nestedObjectValue
+				);
+
+				Value = valueFixedPoint.Parse;
+
+
+			}
+
+			//Property
+			{
+				var tmp =
+					from identifier in Identifier
+					from _ in Combinator.Sequence(whiteSpace, Char(':').Ignore(), whiteSpace)
+					from value in Value
+					select (identifier, value);
+
+				Property = tmp;
+			}
+
+			//LiteralObject
+			{
+				var fwdProp =
+					from _ in whiteSpace
+					from prop in Property
+					from __ in Combinator.Sequence(whiteSpace.Ignore(), Char(',').Ignore())
+					select prop;
+
+				var contents =
+					from props in fwdProp.Many0()
+					from last in Property.Optional()
+					select Concat(props, last);
+
+
+				var tmp = from _ in Combinator.Sequence(Char('{').Ignore(), whiteSpace)
+					from props in contents
+					from __ in Combinator.Sequence(whiteSpace, Char('}').Ignore())
+					select new ObjectEntity(props);
+
+				objectFixedPoint.FixedParser = tmp;
+				LiteralObject = objectFixedPoint.Parse;
+
+
+			
+
+			}
+
+
+		}
+
+
 	}
 }

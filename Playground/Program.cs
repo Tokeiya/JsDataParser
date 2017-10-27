@@ -23,35 +23,62 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using JsDataParser.Entities;
+using JsDataParser.Parser;
 using Parseq;
 using Parseq.Combinators;
 using Playground.NaiveSample;
 
 namespace Playground
 {
-	using static Chars;
-
-
-
-
-
 	internal class Program
 	{
+		private static IEnumerable<ValueEntity> Concat(IEnumerable<ValueEntity> foward, ValueEntity last)
+		{
+			foreach (var elem in foward)
+			{
+				yield return elem;
+			}
+			yield return last;
+		}
+
+
+		private static Parser<TToken, T> Wrap<TToken, T>(Parser<TToken, T> source)
+		{
+			return stream =>
+			{
+				try
+				{
+					Console.WriteLine(
+						$"Line:{stream.Current.Value.Item1.Line} Column:{stream.Current.Value.Item1.Column} Token:{stream.Current.Value.Item0}");
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine("Stream empty.");
+				}
+
+				return source(stream);
+			};
+		}
+
 		private static void Main()
 		{
-			object a = 10;
-			object b = 10;
 
-			Console.WriteLine(a == b);
 
-			var dict = new Dictionary<object, object>();
 
-			dict.Add(10,10);
-			dict.Add(true, "hello");
 
-			Console.WriteLine(dict.ContainsKey(10));
-			Console.WriteLine(dict.ContainsKey(true));
+
+
+
+
+
+
+
 		}
 	}
 }

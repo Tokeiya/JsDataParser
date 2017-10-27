@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using JsDataParser.Parser;
 
 namespace JsDataParser.Entities
@@ -21,28 +22,90 @@ namespace JsDataParser.Entities
 		{
 			_nestedObject = nestedObject ?? throw new ArgumentNullException(nameof(nestedObject));
 			ValueType = ValueTypes.Object;
+			_nestedObject = nestedObject;
 		}
 
 		public ValueEntity(IEnumerable<char> value, ValueTypes valueType)
 		{
-#warning ValueEntity_Is_NotImpl
-			throw new NotImplementedException("ValueEntity is not implemented");
+			if (value == null) throw new ArgumentNullException(nameof(value));
+			if (!valueType.Verify()) throw new ArgumentException($"{nameof(valueType)} is unexpected");
+
+			switch (valueType)
+			{
+				case ValueTypes.Boolean:
+					_boolValue = bool.Parse(value.BuildString());
+					break;
+
+				case ValueTypes.ConstantName:
+				case ValueTypes.String:
+				case ValueTypes.Function:
+					_textValue = value.BuildString();
+					break;
+
+				case ValueTypes.Integer:
+					_integerValue = int.Parse(value.BuildString());
+					break;
+
+				case ValueTypes.Real:
+					_realValue = double.Parse(value.BuildString());
+					break;
+
+				default:
+					throw new ArgumentException("unexpected value.", nameof(valueType));
+
+			}
+			ValueType = valueType;
 		}
 
 		public ValueEntity(IEnumerable<ValueEntity> arrayValue)
 		{
-#warning ValueEntity_Is_NotImpl
-			throw new NotImplementedException("ValueEntity is not implemented");
+			if (arrayValue == null) throw new ArgumentNullException(nameof(arrayValue));
+
+			var buffer = new List<ValueEntity>();
+
+			foreach (var elem in arrayValue)
+			{
+				if (elem == null) throw new ArgumentException($"Contains null value.", nameof(arrayValue));
+
+				buffer.Add(elem);
+			}
+
+			_array = buffer.ToArray();
+
+			ValueType = ValueTypes.Array;
 		}
 
 		public ValueTypes ValueType { get; }
 
-		public object Value
+		public object Object
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
+				switch (ValueType)
+				{
+					case ValueTypes.Array:
+						return _array;
+
+					case ValueTypes.Boolean:
+						return _boolValue;
+
+					case ValueTypes.ConstantName:
+					case ValueTypes.Function:
+					case ValueTypes.String:
+						return _textValue;
+
+					case ValueTypes.Real:
+						return _realValue;
+
+					case ValueTypes.Integer:
+						return _integerValue;
+
+					case ValueTypes.Object:
+						return _nestedObject;
+
+					default:
+						throw new InvalidOperationException();
+				}
 			}
 		}
 
@@ -50,8 +113,9 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
+				if (ValueType != ValueTypes.String) throw new InvalidOperationException("This instance isn't string entity.");
+
+				return _textValue;
 
 			}
 		}
@@ -60,9 +124,8 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
-
+				if (ValueType != ValueTypes.Function) throw new InvalidOperationException("This instance isn't function entity.");
+				return _textValue;
 			}
 		}
 
@@ -70,9 +133,10 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
+				if (ValueType != ValueTypes.ConstantName)
+					throw new InvalidOperationException("This instance isn't constant entity.");
 
+				return _textValue;
 			}
 		}
 
@@ -81,9 +145,8 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
-
+				if (ValueType != ValueTypes.Integer) throw new InvalidOperationException("This instance isn't integer entity.");
+				return _integerValue;
 			}
 		}
 
@@ -91,8 +154,8 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
+				if (ValueType != ValueTypes.Real) throw new InvalidOperationException("Tis instance isn't real entity.");
+				return _realValue;
 			}
 		}
 
@@ -100,32 +163,23 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
-
+				if (ValueType != ValueTypes.Array) throw new InvalidOperationException("This instance isn't array entity.");
+				return _array;
 			}
 		}
 
-		public dynamic Dynamic
+		public ObjectEntity NestedObject
 		{
 			get
 			{
-#warning Value_Is_NotImpl
-				throw new NotImplementedException("Value is not implemented");
+				if (ValueType != ValueTypes.Object)
+					throw new InvalidOperationException("This instance isn't nested object entity.");
 
+				return _nestedObject;
 			}
 		}
 
-		public object Object
-		{
-			get
-			{
-#warning Equals_Is_NotImpl
-				throw new NotImplementedException("Equals is not implemented");
+		public dynamic Dynamic => Object;
 
-			}
-		}
-
-		public ObjectEntity NestedObject => _nestedObject ?? throw new InvalidOperationException();
 	}
 }

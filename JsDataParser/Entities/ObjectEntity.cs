@@ -22,26 +22,52 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using JsDataParser.Parser;
 
 namespace JsDataParser.Entities
 {
-	public class ObjectEntity
+	public class ObjectEntity:IReadOnlyDictionary<IdentifierEntity,ValueEntity>
 	{
-		public ObjectEntity(IEnumerable<(IdentifierEntity identity, ValueEntity value)> properties)
-		{
-#warning ObjectEntity_Is_NotImpl
-			throw new NotImplementedException("ObjectEntity is not implemented");
-		}
+		private readonly Dictionary<IdentifierEntity, ValueEntity> _values = new Dictionary<IdentifierEntity, ValueEntity>();
 
-		public IReadOnlyDictionary<IdentifierEntity, ValueEntity> Properties
+		public ObjectEntity(IEnumerable<(IdentifierEntity identifier, ValueEntity value)> properties)
 		{
-			get
+			if (properties == null) throw new ArgumentNullException(nameof(properties));
+
+			foreach (var elem in properties)
 			{
-#warning Properties_Is_NotImpl
-				throw new NotImplementedException("Properties is not implemented");
+				if (elem.value == null) throw new ArgumentException($"Contains null value.", nameof(properties));
+				if (elem.identifier == null) throw new ArgumentException("Contains null identifier", nameof(properties));
+
+				if (_values.ContainsKey(elem.identifier))
+				{
+					_values[elem.identifier] = elem.value;
+				}
+				else
+				{
+					_values.Add(elem.identifier, elem.value);
+				}
 			}
 		}
+
+		public IEnumerator<KeyValuePair<IdentifierEntity, ValueEntity>> GetEnumerator() => _values.GetEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public int Count => _values.Count;
+
+		public bool ContainsKey(IdentifierEntity key) => _values.ContainsKey(key);
+
+		public bool TryGetValue(IdentifierEntity key, out ValueEntity value) => _values.TryGetValue(key, out value);
+
+		public ValueEntity this[IdentifierEntity key] => _values[key];
+
+		public IEnumerable<IdentifierEntity> Keys => _values.Keys;
+		public IEnumerable<ValueEntity> Values => _values.Values;
 	}
 }

@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 
 namespace JsDataParser.Entities
 {
@@ -43,7 +44,6 @@ namespace JsDataParser.Entities
 
 
 
-			var value = source.BuildString();
 			IdentityType = identityType;
 
 			switch (identityType)
@@ -57,7 +57,7 @@ namespace JsDataParser.Entities
 					break;
 
 				case IdentifierTypes.Real:
-					_realValue = double.Parse(source.BuildString());
+					_realValue = double.Parse(source.BuildString(), NumberStyles.Float);
 					break;
 
 				case IdentifierTypes.String:

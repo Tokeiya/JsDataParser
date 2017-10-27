@@ -137,6 +137,8 @@ namespace JsDataParserTest
 	}").AreSuccess(@"function () {
 	  return (this.HP / this.maxHP > .5);
 	}");
+
+			TinyFunction.Execute("function(){}").AreSuccess("function () {}");
 		}
 
 		[Fact]

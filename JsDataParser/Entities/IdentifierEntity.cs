@@ -156,37 +156,89 @@ namespace JsDataParser.Entities
 
 		public bool Equals(IdentifierEntity other)
 		{
-#warning Equals_Is_NotImpl
-			throw new NotImplementedException("Equals is not implemented");
+			if (other.IsNull()) return false;
+
+			if (other.IdentityType != IdentityType) return false;
+
+			switch (IdentityType)
+			{
+				case IdentifierTypes.Boolean:
+					return _boolValue == other._boolValue;
+
+				case IdentifierTypes.String:
+				case IdentifierTypes.Constant:
+					return _stringValue == other._stringValue;
+
+				case IdentifierTypes.Integer:
+					return _intValue == other._intValue;
+
+				case IdentifierTypes.Real:
+					return Math.Abs(_realValue - other._realValue) < double.Epsilon;
+
+				default:
+					Trace.Assert(false, $"{IdentityType} is unexpected.");
+					break;
+			}
+
+			Trace.Assert(false);
+			return false;
 		}
 
 		public override bool Equals(object obj)
 		{
-#warning Equals_Is_NotImpl
-			throw new NotImplementedException("Equals is not implemented");
+			var other = obj as IdentifierEntity;
+			if (other.IsNull()) return false;
+
+			return Equals(other);
 		}
 
 		public override int GetHashCode()
 		{
-#warning GetHashCode_Is_NotImpl
-			throw new NotImplementedException("GetHashCode is not implemented");
+			int tmp = 0;
 			unchecked
 			{
-				return ((Identity != null ? Identity.GetHashCode() : 0) * 397) ^ (int) IdentityType;
+				switch (IdentityType)
+				{
+					case IdentifierTypes.Boolean:
+						tmp = _boolValue.GetHashCode();
+						break;
+
+					case IdentifierTypes.Constant:
+					case IdentifierTypes.String:
+						tmp = _stringValue.GetHashCode();
+						break;
+
+					case IdentifierTypes.Integer:
+						tmp = _intValue.GetHashCode();
+						break;
+
+					case IdentifierTypes.Real:
+						tmp = _realValue.GetHashCode();
+						break;
+
+					default:
+						Trace.Assert(false);
+						break;
+				}
+
+				return tmp * 397 ^ (int) IdentityType;
 			}
 		}
 
 		public static bool operator ==(IdentifierEntity x, IdentifierEntity y)
 		{
-#warning ==_Is_NotImpl
-			throw new NotImplementedException("== is not implemented");
+			var xNull = x.IsNull();
+			var yNull = y.IsNull();
+
+			if (xNull && yNull) return true;
+			if (xNull || yNull) return false;
+
+			return x.Equals(y);
+
 		}
 
 		public static bool operator !=(IdentifierEntity x, IdentifierEntity y)
-		{
-#warning !=_Is_NotImpl
-			throw new NotImplementedException("!= is not implemented");
-		}
+			=> !(x == y);
 
 	}
 }

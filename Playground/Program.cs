@@ -89,7 +89,7 @@ namespace Playground
 
 		private static void GetValue()
 		{
-			using (var rdr = new StreamReader(".\\Samples\\HugeSample.txt"))
+			using (var rdr = new StreamReader(".\\Samples\\itemdata.txt"))
 			{
 				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
 					(stream, __) =>

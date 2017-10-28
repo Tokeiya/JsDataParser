@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Text;
 using JsDataParser.Entities;
+
 // ReSharper disable InconsistentNaming
 
 namespace JsDataParser
@@ -17,10 +17,14 @@ namespace JsDataParser
 			(ValueTypes[]) Enum.GetValues(typeof(ValueTypes));
 
 		public static bool Verify(this IdentifierTypes type)
-			=> _identifierTypeses.Any(x => x == type);
+		{
+			return _identifierTypeses.Any(x => x == type);
+		}
 
 		public static bool Verify(this ValueTypes type)
-			=> _valueTypes.Any(x => x == type);
+		{
+			return _valueTypes.Any(x => x == type);
+		}
 
 
 		public static string BuildString(this IEnumerable<char> source)
@@ -30,17 +34,22 @@ namespace JsDataParser
 			var bld = new StringBuilder();
 
 			foreach (var c in source)
-			{
 				bld.Append(c);
-			}
 
 			return bld.ToString();
 		}
 
 
 		//新型のNull/IsNull
-		public static bool IsNull<T>(this T value) => NullChecker<T>.IsNull(value);
-		public static bool IsNotNull<T>(this T value) => !IsNull(value);
+		public static bool IsNull<T>(this T value)
+		{
+			return NullChecker<T>.IsNull(value);
+		}
+
+		public static bool IsNotNull<T>(this T value)
+		{
+			return !IsNull(value);
+		}
 
 		private static class NullChecker<T>
 		{
@@ -51,17 +60,11 @@ namespace JsDataParser
 				var type = typeof(T);
 
 				if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-				{
 					_type = TypeType.Nullable;
-				}
 				else if (type.IsValueType)
-				{
 					_type = TypeType.Value;
-				}
 				else
-				{
 					_type = TypeType.Reference;
-				}
 			}
 
 			public static bool IsNull(T value)

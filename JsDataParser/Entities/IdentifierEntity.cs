@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 
 namespace JsDataParser.Entities
@@ -41,7 +40,6 @@ namespace JsDataParser.Entities
 		{
 			if (!identityType.Verify()) throw new ArgumentException($"{nameof(identityType)} is unexpected value.");
 			if (source == null) throw new ArgumentNullException(nameof(source));
-
 
 
 			IdentityType = identityType;

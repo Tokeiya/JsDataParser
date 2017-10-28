@@ -60,9 +60,7 @@ namespace JsDataParser.Parser
 			yield return first;
 
 			foreach (var c in folowing)
-			{
 				yield return c;
-			}
 		}
 
 		private static CharEnumerableParser BuildIdentifierName()
@@ -73,7 +71,6 @@ namespace JsDataParser.Parser
 				select Concat(first, following);
 
 			return tmp;
-
 		}
 
 

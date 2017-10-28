@@ -22,9 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Xml.Serialization;
 using JsDataParser.Entities;
 using Parseq;
 using Parseq.Combinators;
@@ -42,31 +40,8 @@ namespace JsDataParser.Parser
 		public static readonly Parser<char, ObjectEntity> LiteralObject;
 
 
-		private static IEnumerable<T> Concat<T>(IEnumerable<T> foward, T last)
-		{
-			foreach (var elem in foward)
-			{
-				yield return elem;
-			}
-			yield return last;
-		}
-
-		private static IEnumerable<T> Concat<T>(IEnumerable<T> foward, IOption<T> last)
-		{
-			foreach (var elem in foward)
-			{
-				yield return elem;
-			}
-
-			if (last.HasValue) yield return last.Value;
-
-		}
-
-
-
 		static ObjectParser()
 		{
-
 			var whiteSpace = WhiteSpace().Many0().Ignore();
 
 			var objectFixedPoint = new FixedPoint<char, ObjectEntity>("obj");
@@ -91,13 +66,13 @@ namespace JsDataParser.Parser
 			{
 				var foward =
 					from _ in whiteSpace
-					from value in (Parser<char,ValueEntity>)valueFixedPoint.Parse
+					from value in (Parser<char, ValueEntity>) valueFixedPoint.Parse
 					from __ in Combinator.Sequence(whiteSpace, Char(',').Ignore())
 					select value;
 
 				var last =
 					from _ in whiteSpace
-					from value in (Parser<char,ValueEntity>)valueFixedPoint.Parse
+					from value in (Parser<char, ValueEntity>) valueFixedPoint.Parse
 					from __ in whiteSpace
 					select value;
 
@@ -108,19 +83,18 @@ namespace JsDataParser.Parser
 					from fowards in foward.Many0()
 					from l in last
 					from ___ in Char(']')
-					select (IReadOnlyList<ValueEntity>)Concat(fowards, l).ToArray();
+					select (IReadOnlyList<ValueEntity>) Concat(fowards, l).ToArray();
 
 
 				var empty =
 					from _ in Char('[')
 					from __ in whiteSpace
 					from ___ in Char(']')
-					select (IReadOnlyList<ValueEntity>)Array.Empty<ValueEntity>();
+					select (IReadOnlyList<ValueEntity>) Array.Empty<ValueEntity>();
 
 				arrayFixedPoint.FixedParser = Combinator.Choice(tmp, empty);
 
 				ArrayLiteral = arrayFixedPoint.Parse;
-
 			}
 
 
@@ -136,7 +110,7 @@ namespace JsDataParser.Parser
 				);
 
 				var arrayValue = ArrayLiteral.Select(x => new ValueEntity(x));
-				var nestedObjectValue = ((Parser<char,ObjectEntity>)objectFixedPoint.Parse).Select(x => new ValueEntity(x));
+				var nestedObjectValue = ((Parser<char, ObjectEntity>) objectFixedPoint.Parse).Select(x => new ValueEntity(x));
 
 
 				valueFixedPoint.FixedParser = Combinator.Choice(
@@ -146,8 +120,6 @@ namespace JsDataParser.Parser
 				);
 
 				Value = valueFixedPoint.Parse;
-
-
 			}
 
 			//Property
@@ -187,15 +159,23 @@ namespace JsDataParser.Parser
 
 				objectFixedPoint.FixedParser = tmp;
 				LiteralObject = objectFixedPoint.Parse;
-
-
-			
-
 			}
-
-
 		}
 
 
+		private static IEnumerable<T> Concat<T>(IEnumerable<T> foward, T last)
+		{
+			foreach (var elem in foward)
+				yield return elem;
+			yield return last;
+		}
+
+		private static IEnumerable<T> Concat<T>(IEnumerable<T> foward, IOption<T> last)
+		{
+			foreach (var elem in foward)
+				yield return elem;
+
+			if (last.HasValue) yield return last.Value;
+		}
 	}
 }

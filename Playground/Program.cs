@@ -23,16 +23,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
-using Parseq.Combinators;
-using Playground.NaiveSample;
 
 namespace Playground
 {
@@ -41,9 +35,7 @@ namespace Playground
 		private static IEnumerable<ValueEntity> Concat(IEnumerable<ValueEntity> foward, ValueEntity last)
 		{
 			foreach (var elem in foward)
-			{
 				yield return elem;
-			}
 			yield return last;
 		}
 
@@ -68,7 +60,6 @@ namespace Playground
 
 		private static void Main()
 		{
-
 		}
 
 		private static void GetValue()

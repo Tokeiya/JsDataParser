@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using JsDataParser.Parser;
 
 namespace JsDataParser.Entities
 {
-
-
-
 	public class ValueEntity
 	{
-		private readonly ObjectEntity _nestedObject;
 		private readonly ValueEntity[] _array;
-		private readonly string _textValue;
-		private readonly int _integerValue;
-		private readonly double _realValue;
 		private readonly bool _boolValue;
+		private readonly int _integerValue;
+		private readonly ObjectEntity _nestedObject;
+		private readonly double _realValue;
+		private readonly string _textValue;
 
 
 		public ValueEntity(ObjectEntity nestedObject)
@@ -52,7 +47,6 @@ namespace JsDataParser.Entities
 
 				default:
 					throw new ArgumentException("unexpected value.", nameof(valueType));
-
 			}
 			ValueType = valueType;
 		}
@@ -116,7 +110,6 @@ namespace JsDataParser.Entities
 				if (ValueType != ValueTypes.String) throw new InvalidOperationException("This instance isn't string entity.");
 
 				return _textValue;
-
 			}
 		}
 
@@ -180,6 +173,5 @@ namespace JsDataParser.Entities
 		}
 
 		public dynamic Dynamic => Object;
-
 	}
 }

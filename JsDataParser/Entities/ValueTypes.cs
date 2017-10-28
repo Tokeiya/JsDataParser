@@ -1,5 +1,4 @@
-﻿
-namespace JsDataParser.Entities
+﻿namespace JsDataParser.Entities
 {
 	public enum ValueTypes
 	{

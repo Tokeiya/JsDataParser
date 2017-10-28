@@ -22,8 +22,6 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using JsDataParser.Entities;
 using Xunit;
 
@@ -36,7 +34,6 @@ namespace JsDataParserTest
 		{
 			Assert.Throws<ArgumentNullException>(() => new IdentifierEntity(null, IdentifierTypes.Boolean));
 			Assert.Throws<ArgumentException>(() => new IdentifierEntity("hello", 0));
-
 		}
 
 		[Fact]
@@ -55,25 +52,24 @@ namespace JsDataParserTest
 			var tmp = new IdentifierEntity("11", IdentifierTypes.Integer);
 
 
-			(target==tmp).IsTrue();
+			(target == tmp).IsTrue();
 			(target != tmp).IsFalse();
 
-			(target.Equals(tmp)).IsTrue();
-			(tmp.Equals(target)).IsTrue();
+			target.Equals(tmp).IsTrue();
+			tmp.Equals(target).IsTrue();
 
 			target.GetHashCode().Is(tmp.GetHashCode());
 
 			tmp = new IdentifierEntity("11", IdentifierTypes.Real);
 
-			(target==tmp).IsFalse();
-			(target!=tmp).IsTrue();
-			
+			(target == tmp).IsFalse();
+			(target != tmp).IsTrue();
+
 
 			target.Equals(tmp).IsFalse();
 			tmp.Equals(target).IsFalse();
 
 			target.Equals(null).IsFalse();
-
 		}
 
 		[Fact]

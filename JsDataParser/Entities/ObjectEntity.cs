@@ -24,14 +24,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
-using JsDataParser.Parser;
 
 namespace JsDataParser.Entities
 {
-	public class ObjectEntity:IReadOnlyDictionary<IdentifierEntity,ValueEntity>
+	public class ObjectEntity : IReadOnlyDictionary<IdentifierEntity, ValueEntity>
 	{
 		private readonly Dictionary<IdentifierEntity, ValueEntity> _values = new Dictionary<IdentifierEntity, ValueEntity>();
 
@@ -45,25 +41,33 @@ namespace JsDataParser.Entities
 				if (elem.identifier == null) throw new ArgumentException("Contains null identifier", nameof(properties));
 
 				if (_values.ContainsKey(elem.identifier))
-				{
 					_values[elem.identifier] = elem.value;
-				}
 				else
-				{
 					_values.Add(elem.identifier, elem.value);
-				}
 			}
 		}
 
-		public IEnumerator<KeyValuePair<IdentifierEntity, ValueEntity>> GetEnumerator() => _values.GetEnumerator();
+		public IEnumerator<KeyValuePair<IdentifierEntity, ValueEntity>> GetEnumerator()
+		{
+			return _values.GetEnumerator();
+		}
 
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
 
 		public int Count => _values.Count;
 
-		public bool ContainsKey(IdentifierEntity key) => _values.ContainsKey(key);
+		public bool ContainsKey(IdentifierEntity key)
+		{
+			return _values.ContainsKey(key);
+		}
 
-		public bool TryGetValue(IdentifierEntity key, out ValueEntity value) => _values.TryGetValue(key, out value);
+		public bool TryGetValue(IdentifierEntity key, out ValueEntity value)
+		{
+			return _values.TryGetValue(key, out value);
+		}
 
 		public ValueEntity this[IdentifierEntity key] => _values[key];
 

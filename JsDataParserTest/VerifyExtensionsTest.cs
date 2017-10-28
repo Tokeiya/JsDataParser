@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-using JsDataParser;
+﻿using JsDataParser;
 using JsDataParser.Entities;
-
+using Xunit;
 
 namespace JsDataParserTest
 {
-
 	public class VerifyExtensionsTest
 	{
 		[Fact]
 		public void ValueTypesTest()
 		{
-			Extensions.Verify((ValueTypes)0).IsFalse();
-
-
+			((ValueTypes) 0).Verify().IsFalse();
 		}
 	}
 }

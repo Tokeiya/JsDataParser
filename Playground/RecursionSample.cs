@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Parseq;
+using Parseq.Combinators;
 
 // ReSharper disable once CheckNamespace
 namespace Playground.NaiveSample
 {
-	using static Parseq.Combinators.Chars;
+	using static Chars;
 
 	internal class Entity
 	{
@@ -41,29 +41,8 @@ namespace Playground.NaiveSample
 		public IReadOnlyList<Entity> Nested => IsScalar ? throw new InvalidOperationException() : _nested;
 	}
 
-	class RecursionSample
+	internal class RecursionSample
 	{
-		private class FixedPoint<TToken, T>
-		{
-			private Parser<TToken, T> _fixedParser;
-
-			public Parser<TToken, T> FixedParser
-			{
-				set
-				{
-					if (_fixedParser != null) throw new InvalidOperationException("Parser is already registered.");
-					_fixedParser = value ?? throw new NullReferenceException();
-				}
-			}
-
-			public IReply<TToken, T> Parse(ITokenStream<TToken> stream)
-			{
-				if (_fixedParser == null) throw new InvalidOperationException("Parser isn't registered.");
-				return _fixedParser(stream);
-			}
-		}
-
-
 		public static void Sample()
 		{
 			//{}
@@ -130,6 +109,26 @@ namespace Playground.NaiveSample
 
 
 			Console.ReadLine();
+		}
+
+		private class FixedPoint<TToken, T>
+		{
+			private Parser<TToken, T> _fixedParser;
+
+			public Parser<TToken, T> FixedParser
+			{
+				set
+				{
+					if (_fixedParser != null) throw new InvalidOperationException("Parser is already registered.");
+					_fixedParser = value ?? throw new NullReferenceException();
+				}
+			}
+
+			public IReply<TToken, T> Parse(ITokenStream<TToken> stream)
+			{
+				if (_fixedParser == null) throw new InvalidOperationException("Parser isn't registered.");
+				return _fixedParser(stream);
+			}
 		}
 	}
 }

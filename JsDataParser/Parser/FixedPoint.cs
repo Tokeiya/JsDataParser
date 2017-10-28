@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Parseq;
 
 namespace JsDataParser.Parser
 {
 	internal class FixedPoint<TToken, T>
 	{
-		private Parser<TToken, T> _fixedParser;
 		public readonly string Name;
+		private Parser<TToken, T> _fixedParser;
 
 		public FixedPoint(string name)
 		{
@@ -33,9 +31,6 @@ namespace JsDataParser.Parser
 			var column = stream.Current.HasValue ? stream.Current.Value.Item1.Column : -1;
 
 			//Console.WriteLine($"{Name} is Called. Line:{line} Col:{column} Token:{stream.Current.Value.Item0}");
-			
-
-
 
 
 			return _fixedParser(stream);

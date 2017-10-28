@@ -27,10 +27,7 @@ namespace JsDataParserTest
 		{
 			actual.Case(
 				(_, __) => Assert.False(true),
-				(_, cap) =>
-				{
-					cap.SequenceEqual(expected).IsTrue();
-				});
+				(_, cap) => { cap.SequenceEqual(expected).IsTrue(); });
 		}
 
 		public static void AreFail(this IReply<char, IEnumerable<char>> actual)

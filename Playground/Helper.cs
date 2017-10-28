@@ -49,7 +49,7 @@ namespace Playground
 							$"Token:{stream.Current.Value.Item0}");
 					else
 						Console.WriteLine("Stream.Current don't have value.");
-				}, success);
+				}, proc);
 		}
 	}
 }

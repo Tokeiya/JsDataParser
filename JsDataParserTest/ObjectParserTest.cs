@@ -63,7 +63,7 @@ namespace JsDataParserTest
 
 			parser.Run(value.AsStream()).Case(
 				(stream, msg) => Assert.False(true, $"{msg}"),
-				(_, cap) =>
+				(stream, cap) =>
 				{
 					output.WriteLine($"ValueType:{cap.ValueType.ToString()} Object:{cap.Object.ToString()}\n");
 
@@ -111,7 +111,7 @@ namespace JsDataParserTest
 			Value.AreSuccess("'HE_LLO'", new ValueEntity("HE_LLO", ValueTypes.String),_output);
 			Value.AreSuccess("true", new ValueEntity("true", ValueTypes.Boolean), _output);
 
-
+			Value.AreSuccess("Av98Ingram", new ValueEntity("Av98Ingram", ValueTypes.ConstantName), _output);
 
 		}
 

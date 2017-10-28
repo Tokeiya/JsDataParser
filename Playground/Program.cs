@@ -22,23 +22,75 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
-using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
-using Parseq.Combinators;
 
 namespace Playground
 {
+	class DynamicSample : DynamicObject
+	{
+		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+		{
+
+			return base.TryInvokeMember(binder, args, out result);
+		}
+
+		public override bool TryConvert(ConvertBinder binder, out object result)
+		{
+			if (binder.Type == typeof(double))
+			{
+				result = 42.195d;
+				return true;
+			}
+
+			if (binder.Type == typeof(int) && binder.Explicit)
+			{
+				result = 42;
+				return true;
+			}
+
+			else if (binder.Type == typeof(float) && binder.Explicit)
+			{
+				result = (float) 42.195;
+				return true;
+			}
+
+			if (binder.Type == typeof(IEnumerable))
+			{
+				result = Enumerable.Range(0, 100);
+				return true;
+			}
+
+			result = default;
+			return false;
+
+		}
+
+		public IEnumerator<int> GetEnumerator()
+		{
+			return Enumerable.Range(0, 10).GetEnumerator();
+		}
+
+	}
+
 	internal class Program
 	{
-
-
 		private static void Main()
 		{
-			GetValue();
+
+
+			dynamic d=new DynamicSample();
+
+			foreach (int i in d)
+			{
+				Console.WriteLine(i);
+			}
+
 		}
 
 		private static void GetValue()

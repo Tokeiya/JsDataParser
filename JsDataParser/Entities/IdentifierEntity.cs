@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 
 namespace JsDataParser.Entities
 {
@@ -35,6 +36,31 @@ namespace JsDataParser.Entities
 		private readonly double _realValue;
 		private readonly string _stringValue;
 
+
+		public IdentifierEntity(int integer)
+		{
+			_intValue = integer;
+			IdentityType = IdentifierTypes.Integer;
+		}
+
+		public IdentifierEntity(double real)
+		{
+			_realValue = real;
+			IdentityType = IdentifierTypes.Real;
+		}
+
+		public IdentifierEntity(bool boolean)
+		{
+			_boolValue = boolean;
+			IdentityType = IdentifierTypes.Boolean;
+		}
+
+		public IdentifierEntity(string value, bool isConstant)
+		{
+			_stringValue = value ?? throw new ArgumentNullException(nameof(value));
+
+			IdentityType = isConstant ? IdentifierTypes.Constant : IdentifierTypes.String;
+		}
 
 		public IdentifierEntity(IEnumerable<char> source, IdentifierTypes identityType)
 		{

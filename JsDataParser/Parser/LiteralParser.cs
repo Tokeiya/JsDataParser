@@ -88,7 +88,7 @@ namespace JsDataParser.Parser
 				from c in Chars.Any()
 				select c).Many0();
 
-			return from _ in Combinator.Sequence(Chars.WhiteSpace().Many0(), Chars.Sequence("//"))
+			return from _ in Chars.Sequence("//")
 				from cmnt in text
 				from __ in nl
 				select cmnt;

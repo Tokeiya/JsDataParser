@@ -103,6 +103,16 @@ namespace JsDataParser.Entities
 			}
 		}
 
+		public bool Boolean
+		{
+			get
+			{
+				if (ValueType != ValueTypes.Boolean) throw new InvalidOperationException("This instance isn't boolean entity.");
+				return _boolValue;
+			}
+		}
+
+
 		public string String
 		{
 			get

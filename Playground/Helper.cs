@@ -26,6 +26,7 @@ namespace Playground
 		{
 			void proc(ITokenStream<char> stream, T result)
 			{
+				Console.WriteLine("Success");
 				if (stream.Current.HasValue)
 					Console.WriteLine(
 						$"Line:{stream.Current.Value.Item1.Line} " +
@@ -42,6 +43,7 @@ namespace Playground
 			parser.Run(source.AsStream())
 				.Case((stream, _) =>
 				{
+					Console.WriteLine("Fail");
 					if (stream.Current.HasValue)
 						Console.WriteLine(
 							$"Line:{stream.Current.Value.Item1.Line} " +

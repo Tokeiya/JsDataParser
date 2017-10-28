@@ -42,7 +42,11 @@ namespace JsDataParser.Parser
 
 		static ObjectParser()
 		{
-			var whiteSpace = WhiteSpace().Many0().Ignore();
+			var ignore = Combinator.Choice(
+				Chars.WhiteSpace().Ignore(),
+				LiteralParser.Comment.Ignore()
+			).Many0().Ignore();
+
 
 			var objectFixedPoint = new FixedPoint<char, ObjectEntity>("obj");
 
@@ -65,21 +69,21 @@ namespace JsDataParser.Parser
 			//Array
 			{
 				var foward =
-					from _ in whiteSpace
+					from _ in ignore
 					from value in (Parser<char, ValueEntity>) valueFixedPoint.Parse
-					from __ in Combinator.Sequence(whiteSpace, Char(',').Ignore())
+					from __ in Combinator.Sequence(ignore, Char(',').Ignore())
 					select value;
 
 				var last =
-					from _ in whiteSpace
+					from _ in ignore
 					from value in (Parser<char, ValueEntity>) valueFixedPoint.Parse
-					from __ in whiteSpace
+					from __ in ignore
 					select value;
 
 
 				var tmp =
 					from _ in Char('[')
-					from __ in whiteSpace
+					from __ in ignore
 					from fowards in foward.Many0()
 					from l in last
 					from ___ in Char(']')
@@ -88,7 +92,7 @@ namespace JsDataParser.Parser
 
 				var empty =
 					from _ in Char('[')
-					from __ in whiteSpace
+					from __ in ignore
 					from ___ in Char(']')
 					select (IReadOnlyList<ValueEntity>) Array.Empty<ValueEntity>();
 
@@ -126,7 +130,7 @@ namespace JsDataParser.Parser
 			{
 				var tmp =
 					from identifier in Identifier
-					from _ in Combinator.Sequence(whiteSpace, Char(':').Ignore(), whiteSpace)
+					from _ in Combinator.Sequence(ignore, Char(':').Ignore(), ignore)
 					from value in Value
 					select (identifier, value);
 
@@ -136,13 +140,13 @@ namespace JsDataParser.Parser
 			//LiteralObject
 			{
 				var fwdProp =
-					from _ in whiteSpace
+					from _ in ignore
 					from prop in Property
-					from __ in Combinator.Sequence(whiteSpace.Ignore(), Char(',').Ignore())
+					from __ in Combinator.Sequence(ignore.Ignore(), Char(',').Ignore())
 					select prop;
 
 				var lstProp =
-					from _ in whiteSpace
+					from _ in ignore
 					from prop in Property.Optional()
 					select prop;
 
@@ -152,9 +156,9 @@ namespace JsDataParser.Parser
 					select Concat(props, last);
 
 
-				var tmp = from _ in Combinator.Sequence(Char('{').Ignore(), whiteSpace)
+				var tmp = from _ in Combinator.Sequence(Char('{').Ignore(), ignore)
 					from props in contents
-					from __ in Combinator.Sequence(whiteSpace, Char('}').Ignore())
+					from __ in Combinator.Sequence(ignore, Char('}').Ignore())
 					select new ObjectEntity(props);
 
 				objectFixedPoint.FixedParser = tmp;

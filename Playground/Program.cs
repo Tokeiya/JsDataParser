@@ -28,6 +28,7 @@ using System.Linq;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
+using Parseq.Combinators;
 
 namespace Playground
 {
@@ -37,17 +38,12 @@ namespace Playground
 
 		private static void Main()
 		{
-			var array = Enumerable.Range(0, 100);
-
-			foreach (var i in array)
-			{
-				
-			}
+			GetValue();
 		}
 
 		private static void GetValue()
 		{
-			using (var rdr = new StreamReader(".\\Samples\\itemdata.txt"))
+			using (var rdr = new StreamReader(".\\Samples\\hugesample.txt"))
 			{
 				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
 					(stream, __) =>

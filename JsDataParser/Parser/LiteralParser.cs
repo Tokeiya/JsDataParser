@@ -53,8 +53,28 @@ namespace JsDataParser.Parser
 
 		public static readonly CharEnumerableParser Comment = BuildComment();
 
-		public static readonly CharEnumerableParser IdentifierName =
-			Combinator.Choice(Chars.Letter(), Chars.Char('_')).Many1();
+		public static readonly CharEnumerableParser IdentifierName = BuildIdentifierName();
+
+		private static IEnumerable<char> Concat(char first, IEnumerable<char> folowing)
+		{
+			yield return first;
+
+			foreach (var c in folowing)
+			{
+				yield return c;
+			}
+		}
+
+		private static CharEnumerableParser BuildIdentifierName()
+		{
+			var tmp =
+				from first in Combinator.Choice(Chars.Letter(), Chars.Char('_'))
+				from following in Combinator.Choice(Chars.Letter(), Chars.Char('_'), Chars.Digit()).Many0()
+				select Concat(first, following);
+
+			return tmp;
+
+		}
 
 
 		private static CharEnumerableParser BuildComment()

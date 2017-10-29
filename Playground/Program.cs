@@ -27,76 +27,41 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using JsDataParser.Dynamic;
+using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
 
 namespace Playground
 {
-	class DynamicSample : DynamicObject
-	{
-		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
-		{
-
-			return base.TryInvokeMember(binder, args, out result);
-		}
-
-		public override bool TryConvert(ConvertBinder binder, out object result)
-		{
-			if (binder.Type == typeof(double))
-			{
-				result = 42.195d;
-				return true;
-			}
-
-			if (binder.Type == typeof(int) && binder.Explicit)
-			{
-				result = 42;
-				return true;
-			}
-
-			else if (binder.Type == typeof(float) && binder.Explicit)
-			{
-				result = (float) 42.195;
-				return true;
-			}
-
-			if (binder.Type == typeof(IEnumerable))
-			{
-				result = Enumerable.Range(0, 100);
-				return true;
-			}
-
-			result = default;
-			return false;
-
-		}
-
-		public IEnumerator<int> GetEnumerator()
-		{
-			return Enumerable.Range(0, 10).GetEnumerator();
-		}
-
-	}
-
 	internal class Program
 	{
 		private static void Main()
 		{
+			var obj = GetValue();
 
+			dynamic d = new DynamicLiteralObject(obj);
+			d = d[35];
+			string s = d.name;
 
-			dynamic d=new DynamicSample();
+			IReadOnlyList<dynamic> ary = d.Array;
 
-			foreach (int i in d)
+			foreach (var i in ary)
 			{
 				Console.WriteLine(i);
 			}
 
+		Console.WriteLine(s);
+
+			Console.ReadLine();
 		}
 
-		private static void GetValue()
+		private static ObjectEntity GetValue()
 		{
-			using (var rdr = new StreamReader(".\\Samples\\hugesample.txt"))
+			ObjectEntity ret=default;
+			using (var rdr = new StreamReader(".\\Samples\\sample.txt"))
 			{
+
 				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
 					(stream, __) =>
 					{
@@ -110,10 +75,14 @@ namespace Playground
 							Console.WriteLine("empty");
 						}
 					},
-					(_, __) => { Console.WriteLine("success"); });
+					(_, cap) =>
+					{
+						ret = cap;
+						Console.WriteLine("success");
+					});
 			}
 
-			Console.ReadLine();
+			return ret;
 		}
 	}
 }

@@ -57,6 +57,13 @@ namespace JsDataParser.Dynamic
 		public override bool TryConvert(ConvertBinder binder, out object result)
 		{
 			//Strict
+			if (binder.Type == typeof(object))
+			{
+				result = _value.Object;
+				return true;
+			}
+
+
 			if (binder.Type == typeof(int) && _value.ValueType == ValueTypes.Integer)
 			{
 				result = _value.Integer;
@@ -84,5 +91,7 @@ namespace JsDataParser.Dynamic
 			result = default;
 			return false;
 		}
+
+		public override string ToString() => _value.Object.ToString();
 	}
 }

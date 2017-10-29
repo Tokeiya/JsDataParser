@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Text;
+using System.Xml.XPath;
 using JsDataParser.Entities;
 
 namespace JsDataParser.Dynamic
@@ -43,7 +44,7 @@ namespace JsDataParser.Dynamic
 				return true;
 			}
 
-			if (binder.Name.ToLower()=="constant"&&_value.ValueType== ValueTypes.ConstantName)
+			if (binder.Name.ToLower()=="identity"&&_value.ValueType== ValueTypes.ConstantName)
 			{
 				result = _value.Constant;
 				return true;
@@ -87,6 +88,21 @@ namespace JsDataParser.Dynamic
 				result = _value.String;
 				return true;
 			}
+
+			//Implicit
+			if (binder.Type == typeof(double) && _value.ValueType == ValueTypes.Integer)
+			{
+				result = (double) _value.Integer;
+				return true;
+			}
+
+			if (binder.Type == typeof(int) && _value.ValueType == ValueTypes.Real)
+			{
+				result = (int) _value.Real;
+				return true;
+			}
+
+
 
 			result = default;
 			return false;

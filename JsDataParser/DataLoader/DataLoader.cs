@@ -20,84 +20,65 @@
  * 
  */
 
-
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Resources;
-using JsDataParser.DataLoader;
+using System.Text;
 using JsDataParser.Dynamic;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
 
-namespace Playground
+namespace JsDataParser.DataLoader
 {
-	internal class Program
+	public static class DataLoader
 	{
-		private static void Main()
+		public static ObjectEntity LoadRaw(string path)
 		{
-			var sampl = @"{
-				35: {
-					nameA: 'Type 3 Shell',
-					nameJP: '三式弾',
-					added: '2013-04-17',
-					type: TYPESHELL,
-					btype: B_TYPESHELL,
-					atype: A_TYPESHELL,
-					AA: 5,
-					'piyo':10.5,
-					piyo:21.55,
-					Array:[0, 2.0, 'aa',{Hoge:'hello',Piyo:'world'}],
-					10:20,
-					F:function(){},
-				},
-			}";
+			if (path == null) throw new ArgumentNullException(nameof(path));
 
-
-			var root = DataLoader.LoadAsDynamic(".\\Samples\\itemdata.txt");
-
-
-			int s = root[1].Hoge;
-
-			Console.WriteLine(s);
-
-
-
-
-
-
-
-
-			Console.ReadLine();
+			using (var rdr = new StreamReader(path))
+			{
+				return LoadRaw(rdr);
+			}
 		}
 
-		private static ObjectEntity GetValue()
+		public static ObjectEntity LoadRaw(TextReader reader)
 		{
-			ObjectEntity ret=default;
-			using (var rdr = new StreamReader(".\\Samples\\sample.txt"))
-			{
+			if (reader == null) throw new ArgumentNullException(nameof(reader));
 
-				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
-					(stream, __) =>
+			ObjectEntity ret = null;
+
+			ObjectParser.LiteralObject.Run(reader.AsStream())
+				.Case(
+					(stream, message) =>
 					{
-						try
-						{
-							Console.WriteLine(
-								$"Line:{stream.Current.Value.Item1.Line} Column:{stream.Current.Value.Item1.Column} Token:{stream.Current.Value.Item0}");
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("empty");
-						}
-					},
-					(_, cap) =>
-					{
-						ret = cap;
-						Console.WriteLine("success");
-					});
-			}
+						var lineNum = stream.Current.HasValue ? stream.Current.Value.Item1.Line : -1;
+						var col = stream.Current.HasValue ? stream.Current.Value.Item1.Column : -1;
+						throw new LoadException(lineNum, col, message);
+					}
+					,
+					(_, cap) => ret = cap
+				);
 
 			return ret;
+
 		}
+
+		public static dynamic LoadAsDynamic(string path)
+		{
+			using (var rdr = new StreamReader(path))
+			{
+				return LoadAsDynamic(rdr);
+			}
+		}
+
+		public static dynamic LoadAsDynamic(TextReader reader)
+		{
+			var obj = LoadRaw(reader);
+
+			return new DynamicLiteralObject(obj);
+		}
+
 	}
 }

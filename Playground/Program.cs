@@ -41,7 +41,7 @@ namespace Playground
 			var obj = GetValue();
 
 			dynamic d = new DynamicLiteralObject(obj);
-			d = d[35];
+			d = d[0];
 			string s = d.name;
 
 			IReadOnlyList<dynamic> ary = d.Array;

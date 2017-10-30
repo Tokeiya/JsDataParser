@@ -80,5 +80,13 @@ namespace JsDataParser.DataLoader
 			return new DynamicLiteralObject(obj);
 		}
 
+
+		public static IEnumerable<T> Load<T>(string path)
+		{
+#warning Load_Is_NotImpl
+			throw new NotImplementedException("Load is not implemented");
+
+		}
+
 	}
 }

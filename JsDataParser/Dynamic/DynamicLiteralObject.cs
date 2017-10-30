@@ -32,29 +32,25 @@ namespace JsDataParser.Dynamic
 		private readonly ObjectEntity _entity;
 
 		public DynamicLiteralObject(ObjectEntity entity)
-			=> _entity = entity ?? throw new ArgumentNullException(nameof(entity));
+		{
+			_entity = entity ?? throw new ArgumentNullException(nameof(entity));
+		}
 
 
 		private IReadOnlyList<dynamic> BuildArray(IReadOnlyList<ValueEntity> source)
 		{
 			var ret = new dynamic[source.Count];
 
-			for (int i = 0; i < ret.Length; i++)
+			for (var i = 0; i < ret.Length; i++)
 			{
 				var piv = source[i];
 
 				if (piv.ValueType == ValueTypes.Array)
-				{
 					ret[i] = BuildArray(piv.Array);
-				}
 				else if (piv.ValueType == ValueTypes.Object)
-				{
-					ret[i]=new DynamicLiteralObject(piv.NestedObject);
-				}
+					ret[i] = new DynamicLiteralObject(piv.NestedObject);
 				else
-				{
 					ret[i] = new DynamicValueObject(piv);
-				}
 			}
 
 			return ret;
@@ -93,8 +89,7 @@ namespace JsDataParser.Dynamic
 
 			object tmp;
 
-			if(_entity.TryGetValue(entity,out var ret))
-			{
+			if (_entity.TryGetValue(entity, out var ret))
 				switch (ret.ValueType)
 				{
 					case ValueTypes.Array:
@@ -102,18 +97,15 @@ namespace JsDataParser.Dynamic
 						break;
 
 					case ValueTypes.Object:
-						tmp=new DynamicLiteralObject(ret.NestedObject);
+						tmp = new DynamicLiteralObject(ret.NestedObject);
 						break;
 
 					default:
 						tmp = new DynamicValueObject(ret);
 						break;
 				}
-			}
 			else
-			{
 				tmp = default;
-			}
 
 
 			result = tmp;
@@ -125,30 +117,17 @@ namespace JsDataParser.Dynamic
 			object tmp;
 
 			if (_entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret))
-			{
 				if (ret.ValueType == ValueTypes.Array)
-				{
 					tmp = BuildArray(ret.Array);
-				}
 				else if (ret.ValueType == ValueTypes.Object)
-				{
 					tmp = new DynamicLiteralObject(ret.NestedObject);
-				}
 				else
-				{
 					tmp = new DynamicValueObject(ret);
-				}
-			}
 			else
-			{
 				tmp = default;
-			}
 
 			result = tmp;
 			return true;
 		}
 	}
-
-
-
 }

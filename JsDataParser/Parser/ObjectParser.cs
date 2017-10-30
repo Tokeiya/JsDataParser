@@ -43,7 +43,7 @@ namespace JsDataParser.Parser
 		static ObjectParser()
 		{
 			var ignore = Combinator.Choice(
-				Chars.WhiteSpace().Ignore(),
+				WhiteSpace().Ignore(),
 				LiteralParser.Comment.Ignore()
 			).Many0().Ignore();
 

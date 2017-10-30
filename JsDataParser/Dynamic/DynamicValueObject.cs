@@ -21,38 +21,34 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Text;
-using System.Xml.XPath;
 using JsDataParser.Entities;
 
 namespace JsDataParser.Dynamic
 {
-	internal class DynamicValueObject:DynamicObject
+	internal class DynamicValueObject : DynamicObject
 	{
 		private readonly ValueEntity _value;
 
 		public DynamicValueObject(ValueEntity value)
-			=> _value = value ?? throw new ArgumentNullException(nameof(value));
+		{
+			_value = value ?? throw new ArgumentNullException(nameof(value));
+		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			if (binder.Name.ToLower() == "function"&&_value.ValueType== ValueTypes.Function)
+			if (binder.Name.ToLower() == "function" && _value.ValueType == ValueTypes.Function)
 			{
 				result = _value.Function;
 				return true;
 			}
 
-			if (binder.Name.ToLower()=="identity"&&_value.ValueType== ValueTypes.ConstantName)
+			if (binder.Name.ToLower() == "identity" && _value.ValueType == ValueTypes.ConstantName)
 			{
 				result = _value.Constant;
 				return true;
 			}
-			else
-			{
-				throw new InvalidOperationException();
-			}
+			throw new InvalidOperationException();
 		}
 
 		public override bool TryConvert(ConvertBinder binder, out object result)
@@ -103,11 +99,13 @@ namespace JsDataParser.Dynamic
 			}
 
 
-
 			result = default;
 			return false;
 		}
 
-		public override string ToString() => _value.Object.ToString();
+		public override string ToString()
+		{
+			return _value.Object.ToString();
+		}
 	}
 }

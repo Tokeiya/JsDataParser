@@ -27,11 +27,11 @@ using System.Collections.Generic;
 
 namespace JsDataParser.Entities
 {
-	public class ObjectEntity : IReadOnlyDictionary<IdentifierEntity, ValueEntity>
+	public class ObjectLiteralEntity : IReadOnlyDictionary<IdentifierEntity, ValueEntity>
 	{
 		private readonly Dictionary<IdentifierEntity, ValueEntity> _values = new Dictionary<IdentifierEntity, ValueEntity>();
 
-		public ObjectEntity(IEnumerable<(IdentifierEntity identifier, ValueEntity value)> properties)
+		public ObjectLiteralEntity(IEnumerable<(IdentifierEntity identifier, ValueEntity value)> properties)
 		{
 			if (properties == null) throw new ArgumentNullException(nameof(properties));
 

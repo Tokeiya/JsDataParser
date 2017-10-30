@@ -16,15 +16,17 @@ namespace JsDataParser
 		private static readonly ValueTypes[] _valueTypes =
 			(ValueTypes[]) Enum.GetValues(typeof(ValueTypes));
 
+		private static readonly DynamicTypes[] _dynamicTypes=
+			(DynamicTypes[])Enum.GetValues(typeof(DynamicTypes));
+
 		public static bool Verify(this IdentifierTypes type)
-		{
-			return _identifierTypeses.Any(x => x == type);
-		}
+			=>_identifierTypeses.Any(x => x == type);
 
 		public static bool Verify(this ValueTypes type)
-		{
-			return _valueTypes.Any(x => x == type);
-		}
+			=>_valueTypes.Any(x => x == type);
+
+		public static bool Verify(this DynamicTypes type)
+			=> _dynamicTypes.Any(x => x == type);
 
 
 		public static string BuildString(this IEnumerable<char> source)

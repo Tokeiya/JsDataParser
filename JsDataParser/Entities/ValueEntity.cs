@@ -8,12 +8,12 @@ namespace JsDataParser.Entities
 		private readonly ValueEntity[] _array;
 		private readonly bool _boolValue;
 		private readonly int _integerValue;
-		private readonly ObjectEntity _nestedObject;
+		private readonly ObjectLiteralEntity _nestedObject;
 		private readonly double _realValue;
 		private readonly string _textValue;
 
 
-		public ValueEntity(ObjectEntity nestedObject)
+		public ValueEntity(ObjectLiteralEntity nestedObject)
 		{
 			_nestedObject = nestedObject ?? throw new ArgumentNullException(nameof(nestedObject));
 			ValueType = ValueTypes.Object;
@@ -171,7 +171,7 @@ namespace JsDataParser.Entities
 			}
 		}
 
-		public ObjectEntity NestedObject
+		public ObjectLiteralEntity NestedObject
 		{
 			get
 			{

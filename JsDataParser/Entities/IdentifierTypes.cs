@@ -29,6 +29,6 @@ namespace JsDataParser.Entities
 		Integer,
 		Real,
 		Boolean,
-		Constant
+		Identity
 	}
 }

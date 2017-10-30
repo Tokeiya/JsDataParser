@@ -25,7 +25,6 @@ using System;
 using System.IO;
 using System.Resources;
 using JsDataParser.DataLoader;
-using JsDataParser.Dynamic;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
@@ -71,9 +70,9 @@ namespace Playground
 			Console.ReadLine();
 		}
 
-		private static ObjectEntity GetValue()
+		private static ObjectLiteralEntity GetValue()
 		{
-			ObjectEntity ret=default;
+			ObjectLiteralEntity ret=default;
 			using (var rdr = new StreamReader(".\\Samples\\sample.txt"))
 			{
 

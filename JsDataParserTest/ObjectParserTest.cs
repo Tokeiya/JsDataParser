@@ -132,7 +132,7 @@ namespace JsDataParserTest
 			Identifier.AreSuccess("false", new IdentifierEntity("false", IdentifierTypes.Boolean));
 
 			Identifier.AreSuccess("'hello'", new IdentifierEntity("hello", IdentifierTypes.String));
-			Identifier.AreSuccess("CONST", new IdentifierEntity("CONST", IdentifierTypes.Constant));
+			Identifier.AreSuccess("CONST", new IdentifierEntity("CONST", IdentifierTypes.Identity));
 			Identifier.AreSuccess("11.:", new IdentifierEntity("11", IdentifierTypes.Real));
 		}
 

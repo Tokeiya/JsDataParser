@@ -25,13 +25,13 @@ using System.Collections.Generic;
 using System.Dynamic;
 using JsDataParser.Entities;
 
-namespace JsDataParser.Dynamic
+namespace JsDataParser.Entities
 {
-	internal class DynamicLiteralObject : DynamicObject
+	internal class DynamicLiteralObjectEntity : DynamicObject
 	{
-		private readonly ObjectEntity _entity;
+		private readonly ObjectLiteralEntity _entity;
 
-		public DynamicLiteralObject(ObjectEntity entity)
+		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity)
 			=> _entity = entity ?? throw new ArgumentNullException(nameof(entity));
 
 
@@ -49,11 +49,11 @@ namespace JsDataParser.Dynamic
 				}
 				else if (piv.ValueType == ValueTypes.Object)
 				{
-					ret[i]=new DynamicLiteralObject(piv.NestedObject);
+					ret[i]=new DynamicLiteralObjectEntity(piv.NestedObject);
 				}
 				else
 				{
-					ret[i] = new DynamicValueObject(piv);
+					ret[i] = new DynamicValueEntity(piv);
 				}
 			}
 
@@ -102,11 +102,11 @@ namespace JsDataParser.Dynamic
 						break;
 
 					case ValueTypes.Object:
-						tmp=new DynamicLiteralObject(ret.NestedObject);
+						tmp=new DynamicLiteralObjectEntity(ret.NestedObject);
 						break;
 
 					default:
-						tmp = new DynamicValueObject(ret);
+						tmp = new DynamicValueEntity(ret);
 						break;
 				}
 			}
@@ -132,11 +132,11 @@ namespace JsDataParser.Dynamic
 				}
 				else if (ret.ValueType == ValueTypes.Object)
 				{
-					tmp = new DynamicLiteralObject(ret.NestedObject);
+					tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
 				}
 				else
 				{
-					tmp = new DynamicValueObject(ret);
+					tmp = new DynamicValueEntity(ret);
 				}
 			}
 			else

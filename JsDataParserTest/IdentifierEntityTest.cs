@@ -76,7 +76,7 @@ namespace JsDataParserTest
 		public void StringValue()
 		{
 			var target = new IdentifierEntity("Hoge", IdentifierTypes.String);
-			var constant = new IdentifierEntity("Hoge", IdentifierTypes.Constant);
+			var constant = new IdentifierEntity("Hoge", IdentifierTypes.Identity);
 
 
 			target.Equals(constant).IsFalse();

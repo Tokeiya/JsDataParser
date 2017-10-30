@@ -59,7 +59,7 @@ namespace JsDataParser.Entities
 		{
 			_stringValue = value ?? throw new ArgumentNullException(nameof(value));
 
-			IdentityType = isConstant ? IdentifierTypes.Constant : IdentifierTypes.String;
+			IdentityType = isConstant ? IdentifierTypes.Identity : IdentifierTypes.String;
 		}
 
 		public IdentifierEntity(IEnumerable<char> source, IdentifierTypes identityType)
@@ -85,7 +85,7 @@ namespace JsDataParser.Entities
 					break;
 
 				case IdentifierTypes.String:
-				case IdentifierTypes.Constant:
+				case IdentifierTypes.Identity:
 					_stringValue = source.BuildString();
 					break;
 
@@ -143,7 +143,7 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-				if (IdentityType != IdentifierTypes.Constant)
+				if (IdentityType != IdentifierTypes.Identity)
 					throw new InvalidOperationException("This instance isn't Constant identity.");
 
 				return _stringValue;
@@ -158,7 +158,7 @@ namespace JsDataParser.Entities
 			{
 				switch (IdentityType)
 				{
-					case IdentifierTypes.Constant:
+					case IdentifierTypes.Identity:
 					case IdentifierTypes.String:
 						return _stringValue;
 
@@ -196,7 +196,7 @@ namespace JsDataParser.Entities
 					return _boolValue == other._boolValue;
 
 				case IdentifierTypes.String:
-				case IdentifierTypes.Constant:
+				case IdentifierTypes.Identity:
 					return _stringValue == other._stringValue;
 
 				case IdentifierTypes.Integer:
@@ -233,7 +233,7 @@ namespace JsDataParser.Entities
 						tmp = _boolValue.GetHashCode();
 						break;
 
-					case IdentifierTypes.Constant:
+					case IdentifierTypes.Identity:
 					case IdentifierTypes.String:
 						tmp = _stringValue.GetHashCode();
 						break;

@@ -27,13 +27,13 @@ using System.Text;
 using System.Xml.XPath;
 using JsDataParser.Entities;
 
-namespace JsDataParser.Dynamic
+namespace JsDataParser.Entities
 {
-	internal class DynamicValueObject:DynamicObject
+	internal class DynamicValueEntity:DynamicObject
 	{
 		private readonly ValueEntity _value;
 
-		public DynamicValueObject(ValueEntity value)
+		public DynamicValueEntity(ValueEntity value)
 			=> _value = value ?? throw new ArgumentNullException(nameof(value));
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)

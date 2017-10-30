@@ -43,7 +43,7 @@ namespace JsDataParser.Parser
 		static ObjectParser()
 		{
 			var ignore = Combinator.Choice(
-				Chars.WhiteSpace().Ignore(),
+				WhiteSpace().Ignore(),
 				LiteralParser.Comment.Ignore()
 			).Many0().Ignore();
 
@@ -114,7 +114,8 @@ namespace JsDataParser.Parser
 				);
 
 				var arrayValue = ArrayLiteral.Select(x => new ValueEntity(x));
-				var nestedObjectValue = ((Parser<char, ObjectLiteralEntity>) objectFixedPoint.Parse).Select(x => new ValueEntity(x));
+				var nestedObjectValue =
+					((Parser<char, ObjectLiteralEntity>) objectFixedPoint.Parse).Select(x => new ValueEntity(x));
 
 
 				valueFixedPoint.FixedParser = Combinator.Choice(

@@ -23,7 +23,6 @@
 
 using System;
 using System.IO;
-using System.Resources;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
@@ -61,21 +60,14 @@ namespace Playground
 			Console.WriteLine(s);
 
 
-
-
-
-
-
-
 			Console.ReadLine();
 		}
 
 		private static ObjectLiteralEntity GetValue()
 		{
-			ObjectLiteralEntity ret=default;
+			ObjectLiteralEntity ret = default;
 			using (var rdr = new StreamReader(".\\Samples\\sample.txt"))
 			{
-
 				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
 					(stream, __) =>
 					{

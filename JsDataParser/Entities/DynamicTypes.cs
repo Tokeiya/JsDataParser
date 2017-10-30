@@ -23,9 +23,9 @@
 
 namespace JsDataParser.Entities
 {
-    public enum DynamicTypes
-    {
-		Object=1,
+	public enum DynamicTypes
+	{
+		Object = 1,
 		Array,
 		Integer,
 		Real,
@@ -33,5 +33,5 @@ namespace JsDataParser.Entities
 		Function,
 		Identity,
 		Boolean
-    }
+	}
 }

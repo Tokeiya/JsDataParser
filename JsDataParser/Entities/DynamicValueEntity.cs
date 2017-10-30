@@ -21,21 +21,24 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Text;
-using System.Xml.XPath;
-using JsDataParser.Entities;
 
 namespace JsDataParser.Entities
 {
-	internal class DynamicValueEntity: DynamicEntity
+	internal class DynamicValueEntity : DynamicEntity
 	{
+		private readonly ValueEntity _value;
+
+		public DynamicValueEntity(ValueEntity value) : base(GetType(value))
+		{
+			_value = value ?? throw new ArgumentNullException(nameof(value));
+		}
+
 		private static DynamicTypes GetType(ValueEntity value)
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
 
-			switch(value.ValueType)
+			switch (value.ValueType)
 			{
 				case ValueTypes.Array:
 					return DynamicTypes.Array;
@@ -66,36 +69,36 @@ namespace JsDataParser.Entities
 			}
 		}
 
-		private readonly ValueEntity _value;
-
-		public DynamicValueEntity(ValueEntity value):base(GetType(value))
-			=> _value = value ?? throw new ArgumentNullException(nameof(value));
-
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			if (binder.Name.ToLower() == "function"&&_value.ValueType== ValueTypes.Function)
+			if (binder.Name.ToLower() == "function" && _value.ValueType == ValueTypes.Function)
 			{
 				result = _value.Function;
 				return true;
 			}
 
-			if (binder.Name.ToLower()=="identity"&&_value.ValueType== ValueTypes.Identity)
+			if (binder.Name.ToLower() == "identity" && _value.ValueType == ValueTypes.Identity)
 			{
 				result = _value.Constant;
 				return true;
 			}
-			else
-			{
-				throw new InvalidOperationException();
-			}
+			throw new InvalidOperationException();
 		}
 
 		public override bool TryConvert(ConvertBinder binder, out object result)
 		{
 			//Strict
+
+			//Object should be always on top.
 			if (binder.Type == typeof(object))
 			{
 				result = _value.Object;
+				return true;
+			}
+
+			if (binder.Type.IsAssignableFrom(typeof(ValueEntity)))
+			{
+				result = _value;
 				return true;
 			}
 
@@ -138,11 +141,13 @@ namespace JsDataParser.Entities
 			}
 
 
-
 			result = default;
 			return false;
 		}
 
-		public override string ToString() => _value.Object.ToString();
+		public override string ToString()
+		{
+			return _value.Object.ToString();
+		}
 	}
 }

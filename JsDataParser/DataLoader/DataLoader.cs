@@ -21,9 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
@@ -61,7 +59,6 @@ namespace JsDataParser.DataLoader
 				);
 
 			return ret;
-
 		}
 
 		public static dynamic LoadAsDynamic(string path)
@@ -78,6 +75,5 @@ namespace JsDataParser.DataLoader
 
 			return new DynamicLiteralObjectEntity(obj);
 		}
-
 	}
 }

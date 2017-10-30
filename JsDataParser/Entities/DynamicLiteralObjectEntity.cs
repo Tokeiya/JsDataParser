@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using JsDataParser.Entities;
 
 namespace JsDataParser.Entities
 {
@@ -31,30 +30,26 @@ namespace JsDataParser.Entities
 	{
 		private readonly ObjectLiteralEntity _entity;
 
-		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity):base(DynamicTypes.Object)
-			=> _entity = entity ?? throw new ArgumentNullException(nameof(entity));
+		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity) : base(DynamicTypes.Object)
+		{
+			_entity = entity ?? throw new ArgumentNullException(nameof(entity));
+		}
 
 
 		private IReadOnlyList<dynamic> BuildArray(IReadOnlyList<ValueEntity> source)
 		{
 			var ret = new dynamic[source.Count];
 
-			for (int i = 0; i < ret.Length; i++)
+			for (var i = 0; i < ret.Length; i++)
 			{
 				var piv = source[i];
 
 				if (piv.ValueType == ValueTypes.Array)
-				{
 					ret[i] = BuildArray(piv.Array);
-				}
 				else if (piv.ValueType == ValueTypes.Object)
-				{
-					ret[i]=new DynamicLiteralObjectEntity(piv.NestedObject);
-				}
+					ret[i] = new DynamicLiteralObjectEntity(piv.NestedObject);
 				else
-				{
 					ret[i] = new DynamicValueEntity(piv);
-				}
 			}
 
 			return ret;
@@ -93,8 +88,7 @@ namespace JsDataParser.Entities
 
 			object tmp;
 
-			if(_entity.TryGetValue(entity,out var ret))
-			{
+			if (_entity.TryGetValue(entity, out var ret))
 				switch (ret.ValueType)
 				{
 					case ValueTypes.Array:
@@ -102,22 +96,31 @@ namespace JsDataParser.Entities
 						break;
 
 					case ValueTypes.Object:
-						tmp=new DynamicLiteralObjectEntity(ret.NestedObject);
+						tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
 						break;
 
 					default:
 						tmp = new DynamicValueEntity(ret);
 						break;
 				}
-			}
 			else
-			{
 				tmp = default;
-			}
 
 
 			result = tmp;
 			return true;
+		}
+
+		public override bool TryConvert(ConvertBinder binder, out object result)
+		{
+			if (binder.Type.IsAssignableFrom(typeof(ObjectLiteralEntity)))
+			{
+				result = _entity;
+				return true;
+			}
+
+			result = default;
+			return false;
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
@@ -125,30 +128,17 @@ namespace JsDataParser.Entities
 			object tmp;
 
 			if (_entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret))
-			{
 				if (ret.ValueType == ValueTypes.Array)
-				{
 					tmp = BuildArray(ret.Array);
-				}
 				else if (ret.ValueType == ValueTypes.Object)
-				{
 					tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
-				}
 				else
-				{
 					tmp = new DynamicValueEntity(ret);
-				}
-			}
 			else
-			{
 				tmp = default;
-			}
 
 			result = tmp;
 			return true;
 		}
 	}
-
-
-
 }

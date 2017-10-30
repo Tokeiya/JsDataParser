@@ -29,7 +29,7 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Entities
 {
-	internal class DynamicValueEntity:DynamicObject
+	internal class DynamicValueEntity: DynamicEntity
 	{
 		private readonly ValueEntity _value;
 

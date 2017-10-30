@@ -27,7 +27,7 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Entities
 {
-	internal class DynamicLiteralObjectEntity : DynamicObject
+	internal class DynamicLiteralObjectEntity : DynamicEntity
 	{
 		private readonly ObjectLiteralEntity _entity;
 

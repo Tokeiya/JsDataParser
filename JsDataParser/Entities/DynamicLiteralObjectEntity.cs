@@ -31,7 +31,7 @@ namespace JsDataParser.Entities
 	{
 		private readonly ObjectLiteralEntity _entity;
 
-		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity)
+		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity):base(DynamicTypes.Object)
 			=> _entity = entity ?? throw new ArgumentNullException(nameof(entity));
 
 

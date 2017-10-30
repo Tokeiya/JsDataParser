@@ -31,9 +31,44 @@ namespace JsDataParser.Entities
 {
 	internal class DynamicValueEntity: DynamicEntity
 	{
+		private static DynamicTypes GetType(ValueEntity value)
+		{
+			if (value == null) throw new ArgumentNullException(nameof(value));
+
+			switch(value.ValueType)
+			{
+				case ValueTypes.Array:
+					return DynamicTypes.Array;
+
+				case ValueTypes.Boolean:
+					return DynamicTypes.Boolean;
+
+				case ValueTypes.Identity:
+					return DynamicTypes.Identity;
+
+				case ValueTypes.Integer:
+					return DynamicTypes.Integer;
+
+				case ValueTypes.Object:
+					return DynamicTypes.Object;
+
+				case ValueTypes.Real:
+					return DynamicTypes.Real;
+
+				case ValueTypes.String:
+					return DynamicTypes.String;
+
+				case ValueTypes.Function:
+					return DynamicTypes.Function;
+
+				default:
+					throw new InvalidOperationException();
+			}
+		}
+
 		private readonly ValueEntity _value;
 
-		public DynamicValueEntity(ValueEntity value)
+		public DynamicValueEntity(ValueEntity value):base(GetType(value))
 			=> _value = value ?? throw new ArgumentNullException(nameof(value));
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
@@ -44,7 +79,7 @@ namespace JsDataParser.Entities
 				return true;
 			}
 
-			if (binder.Name.ToLower()=="identity"&&_value.ValueType== ValueTypes.ConstantName)
+			if (binder.Name.ToLower()=="identity"&&_value.ValueType== ValueTypes.Identity)
 			{
 				result = _value.Constant;
 				return true;

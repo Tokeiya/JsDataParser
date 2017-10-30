@@ -110,7 +110,7 @@ namespace JsDataParser.Parser
 					LiteralParser.IntegerNumber.Select(x => new ValueEntity(x, ValueTypes.Integer)),
 					LiteralParser.Bool.Select(x => new ValueEntity(x, ValueTypes.Boolean)),
 					LiteralParser.String.Select(x => new ValueEntity(x, ValueTypes.String)),
-					LiteralParser.IdentifierName.Select(x => new ValueEntity(x, ValueTypes.ConstantName))
+					LiteralParser.IdentifierName.Select(x => new ValueEntity(x, ValueTypes.Identity))
 				);
 
 				var arrayValue = ArrayLiteral.Select(x => new ValueEntity(x));

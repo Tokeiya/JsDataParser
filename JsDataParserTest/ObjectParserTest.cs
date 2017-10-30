@@ -155,11 +155,11 @@ namespace JsDataParserTest
 			Value.AreSuccess("function(){hoge}", new ValueEntity("function () {hoge}", ValueTypes.Function), _output);
 			Value.AreSuccess("42", new ValueEntity("42", ValueTypes.Integer), _output);
 			Value.AreSuccess("42.", new ValueEntity("42", ValueTypes.Real), _output);
-			Value.AreSuccess("HE_LLO", new ValueEntity("HE_LLO", ValueTypes.ConstantName), _output);
+			Value.AreSuccess("HE_LLO", new ValueEntity("HE_LLO", ValueTypes.Identity), _output);
 			Value.AreSuccess("'HE_LLO'", new ValueEntity("HE_LLO", ValueTypes.String), _output);
 			Value.AreSuccess("true", new ValueEntity("true", ValueTypes.Boolean), _output);
 
-			Value.AreSuccess("Av98Ingram", new ValueEntity("Av98Ingram", ValueTypes.ConstantName), _output);
+			Value.AreSuccess("Av98Ingram", new ValueEntity("Av98Ingram", ValueTypes.Identity), _output);
 		}
 
 		[Fact]

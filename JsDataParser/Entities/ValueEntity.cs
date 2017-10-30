@@ -31,7 +31,7 @@ namespace JsDataParser.Entities
 					_boolValue = bool.Parse(value.BuildString());
 					break;
 
-				case ValueTypes.ConstantName:
+				case ValueTypes.Identity:
 				case ValueTypes.String:
 				case ValueTypes.Function:
 					_textValue = value.BuildString();
@@ -83,7 +83,7 @@ namespace JsDataParser.Entities
 					case ValueTypes.Boolean:
 						return _boolValue;
 
-					case ValueTypes.ConstantName:
+					case ValueTypes.Identity:
 					case ValueTypes.Function:
 					case ValueTypes.String:
 						return _textValue;
@@ -136,7 +136,7 @@ namespace JsDataParser.Entities
 		{
 			get
 			{
-				if (ValueType != ValueTypes.ConstantName)
+				if (ValueType != ValueTypes.Identity)
 					throw new InvalidOperationException("This instance isn't constant entity.");
 
 				return _textValue;

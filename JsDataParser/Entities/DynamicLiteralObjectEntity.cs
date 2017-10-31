@@ -21,8 +21,10 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 
 namespace JsDataParser.Entities
 {
@@ -38,24 +40,6 @@ namespace JsDataParser.Entities
 		}
 
 
-		private IReadOnlyList<dynamic> BuildArray(IReadOnlyList<ValueEntity> source)
-		{
-			var ret = new dynamic[source.Count];
-
-			for (var i = 0; i < ret.Length; i++)
-			{
-				var piv = source[i];
-
-				if (piv.ValueType == ValueTypes.Array)
-					ret[i] = BuildArray(piv.Array);
-				else if (piv.ValueType == ValueTypes.Object)
-					ret[i] = new DynamicLiteralObjectEntity(piv.NestedObject);
-				else
-					ret[i] = new DynamicValueEntity(piv);
-			}
-
-			return ret;
-		}
 
 
 		public bool TryGetField(string identity, out dynamic value)
@@ -109,10 +93,6 @@ namespace JsDataParser.Entities
 			if (_entity.TryGetValue(entity, out var ret))
 				switch (ret.ValueType)
 				{
-					case ValueTypes.Array:
-						tmp = BuildArray(ret.Array);
-						break;
-
 					case ValueTypes.Object:
 						tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
 						break;
@@ -127,11 +107,6 @@ namespace JsDataParser.Entities
 
 			result = tmp;
 			return true;
-		}
-
-		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
-		{
-			return base.TryInvokeMember(binder, args, out result);
 		}
 
 		public override bool TryConvert(ConvertBinder binder, out object result)
@@ -151,9 +126,7 @@ namespace JsDataParser.Entities
 			object tmp;
 
 			if (_entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret))
-				if (ret.ValueType == ValueTypes.Array)
-					tmp = BuildArray(ret.Array);
-				else if (ret.ValueType == ValueTypes.Object)
+				if (ret.ValueType == ValueTypes.Object)
 					tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
 				else
 					tmp = new DynamicValueEntity(ret);
@@ -162,6 +135,18 @@ namespace JsDataParser.Entities
 
 			result = tmp;
 			return true;
+		}
+
+		public IEnumerator<(object key, object value)> GetEnumerator()
+			=> _entity.Select(x => ((object) new DynamicIdentifierEntity(x.Key), (object) new DynamicValueEntity(x.Value)))
+				.GetEnumerator();
+
+
+		
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

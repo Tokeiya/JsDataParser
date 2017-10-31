@@ -34,20 +34,14 @@ namespace Playground
 	{
 		private static void Main()
 		{
-			
+			var id = new ValueEntity("10", ValueTypes.Integer);
 
+			dynamic d = new DynamicValueEntity(id);
 
-			var root = DataLoader.LoadAsDynamic(".\\Samples\\itemdata.txt");
-
-			var pivot = root[1];
-
-
-			if (((IDynamicLiteralObjectEntity)pivot).TryGetField("name", out dynamic s))
+			foreach (int i in d)
 			{
-				Console.WriteLine(s);
+				Console.WriteLine(i);
 			}
-
-
 
 
 

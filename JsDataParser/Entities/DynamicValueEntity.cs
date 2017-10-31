@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Dynamic;
 
 namespace JsDataParser.Entities
@@ -33,6 +34,7 @@ namespace JsDataParser.Entities
 		{
 			_value = value ?? throw new ArgumentNullException(nameof(value));
 		}
+
 
 		private static RepresentTypes GetType(ValueEntity value)
 		{
@@ -124,6 +126,12 @@ namespace JsDataParser.Entities
 			if (binder.Type == typeof(string) && _value.ValueType == ValueTypes.String)
 			{
 				result = _value.String;
+				return true;
+			}
+
+			if (binder.Type == typeof(IEnumerable) && _value.ValueType == ValueTypes.Array)
+			{
+				result = _value.Array;
 				return true;
 			}
 

@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Dynamic;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Xml.XPath;
 
 namespace JsDataParser.Entities
 {
-	internal class DynamicIdentifierEntity:DynamicEntity
+	internal class DynamicIdentifierEntity : DynamicEntity
 	{
-		
+		private readonly IdentifierEntity _identity;
+
+		public DynamicIdentifierEntity(IdentifierEntity identity)
+			: base(GetType(identity), DynamicEntityTypes.Identity)
+		{
+			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
+		}
+
 
 		private static RepresentTypes GetType(IdentifierEntity identity)
 		{
@@ -35,20 +37,11 @@ namespace JsDataParser.Entities
 				default:
 					throw new InvalidOperationException($"{identity.IdentityType} is unexpted.");
 			}
-
-		}
-
-		private readonly IdentifierEntity _identity;
-
-		public DynamicIdentifierEntity(IdentifierEntity identity)
-			: base(GetType(identity), DynamicEntityTypes.Identity)
-		{
-			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			if (binder.Name.ToLower() == "identity"&& RepresentType== RepresentTypes.Identity)
+			if (binder.Name.ToLower() == "identity" && RepresentType == RepresentTypes.Identity)
 			{
 				result = _identity.Constant;
 				return true;
@@ -72,7 +65,7 @@ namespace JsDataParser.Entities
 				return true;
 			}
 
-			if (binder.Type.IsAssignableFrom(typeof(int))&&_identity.IdentityType== IdentifierTypes.Integer)
+			if (binder.Type.IsAssignableFrom(typeof(int)) && _identity.IdentityType == IdentifierTypes.Integer)
 			{
 				result = _identity.Integer;
 				return true;
@@ -113,8 +106,6 @@ namespace JsDataParser.Entities
 
 			result = default;
 			return true;
-
 		}
 	}
-
 }

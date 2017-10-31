@@ -27,13 +27,12 @@ namespace JsDataParser.Entities
 {
 	internal abstract class DynamicEntity : DynamicObject
 	{
-		protected DynamicEntity(RepresentTypes representType,DynamicEntityTypes entityType)
+		protected DynamicEntity(RepresentTypes representType, DynamicEntityTypes entityType)
 		{
 			if (!representType.Verify()) throw new ArgumentException($"{representType} is unexpected.");
-			if(!entityType.Verify()) throw new ArgumentException($"{entityType} is unexpected.");
+			if (!entityType.Verify()) throw new ArgumentException($"{entityType} is unexpected.");
 			RepresentType = representType;
 			EntityType = entityType;
-
 		}
 
 		public RepresentTypes RepresentType { get; }

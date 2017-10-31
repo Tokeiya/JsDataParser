@@ -20,17 +20,12 @@
  * 
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace JsDataParser.Entities
 {
 	public enum DynamicEntityTypes
 	{
-		Object=1,
+		Object = 1,
 		Value,
 		Identity
 	}
-
 }

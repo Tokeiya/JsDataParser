@@ -22,13 +22,25 @@ namespace JsDataParser
 		private static readonly DynamicEntityTypes[] _dynamicEntityTypes =
 			(DynamicEntityTypes[]) Enum.GetValues(typeof(DynamicEntityTypes));
 
-		public static bool Verify(this IdentifierTypes type) => _identifierTypeses.Any(x => x == type);
+		public static bool Verify(this IdentifierTypes type)
+		{
+			return _identifierTypeses.Any(x => x == type);
+		}
 
-		public static bool Verify(this ValueTypes type) => _valueTypes.Any(x => x == type);
+		public static bool Verify(this ValueTypes type)
+		{
+			return _valueTypes.Any(x => x == type);
+		}
 
-		public static bool Verify(this RepresentTypes type) => _dynamicTypes.Any(x => x == type);
+		public static bool Verify(this RepresentTypes type)
+		{
+			return _dynamicTypes.Any(x => x == type);
+		}
 
-		public static bool Verify(this DynamicEntityTypes type) => _dynamicEntityTypes.Any(x => x == type);
+		public static bool Verify(this DynamicEntityTypes type)
+		{
+			return _dynamicEntityTypes.Any(x => x == type);
+		}
 
 
 		public static string BuildString(this IEnumerable<char> source)
@@ -44,9 +56,15 @@ namespace JsDataParser
 		}
 
 
-		public static bool IsNull<T>(this T value) => NullChecker<T>.IsNull(value);
+		public static bool IsNull<T>(this T value)
+		{
+			return NullChecker<T>.IsNull(value);
+		}
 
-		public static bool IsNotNull<T>(this T value) => !IsNull(value);
+		public static bool IsNotNull<T>(this T value)
+		{
+			return !IsNull(value);
+		}
 
 		private static class NullChecker<T>
 		{

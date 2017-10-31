@@ -22,59 +22,31 @@
 
 
 using System;
-using System.IO;
 using JsDataParser.DataLoader;
-using JsDataParser.Entities;
-using JsDataParser.Parser;
-using Parseq;
 
 namespace Playground
 {
+	public class Sample
+	{
+		public string name { get; set; }
+		public string nameJp { get; set; }
+
+		public override string ToString()
+		{
+			return $"name:{name} nameJp:{nameJp}";
+		}
+	}
+
 	internal class Program
 	{
 		private static void Main()
 		{
-			var id = new ValueEntity("10", ValueTypes.Integer);
+			var root = DataLoader.LoadRaw(".\\Samples\\itemdata.txt");
 
-			dynamic d = new DynamicValueEntity(id);
+			var maped = TinyMapper.MapMany<Sample>(root);
 
-			foreach (int i in d)
-			{
-				Console.WriteLine(i);
-			}
-
-
-
-
-
-		}
-
-		private static ObjectLiteralEntity GetValue()
-		{
-			ObjectLiteralEntity ret = default;
-			using (var rdr = new StreamReader(".\\Samples\\sample.txt"))
-			{
-				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
-					(stream, __) =>
-					{
-						try
-						{
-							Console.WriteLine(
-								$"Line:{stream.Current.Value.Item1.Line} Column:{stream.Current.Value.Item1.Column} Token:{stream.Current.Value.Item0}");
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("empty");
-						}
-					},
-					(_, cap) =>
-					{
-						ret = cap;
-						Console.WriteLine("success");
-					});
-			}
-
-			return ret;
+			foreach (var elem in maped)
+				Console.WriteLine(elem);
 		}
 	}
 }

@@ -28,9 +28,7 @@ using System.Linq;
 
 namespace JsDataParser.Entities
 {
-
-
-	internal class DynamicLiteralObjectEntity : DynamicEntity,IDynamicLiteralObjectEntity
+	internal class DynamicLiteralObjectEntity : DynamicEntity, IDynamicLiteralObjectEntity
 	{
 		private readonly ObjectLiteralEntity _entity;
 
@@ -38,8 +36,6 @@ namespace JsDataParser.Entities
 		{
 			_entity = entity ?? throw new ArgumentNullException(nameof(entity));
 		}
-
-
 
 
 		public bool TryGetField(string identity, out dynamic value)
@@ -56,6 +52,18 @@ namespace JsDataParser.Entities
 
 			value = default;
 			return false;
+		}
+
+		public IEnumerator<(object key, object value)> GetEnumerator()
+		{
+			return _entity.Select(x => ((object) new DynamicIdentifierEntity(x.Key), (object) new DynamicValueEntity(x.Value)))
+				.GetEnumerator();
+		}
+
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 
 		public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
@@ -135,18 +143,6 @@ namespace JsDataParser.Entities
 
 			result = tmp;
 			return true;
-		}
-
-		public IEnumerator<(object key, object value)> GetEnumerator()
-			=> _entity.Select(x => ((object) new DynamicIdentifierEntity(x.Key), (object) new DynamicValueEntity(x.Value)))
-				.GetEnumerator();
-
-
-		
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
 		}
 	}
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace JsDataParser.Entities
 {
-	public interface IDynamicLiteralObjectEntity:IEnumerable<(object key,object value)>
+	public interface IDynamicLiteralObjectEntity : IEnumerable<(object key, object value)>
 	{
 		bool TryGetField(string identity, out dynamic value);
-		
 	}
 }

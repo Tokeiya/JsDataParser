@@ -34,7 +34,7 @@ namespace Playground
 			var source = entity.Array;
 			array = new int[source.Count];
 
-			var cnt = 0;
+			var cnt = -1;
 			foreach (var elem in source)
 			{
 				if (elem.ValueType != ValueTypes.Integer) return false;
@@ -50,7 +50,7 @@ namespace Playground
 			var source = entity.Array;
 			array = new string[source.Count];
 
-			var cnt = 0;
+			var cnt = -1;
 
 			foreach (var elem in source)
 			{
@@ -62,7 +62,7 @@ namespace Playground
 		}
 
 
-		/*回帰マップはしないよ
+		/*sマップはしないよ
 		 *	improve: {
 			ACCshell: 1.7,
 			ACCnb: 1.6

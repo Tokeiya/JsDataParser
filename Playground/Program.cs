@@ -22,31 +22,80 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using JsDataParser.DataLoader;
+using JsDataParser.Entities;
 
 namespace Playground
 {
 	public class Sample
 	{
-		public string name { get; set; }
-		public string nameJp { get; set; }
+		public string Name { get; set; }
+		public string NameJP { get; set; }
+		public string Image { get; set; }
 
-		public override string ToString()
+		//[DestinationName("type")]
+		public object ShipType { get; set; }
+
+		public IReadOnlyList<int> Slots { get; set; }
+
+
+	}
+
+
+	//1: {
+	//	name: '12cm Single Cannon',
+	//	nameJP: '12cm単装砲',
+	//	added: '2013-04-17',
+	//	type: MAINGUNS,
+	//	btype: B_MAINGUN,
+	//	atype: A_GUN,
+	//	FP: 1,
+	//	AA: 1,
+	//	RNG: 1
+	//},
+
+	class TaskProcedure
+	{
+		private readonly CancellationTokenSource _source = new CancellationTokenSource();
+
+		public void Stop()
 		{
-			return $"name:{name} nameJp:{nameJp}";
+			_source.Cancel();
+		}
+
+		public void Proc()
+		{
+			for (int i = 0;; i++)
+			{
+				Task.Delay(500);
+				Console.WriteLine(i);
+			}
+
 		}
 	}
 
 	internal class Program
 	{
+
+
 		private static void Main()
 		{
-			var root = DataLoader.LoadRaw(".\\Samples\\itemdata.txt");
+			var tmp=new TaskProcedure();
 
-			var maped = TinyMapper.MapMany<Sample>(root);
+			var task = new Task(tmp.Proc);
 
-			foreach (var elem in maped)
-				Console.WriteLine(elem);
+			task.Start();
+
+
+			Console.ReadLine();
+
+			tmp.Stop();
+
+
 		}
 	}
 }

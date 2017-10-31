@@ -21,22 +21,16 @@
  */
 
 using System;
-using System.Dynamic;
+using System.Collections.Generic;
+using System.Text;
 
 namespace JsDataParser.Entities
 {
-	internal abstract class DynamicEntity : DynamicObject
+	public enum DynamicEntityTypes
 	{
-		protected DynamicEntity(RepresentTypes representType,DynamicEntityTypes entityType)
-		{
-			if (!representType.Verify()) throw new ArgumentException($"{representType} is unexpected.");
-			if(!entityType.Verify()) throw new ArgumentException($"{entityType} is unexpected.");
-			RepresentType = representType;
-			EntityType = entityType;
-
-		}
-
-		public RepresentTypes RepresentType { get; }
-		public DynamicEntityTypes EntityType { get; }
+		Object=1,
+		Value,
+		Identity
 	}
+
 }

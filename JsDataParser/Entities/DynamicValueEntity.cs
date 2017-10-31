@@ -29,40 +29,40 @@ namespace JsDataParser.Entities
 	{
 		private readonly ValueEntity _value;
 
-		public DynamicValueEntity(ValueEntity value) : base(GetType(value))
+		public DynamicValueEntity(ValueEntity value) : base(GetType(value), DynamicEntityTypes.Value)
 		{
 			_value = value ?? throw new ArgumentNullException(nameof(value));
 		}
 
-		private static DynamicTypes GetType(ValueEntity value)
+		private static RepresentTypes GetType(ValueEntity value)
 		{
 			if (value == null) throw new ArgumentNullException(nameof(value));
 
 			switch (value.ValueType)
 			{
 				case ValueTypes.Array:
-					return DynamicTypes.Array;
+					return RepresentTypes.Array;
 
 				case ValueTypes.Boolean:
-					return DynamicTypes.Boolean;
+					return RepresentTypes.Boolean;
 
 				case ValueTypes.Identity:
-					return DynamicTypes.Identity;
+					return RepresentTypes.Identity;
 
 				case ValueTypes.Integer:
-					return DynamicTypes.Integer;
+					return RepresentTypes.Integer;
 
 				case ValueTypes.Object:
-					return DynamicTypes.Object;
+					return RepresentTypes.Object;
 
 				case ValueTypes.Real:
-					return DynamicTypes.Real;
+					return RepresentTypes.Real;
 
 				case ValueTypes.String:
-					return DynamicTypes.String;
+					return RepresentTypes.String;
 
 				case ValueTypes.Function:
-					return DynamicTypes.Function;
+					return RepresentTypes.Function;
 
 				default:
 					throw new InvalidOperationException();

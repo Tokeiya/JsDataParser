@@ -23,7 +23,7 @@
 
 namespace JsDataParser.Entities
 {
-	public enum DynamicTypes
+	public enum RepresentTypes
 	{
 		Object = 1,
 		Array,

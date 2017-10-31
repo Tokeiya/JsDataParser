@@ -26,11 +26,13 @@ using System.Dynamic;
 
 namespace JsDataParser.Entities
 {
-	internal class DynamicLiteralObjectEntity : DynamicEntity
+
+
+	internal class DynamicLiteralObjectEntity : DynamicEntity,IDynamicLiteralObjectEntity
 	{
 		private readonly ObjectLiteralEntity _entity;
 
-		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity) : base(DynamicTypes.Object)
+		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity) : base(RepresentTypes.Object, DynamicEntityTypes.Object)
 		{
 			_entity = entity ?? throw new ArgumentNullException(nameof(entity));
 		}
@@ -55,6 +57,22 @@ namespace JsDataParser.Entities
 			return ret;
 		}
 
+
+		public bool TryGetField(string identity, out dynamic value)
+		{
+			if (identity == null) throw new ArgumentNullException(nameof(identity));
+
+			var key = new IdentifierEntity(identity, true);
+
+			if (_entity.TryGetValue(key, out var ret))
+			{
+				value = new DynamicValueEntity(ret);
+				return true;
+			}
+
+			value = default;
+			return false;
+		}
 
 		public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
 		{
@@ -109,6 +127,11 @@ namespace JsDataParser.Entities
 
 			result = tmp;
 			return true;
+		}
+
+		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+		{
+			return base.TryInvokeMember(binder, args, out result);
 		}
 
 		public override bool TryConvert(ConvertBinder binder, out object result)

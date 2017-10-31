@@ -34,33 +34,25 @@ namespace Playground
 	{
 		private static void Main()
 		{
-			var sampl = @"{
-				35: {
-					nameA: 'Type 3 Shell',
-					nameJP: '三式弾',
-					added: '2013-04-17',
-					type: TYPESHELL,
-					btype: B_TYPESHELL,
-					atype: A_TYPESHELL,
-					AA: 5,
-					'piyo':10.5,
-					piyo:21.55,
-					Array:[0, 2.0, 'aa',{Hoge:'hello',Piyo:'world'}],
-					10:20,
-					F:function(){},
-				},
-			}";
+			
 
 
 			var root = DataLoader.LoadAsDynamic(".\\Samples\\itemdata.txt");
 
-
-			int s = root[1].Hoge;
-
-			Console.WriteLine(s);
+			var pivot = root[1];
 
 
-			Console.ReadLine();
+			if (((IDynamicLiteralObjectEntity)pivot).TryGetField("name", out dynamic s))
+			{
+				Console.WriteLine(s);
+			}
+
+
+
+
+
+
+
 		}
 
 		private static ObjectLiteralEntity GetValue()

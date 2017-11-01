@@ -117,5 +117,18 @@ namespace JsDataParserTest
 			actual.Flags.SequenceEqual(new[] { true, false }).IsTrue();
 		}
 
+		[Fact]
+		public void MapManyTest()
+		{
+			var tmp = DataLoader.LoadRaw(".\\Samples\\TinyMapTestSample.txt");
+			var actual = TinyMapper<SampleA>.MultiMap(tmp).ToArray();
+
+			actual.Length.Is(5);
+
+
+
+
+		}
+
 	}
 }

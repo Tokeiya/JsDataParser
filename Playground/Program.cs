@@ -23,7 +23,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using JsDataParser.DataLoader;
@@ -46,54 +48,16 @@ namespace Playground
 	}
 
 
-	//1: {
-	//	name: '12cm Single Cannon',
-	//	nameJP: '12cm単装砲',
-	//	added: '2013-04-17',
-	//	type: MAINGUNS,
-	//	btype: B_MAINGUN,
-	//	atype: A_GUN,
-	//	FP: 1,
-	//	AA: 1,
-	//	RNG: 1
-	//},
-
-	class TaskProcedure
-	{
-		private readonly CancellationTokenSource _source = new CancellationTokenSource();
-
-		public void Stop()
-		{
-			_source.Cancel();
-		}
-
-		public void Proc()
-		{
-			for (int i = 0;; i++)
-			{
-				Task.Delay(500);
-				Console.WriteLine(i);
-			}
-
-		}
-	}
-
 	internal class Program
 	{
 
 
 		private static void Main()
 		{
-			var tmp=new TaskProcedure();
-
-			var task = new Task(tmp.Proc);
-
-			task.Start();
+			var hoge = typeof(Sample).GetProperties().Cast<MemberInfo>().ToArray();
 
 
-			Console.ReadLine();
 
-			tmp.Stop();
 
 
 		}

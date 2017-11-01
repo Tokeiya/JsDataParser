@@ -138,12 +138,12 @@ namespace JsDataParser.Entities
 			}
 		}
 
-		public string Constant
+		public string Identity
 		{
 			get
 			{
 				if (IdentityType != IdentifierTypes.Identity)
-					throw new InvalidOperationException("This instance isn't Constant identity.");
+					throw new InvalidOperationException("This instance isn't identity.");
 
 				return _stringValue;
 			}

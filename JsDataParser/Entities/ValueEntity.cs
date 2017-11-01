@@ -132,7 +132,7 @@ namespace JsDataParser.Entities
 			}
 		}
 
-		public string Constant
+		public string Identity
 		{
 			get
 			{

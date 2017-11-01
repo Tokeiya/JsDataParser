@@ -81,7 +81,7 @@ namespace JsDataParser.Entities
 
 			if (binder.Name.ToLower() == "identity" && _value.ValueType == ValueTypes.Identity)
 			{
-				result = _value.Constant;
+				result = _value.Identity;
 				return true;
 			}
 			throw new InvalidOperationException();

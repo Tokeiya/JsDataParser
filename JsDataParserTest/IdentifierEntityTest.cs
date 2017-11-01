@@ -45,7 +45,7 @@ namespace JsDataParserTest
 			target.Integer.Is(11);
 
 			Assert.Throws<InvalidOperationException>(() => target.Boolean);
-			Assert.Throws<InvalidOperationException>(() => target.Constant);
+			Assert.Throws<InvalidOperationException>(() => target.Identity);
 			Assert.Throws<InvalidOperationException>(() => target.Real);
 			Assert.Throws<InvalidOperationException>(() => target.String);
 

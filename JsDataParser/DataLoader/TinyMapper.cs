@@ -23,9 +23,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using JsDataParser.Entities;
+// ReSharper disable InconsistentNaming
 
 namespace JsDataParser.DataLoader
 {
@@ -40,8 +42,308 @@ namespace JsDataParser.DataLoader
 		private static readonly PropertyInfo[] _properties = typeof(T).GetProperties().Where(x => x.CanWrite).ToArray();
 		private static readonly FieldInfo[] _fields = typeof(T).GetFields().Where(x => !x.IsInitOnly).ToArray();
 
+
+		private static bool Verify(Type mapTo, ValueTypes mapFrom)
+		{
+			switch (mapFrom)
+			{
+				case ValueTypes.Array:
+					return mapTo.IsAssignableFrom(typeof(int[])) || mapTo.IsAssignableFrom(typeof(string[])) ||
+					       mapTo.IsAssignableFrom(typeof(object[])) || mapTo.IsAssignableFrom(typeof(double[]));
+
+				case ValueTypes.Boolean:
+					return mapTo.IsAssignableFrom(typeof(bool));
+
+				case ValueTypes.Function:
+				case ValueTypes.Identity:
+				case ValueTypes.String:
+					return mapTo.IsAssignableFrom(typeof(string));
+
+				case ValueTypes.Integer:
+					return mapTo.IsAssignableFrom(typeof(int));
+
+				case ValueTypes.Real:
+					return mapTo.IsAssignableFrom(typeof(double));
+
+				default:
+					throw new InvalidOperationException($"{mapFrom} is unexpected value");
+			}
+		}
+
+		private static bool TryBuildIntArray(IReadOnlyList<ValueEntity> mapFrom, out int[] mapTo)
+		{
+			mapTo = new int[mapFrom.Count];
+
+
+			for (var i = 0; i < mapTo.Length; i++)
+			{
+				switch (mapFrom[i].ValueType)
+				{
+					case ValueTypes.Integer:
+						mapTo[i] = mapFrom[i].Integer;
+						break;
+
+					default:
+						return false;
+				}
+			}
+
+			return true;
+		}
+
+		private static bool TryBuildRealArray(IReadOnlyList<ValueEntity> mapFrom, out double[] mapTo)
+		{
+			mapTo = new double[mapFrom.Count];
+
+			for (int i = 0; i < mapTo.Length; i++)
+			{
+				switch (mapFrom[i].ValueType)
+				{
+					case ValueTypes.Real:
+						mapTo[i] = mapFrom[i].Real;
+						break;
+
+					default:
+						return false;
+				}
+			}
+
+			return true;
+		}
+
+		private static bool TryBuildStringArray(IReadOnlyList<ValueEntity> mapFrom, out string[] mapTo)
+		{
+			mapTo = new string[mapFrom.Count];
+
+
+			for (int i = 0; i < mapTo.Length; i++)
+			{
+				switch (mapFrom[i].ValueType)
+				{
+					case ValueTypes.Function:
+						mapTo[i] = mapFrom[i].Function;
+						break;
+						
+					case ValueTypes.String:
+						mapTo[i] = mapFrom[i].String;
+						break;
+						
+					case ValueTypes.Identity:
+						mapTo[i] = mapFrom[i].Identity;
+						break;
+
+					default:
+						return false;
+				}
+			}
+
+			return true;
+
+		}
+
+		private static bool TryBuildObjectArray(IReadOnlyList<ValueEntity> mapFrom, out object[] mapTo)
+		{
+			mapTo = new object[mapFrom.Count];
+
+			for (int i = 0; i < mapTo.Length; i++)
+			{
+				switch (mapFrom[i].ValueType)
+				{
+					case ValueTypes.Array:
+					case ValueTypes.Object:
+						return false;
+
+					default:
+						mapTo[i] = mapFrom[i].Object;
+						break;
+				}
+			}
+
+			return true;
+		}
+
+		private static Action<T, ValueEntity> BuildField(FieldInfo info, ValueTypes valueType)
+		{
+			switch (valueType)
+			{
+				case ValueTypes.Array:
+					if (info.FieldType.IsAssignableFrom(typeof(int[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildIntArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+					if (info.FieldType.IsAssignableFrom(typeof(double[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildRealArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+
+
+
+					if (info.FieldType.IsAssignableFrom(typeof(string[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildStringArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+					if (info.FieldType.IsAssignableFrom(typeof(object[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildObjectArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+					return _empty;
+
+				case ValueTypes.Boolean:
+					return (to, from) => info.SetValue(to, from.Boolean);
+
+				case ValueTypes.Function:
+					return (to, from) => info.SetValue(to, from.Function);
+
+				case ValueTypes.Identity:
+					return (to, from) => info.SetValue(to, from.Identity);
+
+				case ValueTypes.Integer:
+					return (to, from) => info.SetValue(to, from.Integer);
+
+				case ValueTypes.String:
+					return (to, from) => info.SetValue(to, from.String);
+
+				case ValueTypes.Real:
+					return (to, from) => info.SetValue(to, from.Real);
+
+				default:
+					return _empty;
+			}
+		}
+
+		private static Action<T, ValueEntity> BuildProperty(PropertyInfo info, ValueTypes valueType)
+		{
+			switch (valueType)
+			{
+				case ValueTypes.Array:
+					if (info.PropertyType.IsAssignableFrom(typeof(int[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildIntArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+					if (info.PropertyType.IsAssignableFrom(typeof(double[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildRealArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+
+
+					if (info.PropertyType.IsAssignableFrom(typeof(string[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildStringArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+					if (info.PropertyType.IsAssignableFrom(typeof(object[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildObjectArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+					return _empty;
+
+				case ValueTypes.Boolean:
+					return (to, from) =>info.SetValue(to, from.Boolean);
+
+				case ValueTypes.Function:
+					return (to, from) =>info.SetValue(to, from.Function);
+
+				case ValueTypes.Identity:
+					return (to, from) => info.SetValue(to, from.Identity);
+
+				case ValueTypes.Integer:
+					return (to, from) => info.SetValue(to, from.Integer);
+
+				case ValueTypes.String:
+					return (to, from) => info.SetValue(to, from.String);
+
+				case ValueTypes.Real:
+					return (to, from) => info.SetValue(to, from.Real);
+
+				default:
+					return _empty;
+			}
+		}
+
 		private static Action<T,ValueEntity> Build(KeyValuePair<IdentifierEntity, ValueEntity> pair)
 		{
+			if (pair.Value == null || pair.Key == null) throw new ArgumentException($"{nameof(pair)} contains null value.");
+
+			var propCandidates = _properties.Where(x => x.Name.ToLower() == pair.Key.Identity.ToLower())
+				.Where(x => Verify(x.PropertyType, pair.Value.ValueType));
+
+			var fldCandidates = _fields.Where(x => x.Name.ToLower() == pair.Key.Identity.ToLower())
+				.Where(x => Verify(x.FieldType, pair.Value.ValueType));
+
+			var cnt = propCandidates.Count() + fldCandidates.Count();
+
+			if (cnt > 1) throw new InvalidOperationException($"Detect many candidates!");
+
+			if (cnt == 0) return _empty;
+
+
+			var prop = propCandidates.FirstOrDefault();
+
+			if (prop != null)
+			{
+				
+			}
+
+
+
+
+
+
 
 #warning Build_Is_NotImpl
 			throw new NotImplementedException("Build is not implemented");
@@ -55,13 +357,13 @@ namespace JsDataParser.DataLoader
 
 			foreach (var pair in entity.Where(x=>x.Key.IdentityType== IdentifierTypes.Identity))
 			{
-				if (_cache.TryGetValue((pair.Key.Constant.ToLower(), pair.Value.ValueType), out var act))
+				if (_cache.TryGetValue((pair.Key.Identity.ToLower(), pair.Value.ValueType), out var act))
 					act(ret, pair.Value);
 				else
 				{
 					var proc = Build(pair);
 					proc(ret, pair.Value);
-					_cache.Add((pair.Key.Constant.ToLower(), pair.Value.ValueType), proc);
+					_cache.Add((pair.Key.Identity.ToLower(), pair.Value.ValueType), proc);
 				}
 			}
 

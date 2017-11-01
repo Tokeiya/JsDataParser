@@ -66,7 +66,7 @@ namespace JsDataParser.Entities
 		{
 			if (binder.Name.ToLower() == "identity" && RepresentType == RepresentTypes.Identity)
 			{
-				result = _identity.Constant;
+				result = _identity.Identity;
 				return true;
 			}
 

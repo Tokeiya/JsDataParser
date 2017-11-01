@@ -99,7 +99,7 @@ namespace JsDataParserTest
 				(_, __) => Assert.False(true, "FAIL!"),
 				(_, cap) =>
 				{
-					cap.identifier.Constant.Is("AA");
+					cap.identifier.Identity.Is("AA");
 					var array = cap.value.Array;
 					array.Count.Is(3);
 					array.Select(x => x.Integer).SequenceEqual(new[] {1, 2, 3}).IsTrue();
@@ -143,7 +143,7 @@ namespace JsDataParserTest
 				(_, __) => Assert.False(true, "FAIL!"),
 				(_, cap) =>
 				{
-					cap.identifier.Constant.Is("AA");
+					cap.identifier.Identity.Is("AA");
 					cap.value.Integer.Is(2);
 				}
 			);

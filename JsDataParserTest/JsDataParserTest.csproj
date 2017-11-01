@@ -32,10 +32,10 @@
     <None Update="Samples\itemdata.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Samples\itemtype.txt">
+    <None Update="Samples\TestItemtype.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Samples\Sample.txt">
+    <None Update="Samples\TinyMapTestSample.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

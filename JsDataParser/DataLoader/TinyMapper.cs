@@ -49,7 +49,8 @@ namespace JsDataParser.DataLoader
 			{
 				case ValueTypes.Array:
 					return mapTo.IsAssignableFrom(typeof(int[])) || mapTo.IsAssignableFrom(typeof(string[])) ||
-					       mapTo.IsAssignableFrom(typeof(object[])) || mapTo.IsAssignableFrom(typeof(double[]));
+					       mapTo.IsAssignableFrom(typeof(object[])) || mapTo.IsAssignableFrom(typeof(double[])) ||
+					       mapTo.IsAssignableFrom(typeof(bool[]));
 
 				case ValueTypes.Boolean:
 					return mapTo.IsAssignableFrom(typeof(bool));
@@ -110,6 +111,28 @@ namespace JsDataParser.DataLoader
 
 			return true;
 		}
+
+
+		private static bool TryBuildBoolArray(IReadOnlyList<ValueEntity> mapFrom, out bool[] mapTo)
+		{
+			mapTo = new bool[mapFrom.Count];
+
+			for (int i = 0; i < mapTo.Length; i++)
+			{
+				switch (mapFrom[i].ValueType)
+				{
+					case ValueTypes.Boolean:
+						mapTo[i] = mapFrom[i].Boolean;
+						break;
+
+					default:
+						return false;
+				}
+			}
+
+			return true;
+		}
+
 
 		private static bool TryBuildStringArray(IReadOnlyList<ValueEntity> mapFrom, out string[] mapTo)
 		{
@@ -189,6 +212,30 @@ namespace JsDataParser.DataLoader
 						};
 					}
 
+					if (info.FieldType.IsAssignableFrom(typeof(bool[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildBoolArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+
+					//statement order is important.
+					if (info.FieldType.IsAssignableFrom(typeof(object[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildObjectArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
 
 
 
@@ -203,16 +250,6 @@ namespace JsDataParser.DataLoader
 						};
 					}
 
-					if (info.FieldType.IsAssignableFrom(typeof(object[])))
-					{
-						return (to, from) =>
-						{
-							if (TryBuildObjectArray(from.Array, out var array))
-							{
-								info.SetValue(to, array);
-							}
-						};
-					}
 
 					return _empty;
 
@@ -266,6 +303,29 @@ namespace JsDataParser.DataLoader
 						};
 					}
 
+					if (info.PropertyType.IsAssignableFrom(typeof(bool[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildBoolArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
+
+
+					//statement order is important.
+					if (info.PropertyType.IsAssignableFrom(typeof(object[])))
+					{
+						return (to, from) =>
+						{
+							if (TryBuildObjectArray(from.Array, out var array))
+							{
+								info.SetValue(to, array);
+							}
+						};
+					}
 
 
 					if (info.PropertyType.IsAssignableFrom(typeof(string[])))
@@ -279,16 +339,6 @@ namespace JsDataParser.DataLoader
 						};
 					}
 
-					if (info.PropertyType.IsAssignableFrom(typeof(object[])))
-					{
-						return (to, from) =>
-						{
-							if (TryBuildObjectArray(from.Array, out var array))
-							{
-								info.SetValue(to, array);
-							}
-						};
-					}
 
 					return _empty;
 
@@ -336,17 +386,10 @@ namespace JsDataParser.DataLoader
 
 			if (prop != null)
 			{
-				
+				return BuildProperty(prop, pair.Value.ValueType);
 			}
 
-
-
-
-
-
-
-#warning Build_Is_NotImpl
-			throw new NotImplementedException("Build is not implemented");
+			return BuildField(fldCandidates.FirstOrDefault(), pair.Value.ValueType);
 		}
 
 		public static T SingleMap(ObjectLiteralEntity entity)

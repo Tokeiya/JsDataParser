@@ -39,12 +39,6 @@ namespace Playground
 		public string NameJP { get; set; }
 		public string Image { get; set; }
 
-		//[DestinationName("type")]
-		public object ShipType { get; set; }
-
-		public IReadOnlyList<int> Slots { get; set; }
-
-
 	}
 
 
@@ -54,8 +48,9 @@ namespace Playground
 
 		private static void Main()
 		{
-			var hoge = typeof(Sample).GetProperties().Cast<MemberInfo>().ToArray();
+			var data = DataLoader.LoadRaw(".\\Samples\\sample.txt");
 
+			var ret = TinyMapper<Sample>.SingleMap(data.Values.First().NestedObject);
 
 
 

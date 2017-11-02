@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
@@ -94,16 +95,100 @@ namespace JsDataParser.Mapping
 		public Type MapToType { get; }
 
 
+		private Action<ValueEntity, object> BuildNestedObject(PropertyInfo info, ValueType valueType)
+		{
+#warning BuildNestedObject_Is_NotImpl
+			throw new NotImplementedException("BuildNestedObject is not implemented");
+		}
+
+		private Action<ValueEntity, object> BuildNestedObject(FieldInfo info, ValueType valueTyep)
+		{
+#warning BuildNestedObject_Is_NotImpl
+			throw new NotImplementedException("BuildNestedObject is not implemented");
+		}
+
+		private Action<ValueEntity, object> BuildArray(PropertyInfo info, ValueTypes valueType)
+		{
+#warning BuildArray_Is_NotImpl
+			throw new NotImplementedException("BuildArray is not implemented");
+		}
+
+		private Action<ValueEntity, object> BuildArray(FieldInfo info, ValueTypes valueType)
+		{
+#warning BuildArray_Is_NotImpl
+			throw new NotImplementedException("BuildArray is not implemented");
+		}
+
+
+
 		private Action<ValueEntity, object> BuildProperty(PropertyInfo info, ValueTypes valueType)
 		{
-#warning BuildProperty_Is_NotImpl
-			throw new NotImplementedException("BuildProperty is not implemented");
+			switch (valueType)
+			{
+				case ValueTypes.Array:
+					return BuildArray(info, valueType);
+
+				case ValueTypes.Boolean:
+					return(from, to) =>info.SetValue(to, from.Boolean);
+
+				case ValueTypes.Function:
+					return (from, to) => info.SetValue(to, from.Function);
+
+				case ValueTypes.Identity:
+					return (from, to) => info.SetValue(to, from.Identity);
+
+				case ValueTypes.Integer:
+					return (from, to) => info.SetValue(to, from.Integer);
+
+				case ValueTypes.Real:
+					return (from, to) => info.SetValue(to, from.Real);
+
+				case ValueTypes.String:
+					return (from, to) => info.SetValue(to, from.String);
+
+				case ValueTypes.Object:
+					return BuildNestedObject(info, valueType);
+
+				default:
+					throw new InvalidOperationException($"{valueType} is unexpected.");
+
+
+			}
 		}
 
 		private Action<ValueEntity, object> BuildFields(FieldInfo info, ValueTypes valueType)
 		{
-#warning BuildFields_Is_NotImpl
-			throw new NotImplementedException("BuildFields is not implemented");
+			switch (valueType)
+			{
+				case ValueTypes.Array:
+					return BuildArray(info, valueType);
+
+				case ValueTypes.Boolean:
+					return (from, to) => info.SetValue(to, from.Boolean);
+
+				case ValueTypes.Function:
+					return (from, to) => info.SetValue(to, from.Function);
+
+				case ValueTypes.Identity:
+					return (from, to) => info.SetValue(to, from.Identity);
+
+				case ValueTypes.Integer:
+					return (from, to) => info.SetValue(to, from.Integer);
+
+				case ValueTypes.Real:
+					return (from, to) => info.SetValue(to, from.Real);
+
+				case ValueTypes.String:
+					return (from, to) => info.SetValue(to, from.String);
+
+				case ValueTypes.Object:
+					return BuildNestedObject(info, valueType);
+
+				default:
+					throw new InvalidOperationException($"{valueType} is unexpected.");
+
+
+			}
 		}
 
 
@@ -155,3 +240,4 @@ namespace JsDataParser.Mapping
 		}
 	}
 }
+

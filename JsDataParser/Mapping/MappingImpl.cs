@@ -22,27 +22,24 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Reflection;
 using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-    internal class MappingImpl
-    {
-	    private readonly Type _mapTo;
-	    private readonly bool _canCreateInstance;
-
-
-	    public MappingImpl(Type mapTo)
-	    {
+	internal class MappingImpl
+	{
+		public MappingImpl(Type mapTo, params Type[] candidates)
+		{
 #warning MappingImpl_Is_NotImpl
-		    throw new NotImplementedException("MappingImpl is not implemented");
-	    }
+			throw new NotImplementedException("MappingImpl is not implemented");
+		}
 
-	    public object Map(ObjectLiteralEntity entity)
-	    {
+		public object Map(ObjectLiteralEntity entity)
+		{
 #warning Map_Is_NotImpl
-		    throw new NotImplementedException("Map is not implemented");
-	    }
-    }
+			throw new NotImplementedException("Map is not implemented");
+		}
+	}
 }

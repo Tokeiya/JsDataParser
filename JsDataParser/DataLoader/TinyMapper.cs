@@ -72,6 +72,12 @@ namespace JsDataParser.DataLoader
 
 		private static bool TryBuildIntArray(IReadOnlyList<ValueEntity> mapFrom, out int[] mapTo)
 		{
+			if (mapFrom.Count == 0)
+			{
+				mapTo = Array.Empty<int>();
+				return true;
+			}
+
 			mapTo = new int[mapFrom.Count];
 
 
@@ -91,6 +97,12 @@ namespace JsDataParser.DataLoader
 
 		private static bool TryBuildRealArray(IReadOnlyList<ValueEntity> mapFrom, out double[] mapTo)
 		{
+			if (mapFrom.Count == 0)
+			{
+				mapTo = Array.Empty<double>();
+				return true;
+			}
+
 			mapTo = new double[mapFrom.Count];
 
 			for (var i = 0; i < mapTo.Length; i++)
@@ -110,6 +122,12 @@ namespace JsDataParser.DataLoader
 
 		private static bool TryBuildBoolArray(IReadOnlyList<ValueEntity> mapFrom, out bool[] mapTo)
 		{
+			if (mapFrom.Count == 0)
+			{
+				mapTo = Array.Empty<bool>();
+				return true;
+			}
+
 			mapTo = new bool[mapFrom.Count];
 
 			for (var i = 0; i < mapTo.Length; i++)
@@ -129,6 +147,12 @@ namespace JsDataParser.DataLoader
 
 		private static bool TryBuildStringArray(IReadOnlyList<ValueEntity> mapFrom, out string[] mapTo)
 		{
+			if (mapFrom.Count == 0)
+			{
+				mapTo = Array.Empty<string>();
+				return true;
+			}
+
 			mapTo = new string[mapFrom.Count];
 
 
@@ -156,6 +180,12 @@ namespace JsDataParser.DataLoader
 
 		private static bool TryBuildObjectArray(IReadOnlyList<ValueEntity> mapFrom, out object[] mapTo)
 		{
+			if (mapFrom.Count == 0)
+			{
+				mapTo = Array.Empty<object>();
+				return true;
+			}
+
 			mapTo = new object[mapFrom.Count];
 
 			for (var i = 0; i < mapTo.Length; i++)

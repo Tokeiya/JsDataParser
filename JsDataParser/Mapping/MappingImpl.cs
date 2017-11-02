@@ -70,7 +70,7 @@ namespace JsDataParser.Mapping
 
 		private readonly bool _hasDefaultCtor;
 
-		private readonly Dictionary<Type, MappingImpl> _candidates;
+		private readonly Dictionary<Type, MappingImpl> _nestedMapper;
 
 		private readonly Dictionary<(string name, ValueTypes type), Action<ValueEntity, object>> _cache
 			= new Dictionary<(string name, ValueTypes type), Action<ValueEntity, object>>();
@@ -83,7 +83,7 @@ namespace JsDataParser.Mapping
 		{
 			MapToType = mapToType ?? throw new ArgumentNullException(nameof(mapToType));
 
-			_candidates = (candidates ?? throw new ArgumentNullException(nameof(candidates)))
+			_nestedMapper = (candidates ?? throw new ArgumentNullException(nameof(candidates)))
 				.ToDictionary(x => x, x => new MappingImpl(x));
 
 			_hasDefaultCtor = mapToType.GetConstructor(Array.Empty<Type>()) == null;
@@ -97,15 +97,38 @@ namespace JsDataParser.Mapping
 
 		private Action<ValueEntity, object> BuildNestedObject(PropertyInfo info)
 		{
+			if (!_nestedMapper.ContainsKey(info.PropertyType))
+			{
+				_nestedMapper.Add(info.PropertyType,new MappingImpl(info.PropertyType));
+			}
 
-#warning BuildNestedObject_Is_NotImpl
-			throw new NotImplementedException("BuildNestedObject is not implemented");
+			void ret(ValueEntity from, object to)
+			{
+				var tmp = info.GetValue(to);
+				_nestedMapper[info.PropertyType].Map(from.NestedObject, ref tmp);
+
+				info.SetValue(to, tmp);
+			}
+
+			return ret;
 		}
 
 		private Action<ValueEntity, object> BuildNestedObject(FieldInfo info)
 		{
-#warning BuildNestedObject_Is_NotImpl
-			throw new NotImplementedException("BuildNestedObject is not implemented");
+			if (!_nestedMapper.ContainsKey(info.FieldType))
+			{
+				_nestedMapper.Add(info.FieldType, new MappingImpl(info.FieldType));
+			}
+
+			void ret(ValueEntity from, object to)
+			{
+				var tmp = info.GetValue(to);
+				_nestedMapper[info.FieldType].Map(from.NestedObject,ref tmp);
+
+				info.SetValue(to, tmp);
+			}
+
+			return ret;
 		}
 
 		private Action<ValueEntity, object> BuildArray(PropertyInfo info)
@@ -196,7 +219,7 @@ namespace JsDataParser.Mapping
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		private Action<ValueEntity, object> Build(string identity, ValueTypes valueType)
 		{
-			var propCandidate = _properties.Where(x => x.Name.ToLower() == identity)
+			var propCandidate = _properties.Where(x => x.Name.ToLower() == identity && x.CanRead && x.CanWrite)
 				.Where(x => Verify(x.PropertyType, valueType));
 
 			var fldCandidate = _fields.Where(x => x.Name.ToLower() == identity)

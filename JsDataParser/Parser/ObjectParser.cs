@@ -37,7 +37,7 @@ namespace JsDataParser.Parser
 		public static readonly Parser<char, IReadOnlyList<ValueEntity>> ArrayLiteral;
 		public static readonly Parser<char, ValueEntity> Value;
 		public static readonly Parser<char, (IdentifierEntity identifier, ValueEntity value)> Property;
-		public static readonly Parser<char, ObjectEntity> LiteralObject;
+		public static readonly Parser<char, ObjectLiteralEntity> LiteralObject;
 
 
 		static ObjectParser()
@@ -48,7 +48,7 @@ namespace JsDataParser.Parser
 			).Many0().Ignore();
 
 
-			var objectFixedPoint = new FixedPoint<char, ObjectEntity>("obj");
+			var objectFixedPoint = new FixedPoint<char, ObjectLiteralEntity>("obj");
 
 			var valueFixedPoint = new FixedPoint<char, ValueEntity>("value");
 
@@ -61,7 +61,7 @@ namespace JsDataParser.Parser
 					LiteralParser.RealNumber.Select(x => new IdentifierEntity(x, IdentifierTypes.Real)),
 					LiteralParser.IntegerNumber.Select(x => new IdentifierEntity(x, IdentifierTypes.Integer)),
 					LiteralParser.Bool.Select(x => new IdentifierEntity(x, IdentifierTypes.Boolean)),
-					LiteralParser.IdentifierName.Select(x => new IdentifierEntity(x, IdentifierTypes.Constant)),
+					LiteralParser.IdentifierName.Select(x => new IdentifierEntity(x, IdentifierTypes.Identity)),
 					LiteralParser.String.Select(x => new IdentifierEntity(x, IdentifierTypes.String))
 				);
 			}
@@ -110,11 +110,12 @@ namespace JsDataParser.Parser
 					LiteralParser.IntegerNumber.Select(x => new ValueEntity(x, ValueTypes.Integer)),
 					LiteralParser.Bool.Select(x => new ValueEntity(x, ValueTypes.Boolean)),
 					LiteralParser.String.Select(x => new ValueEntity(x, ValueTypes.String)),
-					LiteralParser.IdentifierName.Select(x => new ValueEntity(x, ValueTypes.ConstantName))
+					LiteralParser.IdentifierName.Select(x => new ValueEntity(x, ValueTypes.Identity))
 				);
 
 				var arrayValue = ArrayLiteral.Select(x => new ValueEntity(x));
-				var nestedObjectValue = ((Parser<char, ObjectEntity>) objectFixedPoint.Parse).Select(x => new ValueEntity(x));
+				var nestedObjectValue =
+					((Parser<char, ObjectLiteralEntity>) objectFixedPoint.Parse).Select(x => new ValueEntity(x));
 
 
 				valueFixedPoint.FixedParser = Combinator.Choice(
@@ -159,7 +160,7 @@ namespace JsDataParser.Parser
 				var tmp = from _ in Combinator.Sequence(Char('{').Ignore(), ignore)
 					from props in contents
 					from __ in Combinator.Sequence(ignore, Char('}').Ignore())
-					select new ObjectEntity(props);
+					select new ObjectLiteralEntity(props);
 
 				objectFixedPoint.FixedParser = tmp;
 				LiteralObject = objectFixedPoint.Parse;

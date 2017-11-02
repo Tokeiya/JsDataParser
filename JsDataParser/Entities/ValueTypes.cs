@@ -7,9 +7,8 @@
 		Real,
 		Boolean,
 		Function,
-		ConstantName,
+		Identity,
 		Object,
-		Array,
-		Unit
+		Array
 	}
 }

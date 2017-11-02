@@ -8,12 +8,12 @@ namespace JsDataParser.Entities
 		private readonly ValueEntity[] _array;
 		private readonly bool _boolValue;
 		private readonly int _integerValue;
-		private readonly ObjectEntity _nestedObject;
+		private readonly ObjectLiteralEntity _nestedObject;
 		private readonly double _realValue;
 		private readonly string _textValue;
 
 
-		public ValueEntity(ObjectEntity nestedObject)
+		public ValueEntity(ObjectLiteralEntity nestedObject)
 		{
 			_nestedObject = nestedObject ?? throw new ArgumentNullException(nameof(nestedObject));
 			ValueType = ValueTypes.Object;
@@ -31,7 +31,7 @@ namespace JsDataParser.Entities
 					_boolValue = bool.Parse(value.BuildString());
 					break;
 
-				case ValueTypes.ConstantName:
+				case ValueTypes.Identity:
 				case ValueTypes.String:
 				case ValueTypes.Function:
 					_textValue = value.BuildString();
@@ -83,7 +83,7 @@ namespace JsDataParser.Entities
 					case ValueTypes.Boolean:
 						return _boolValue;
 
-					case ValueTypes.ConstantName:
+					case ValueTypes.Identity:
 					case ValueTypes.Function:
 					case ValueTypes.String:
 						return _textValue;
@@ -132,11 +132,11 @@ namespace JsDataParser.Entities
 			}
 		}
 
-		public string Constant
+		public string Identity
 		{
 			get
 			{
-				if (ValueType != ValueTypes.ConstantName)
+				if (ValueType != ValueTypes.Identity)
 					throw new InvalidOperationException("This instance isn't constant entity.");
 
 				return _textValue;
@@ -171,7 +171,7 @@ namespace JsDataParser.Entities
 			}
 		}
 
-		public ObjectEntity NestedObject
+		public ObjectLiteralEntity NestedObject
 		{
 			get
 			{

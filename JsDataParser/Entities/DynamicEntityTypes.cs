@@ -20,15 +20,12 @@
  * 
  */
 
-
 namespace JsDataParser.Entities
 {
-	public enum IdentifierTypes
+	public enum DynamicEntityTypes
 	{
-		String = 1,
-		Integer,
-		Real,
-		Boolean,
+		Object = 1,
+		Value,
 		Identity
 	}
 }

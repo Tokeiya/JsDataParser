@@ -21,41 +21,50 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
-using JsDataParser.Entities;
+using System.Linq;
 
-namespace JsDataParser.Dynamic
+namespace JsDataParser.Entities
 {
-	internal class DynamicLiteralObject : DynamicObject
+	internal class DynamicLiteralObjectEntity : DynamicEntity, IDynamicLiteralObjectEntity
 	{
-		private readonly ObjectEntity _entity;
+		private readonly ObjectLiteralEntity _entity;
 
-		public DynamicLiteralObject(ObjectEntity entity)
+		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity) : base(RepresentTypes.Object, DynamicEntityTypes.Object)
 		{
 			_entity = entity ?? throw new ArgumentNullException(nameof(entity));
 		}
 
 
-		private IReadOnlyList<dynamic> BuildArray(IReadOnlyList<ValueEntity> source)
+		public bool TryGetField(string identity, out dynamic value)
 		{
-			var ret = new dynamic[source.Count];
+			if (identity == null) throw new ArgumentNullException(nameof(identity));
 
-			for (var i = 0; i < ret.Length; i++)
+			var key = new IdentifierEntity(identity, true);
+
+			if (_entity.TryGetValue(key, out var ret))
 			{
-				var piv = source[i];
-
-				if (piv.ValueType == ValueTypes.Array)
-					ret[i] = BuildArray(piv.Array);
-				else if (piv.ValueType == ValueTypes.Object)
-					ret[i] = new DynamicLiteralObject(piv.NestedObject);
-				else
-					ret[i] = new DynamicValueObject(piv);
+				value = new DynamicValueEntity(ret);
+				return true;
 			}
 
-			return ret;
+			value = default;
+			return false;
 		}
 
+		public IEnumerator<(object key, object value)> GetEnumerator()
+		{
+			return _entity.Select(x => ((object) new DynamicIdentifierEntity(x.Key), (object) new DynamicValueEntity(x.Value)))
+				.GetEnumerator();
+		}
+
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
 
 		public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
 		{
@@ -92,16 +101,12 @@ namespace JsDataParser.Dynamic
 			if (_entity.TryGetValue(entity, out var ret))
 				switch (ret.ValueType)
 				{
-					case ValueTypes.Array:
-						tmp = BuildArray(ret.Array);
-						break;
-
 					case ValueTypes.Object:
-						tmp = new DynamicLiteralObject(ret.NestedObject);
+						tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
 						break;
 
 					default:
-						tmp = new DynamicValueObject(ret);
+						tmp = new DynamicValueEntity(ret);
 						break;
 				}
 			else
@@ -112,17 +117,27 @@ namespace JsDataParser.Dynamic
 			return true;
 		}
 
+		public override bool TryConvert(ConvertBinder binder, out object result)
+		{
+			if (binder.Type.IsAssignableFrom(typeof(ObjectLiteralEntity)))
+			{
+				result = _entity;
+				return true;
+			}
+
+			result = default;
+			return false;
+		}
+
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
 			object tmp;
 
 			if (_entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret))
-				if (ret.ValueType == ValueTypes.Array)
-					tmp = BuildArray(ret.Array);
-				else if (ret.ValueType == ValueTypes.Object)
-					tmp = new DynamicLiteralObject(ret.NestedObject);
+				if (ret.ValueType == ValueTypes.Object)
+					tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
 				else
-					tmp = new DynamicValueObject(ret);
+					tmp = new DynamicValueEntity(ret);
 			else
 				tmp = default;
 

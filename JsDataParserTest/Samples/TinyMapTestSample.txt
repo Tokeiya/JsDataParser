@@ -8,8 +8,12 @@
 	atype: A_GUN,
 	FP: 1,
 	AA: 1,
-	RNG: 1
-	SLOTS:[1,2,3]
+	RNG: 1,
+	SLOTS:[1,2,3],
+	TXTS:['a','b','c'],
+	REALS:[1.2,1.5],
+	Flags:[true,false],
+	Misc:[1,'a',42.195,114514]
   },
   2: {
 	name: '12.7cm Twin Cannon',
@@ -21,7 +25,7 @@
 	improveType: 1,
 	FP: 2,
 	AA: 2,
-	RNG: 1
+	RNG: 1,
 	TXTS:['a','b','c']
   },
   3: {

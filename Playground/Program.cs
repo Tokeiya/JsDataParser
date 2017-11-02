@@ -21,21 +21,16 @@
  */
 
 
-using System;
-using System.IO;
-using System.Resources;
+using System.Linq;
 using JsDataParser.DataLoader;
-using JsDataParser.Dynamic;
-using JsDataParser.Entities;
-using JsDataParser.Parser;
-using Parseq;
 
 namespace Playground
 {
-
-	public class Hoge
+	public class Sample
 	{
-		
+		public string Name { get; set; }
+		public string NameJP { get; set; }
+		public string Image { get; set; }
 	}
 
 
@@ -43,44 +38,9 @@ namespace Playground
 	{
 		private static void Main()
 		{
-			var root = DataLoader.LoadAsDynamic(".\\Samples\\itemdata.txt");
+			var data = DataLoader.LoadRaw(".\\Samples\\sample.txt");
 
-			int s = root[1].Hoge;
-
-
-
-			Console.WriteLine(s);
-
-			Console.ReadLine();
-		}
-
-		private static ObjectEntity GetValue()
-		{
-			ObjectEntity ret=default;
-			using (var rdr = new StreamReader(".\\Samples\\sample.txt"))
-			{
-
-				ObjectParser.LiteralObject.Run(rdr.AsStream()).Case(
-					(stream, __) =>
-					{
-						try
-						{
-							Console.WriteLine(
-								$"Line:{stream.Current.Value.Item1.Line} Column:{stream.Current.Value.Item1.Column} Token:{stream.Current.Value.Item0}");
-						}
-						catch (Exception)
-						{
-							Console.WriteLine("empty");
-						}
-					},
-					(_, cap) =>
-					{
-						ret = cap;
-						Console.WriteLine("success");
-					});
-			}
-
-			return ret;
+			var ret = TinyMapper<Sample>.SingleMap(data.Values.First().NestedObject);
 		}
 	}
 }

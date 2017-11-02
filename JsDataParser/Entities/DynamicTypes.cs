@@ -23,12 +23,15 @@
 
 namespace JsDataParser.Entities
 {
-	public enum IdentifierTypes
+	public enum RepresentTypes
 	{
-		String = 1,
+		Object = 1,
+		Array,
 		Integer,
 		Real,
-		Boolean,
-		Identity
+		String,
+		Function,
+		Identity,
+		Boolean
 	}
 }

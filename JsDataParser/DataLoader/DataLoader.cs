@@ -21,10 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using JsDataParser.Dynamic;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
 using Parseq;
@@ -33,7 +30,7 @@ namespace JsDataParser.DataLoader
 {
 	public static class DataLoader
 	{
-		public static ObjectEntity LoadRaw(string path)
+		public static ObjectLiteralEntity LoadRaw(string path)
 		{
 			if (path == null) throw new ArgumentNullException(nameof(path));
 
@@ -43,11 +40,11 @@ namespace JsDataParser.DataLoader
 			}
 		}
 
-		public static ObjectEntity LoadRaw(TextReader reader)
+		public static ObjectLiteralEntity LoadRaw(TextReader reader)
 		{
 			if (reader == null) throw new ArgumentNullException(nameof(reader));
 
-			ObjectEntity ret = null;
+			ObjectLiteralEntity ret = null;
 
 			ObjectParser.LiteralObject.Run(reader.AsStream())
 				.Case(
@@ -62,7 +59,6 @@ namespace JsDataParser.DataLoader
 				);
 
 			return ret;
-
 		}
 
 		public static dynamic LoadAsDynamic(string path)
@@ -77,16 +73,7 @@ namespace JsDataParser.DataLoader
 		{
 			var obj = LoadRaw(reader);
 
-			return new DynamicLiteralObject(obj);
+			return new DynamicLiteralObjectEntity(obj);
 		}
-
-
-		public static IEnumerable<T> Load<T>(string path)
-		{
-#warning Load_Is_NotImpl
-			throw new NotImplementedException("Load is not implemented");
-
-		}
-
 	}
 }

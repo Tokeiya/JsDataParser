@@ -16,6 +16,12 @@ namespace JsDataParser
 		private static readonly ValueTypes[] _valueTypes =
 			(ValueTypes[]) Enum.GetValues(typeof(ValueTypes));
 
+		private static readonly RepresentTypes[] _dynamicTypes =
+			(RepresentTypes[]) Enum.GetValues(typeof(RepresentTypes));
+
+		private static readonly DynamicEntityTypes[] _dynamicEntityTypes =
+			(DynamicEntityTypes[]) Enum.GetValues(typeof(DynamicEntityTypes));
+
 		public static bool Verify(this IdentifierTypes type)
 		{
 			return _identifierTypeses.Any(x => x == type);
@@ -24,6 +30,16 @@ namespace JsDataParser
 		public static bool Verify(this ValueTypes type)
 		{
 			return _valueTypes.Any(x => x == type);
+		}
+
+		public static bool Verify(this RepresentTypes type)
+		{
+			return _dynamicTypes.Any(x => x == type);
+		}
+
+		public static bool Verify(this DynamicEntityTypes type)
+		{
+			return _dynamicEntityTypes.Any(x => x == type);
 		}
 
 
@@ -40,7 +56,6 @@ namespace JsDataParser
 		}
 
 
-		//新型のNull/IsNull
 		public static bool IsNull<T>(this T value)
 		{
 			return NullChecker<T>.IsNull(value);

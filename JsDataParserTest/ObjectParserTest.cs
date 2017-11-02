@@ -99,7 +99,7 @@ namespace JsDataParserTest
 				(_, __) => Assert.False(true, "FAIL!"),
 				(_, cap) =>
 				{
-					cap.identifier.Constant.Is("AA");
+					cap.identifier.Identity.Is("AA");
 					var array = cap.value.Array;
 					array.Count.Is(3);
 					array.Select(x => x.Integer).SequenceEqual(new[] {1, 2, 3}).IsTrue();
@@ -132,7 +132,7 @@ namespace JsDataParserTest
 			Identifier.AreSuccess("false", new IdentifierEntity("false", IdentifierTypes.Boolean));
 
 			Identifier.AreSuccess("'hello'", new IdentifierEntity("hello", IdentifierTypes.String));
-			Identifier.AreSuccess("CONST", new IdentifierEntity("CONST", IdentifierTypes.Constant));
+			Identifier.AreSuccess("CONST", new IdentifierEntity("CONST", IdentifierTypes.Identity));
 			Identifier.AreSuccess("11.:", new IdentifierEntity("11", IdentifierTypes.Real));
 		}
 
@@ -143,7 +143,7 @@ namespace JsDataParserTest
 				(_, __) => Assert.False(true, "FAIL!"),
 				(_, cap) =>
 				{
-					cap.identifier.Constant.Is("AA");
+					cap.identifier.Identity.Is("AA");
 					cap.value.Integer.Is(2);
 				}
 			);
@@ -155,11 +155,11 @@ namespace JsDataParserTest
 			Value.AreSuccess("function(){hoge}", new ValueEntity("function () {hoge}", ValueTypes.Function), _output);
 			Value.AreSuccess("42", new ValueEntity("42", ValueTypes.Integer), _output);
 			Value.AreSuccess("42.", new ValueEntity("42", ValueTypes.Real), _output);
-			Value.AreSuccess("HE_LLO", new ValueEntity("HE_LLO", ValueTypes.ConstantName), _output);
+			Value.AreSuccess("HE_LLO", new ValueEntity("HE_LLO", ValueTypes.Identity), _output);
 			Value.AreSuccess("'HE_LLO'", new ValueEntity("HE_LLO", ValueTypes.String), _output);
 			Value.AreSuccess("true", new ValueEntity("true", ValueTypes.Boolean), _output);
 
-			Value.AreSuccess("Av98Ingram", new ValueEntity("Av98Ingram", ValueTypes.ConstantName), _output);
+			Value.AreSuccess("Av98Ingram", new ValueEntity("Av98Ingram", ValueTypes.Identity), _output);
 		}
 
 		[Fact]

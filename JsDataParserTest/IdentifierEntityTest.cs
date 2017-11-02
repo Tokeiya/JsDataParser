@@ -45,7 +45,7 @@ namespace JsDataParserTest
 			target.Integer.Is(11);
 
 			Assert.Throws<InvalidOperationException>(() => target.Boolean);
-			Assert.Throws<InvalidOperationException>(() => target.Constant);
+			Assert.Throws<InvalidOperationException>(() => target.Identity);
 			Assert.Throws<InvalidOperationException>(() => target.Real);
 			Assert.Throws<InvalidOperationException>(() => target.String);
 
@@ -76,7 +76,7 @@ namespace JsDataParserTest
 		public void StringValue()
 		{
 			var target = new IdentifierEntity("Hoge", IdentifierTypes.String);
-			var constant = new IdentifierEntity("Hoge", IdentifierTypes.Constant);
+			var constant = new IdentifierEntity("Hoge", IdentifierTypes.Identity);
 
 
 			target.Equals(constant).IsFalse();

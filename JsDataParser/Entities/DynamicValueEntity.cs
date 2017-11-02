@@ -21,18 +21,54 @@
  */
 
 using System;
+using System.Collections;
 using System.Dynamic;
-using JsDataParser.Entities;
 
-namespace JsDataParser.Dynamic
+namespace JsDataParser.Entities
 {
-	internal class DynamicValueObject : DynamicObject
+	internal class DynamicValueEntity : DynamicEntity
 	{
 		private readonly ValueEntity _value;
 
-		public DynamicValueObject(ValueEntity value)
+		public DynamicValueEntity(ValueEntity value) : base(GetType(value), DynamicEntityTypes.Value)
 		{
 			_value = value ?? throw new ArgumentNullException(nameof(value));
+		}
+
+
+		private static RepresentTypes GetType(ValueEntity value)
+		{
+			if (value == null) throw new ArgumentNullException(nameof(value));
+
+			switch (value.ValueType)
+			{
+				case ValueTypes.Array:
+					return RepresentTypes.Array;
+
+				case ValueTypes.Boolean:
+					return RepresentTypes.Boolean;
+
+				case ValueTypes.Identity:
+					return RepresentTypes.Identity;
+
+				case ValueTypes.Integer:
+					return RepresentTypes.Integer;
+
+				case ValueTypes.Object:
+					return RepresentTypes.Object;
+
+				case ValueTypes.Real:
+					return RepresentTypes.Real;
+
+				case ValueTypes.String:
+					return RepresentTypes.String;
+
+				case ValueTypes.Function:
+					return RepresentTypes.Function;
+
+				default:
+					throw new InvalidOperationException();
+			}
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
@@ -43,9 +79,9 @@ namespace JsDataParser.Dynamic
 				return true;
 			}
 
-			if (binder.Name.ToLower() == "identity" && _value.ValueType == ValueTypes.ConstantName)
+			if (binder.Name.ToLower() == "identity" && _value.ValueType == ValueTypes.Identity)
 			{
-				result = _value.Constant;
+				result = _value.Identity;
 				return true;
 			}
 			throw new InvalidOperationException();
@@ -54,9 +90,17 @@ namespace JsDataParser.Dynamic
 		public override bool TryConvert(ConvertBinder binder, out object result)
 		{
 			//Strict
+
+			//Object should be always on top.
 			if (binder.Type == typeof(object))
 			{
 				result = _value.Object;
+				return true;
+			}
+
+			if (binder.Type.IsAssignableFrom(typeof(ValueEntity)))
+			{
+				result = _value;
 				return true;
 			}
 
@@ -82,6 +126,12 @@ namespace JsDataParser.Dynamic
 			if (binder.Type == typeof(string) && _value.ValueType == ValueTypes.String)
 			{
 				result = _value.String;
+				return true;
+			}
+
+			if (binder.Type == typeof(IEnumerable) && _value.ValueType == ValueTypes.Array)
+			{
+				result = _value.Array;
 				return true;
 			}
 

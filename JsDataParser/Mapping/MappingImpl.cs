@@ -95,26 +95,26 @@ namespace JsDataParser.Mapping
 		public Type MapToType { get; }
 
 
-		private Action<ValueEntity, object> BuildNestedObject(PropertyInfo info, ValueType valueType)
+		private Action<ValueEntity, object> BuildNestedObject(PropertyInfo info)
 		{
 
 #warning BuildNestedObject_Is_NotImpl
 			throw new NotImplementedException("BuildNestedObject is not implemented");
 		}
 
-		private Action<ValueEntity, object> BuildNestedObject(FieldInfo info, ValueType valueTyep)
+		private Action<ValueEntity, object> BuildNestedObject(FieldInfo info)
 		{
 #warning BuildNestedObject_Is_NotImpl
 			throw new NotImplementedException("BuildNestedObject is not implemented");
 		}
 
-		private Action<ValueEntity, object> BuildArray(PropertyInfo info, ValueTypes valueType)
+		private Action<ValueEntity, object> BuildArray(PropertyInfo info)
 		{
 #warning BuildArray_Is_NotImpl
 			throw new NotImplementedException("BuildArray is not implemented");
 		}
 
-		private Action<ValueEntity, object> BuildArray(FieldInfo info, ValueTypes valueType)
+		private Action<ValueEntity, object> BuildArray(FieldInfo info)
 		{
 #warning BuildArray_Is_NotImpl
 			throw new NotImplementedException("BuildArray is not implemented");
@@ -127,7 +127,7 @@ namespace JsDataParser.Mapping
 			switch (valueType)
 			{
 				case ValueTypes.Array:
-					return BuildArray(info, valueType);
+					return BuildArray(info);
 
 				case ValueTypes.Boolean:
 					return(from, to) =>info.SetValue(to, from.Boolean);
@@ -148,7 +148,7 @@ namespace JsDataParser.Mapping
 					return (from, to) => info.SetValue(to, from.String);
 
 				case ValueTypes.Object:
-					return BuildNestedObject(info, valueType);
+					return BuildNestedObject(info);
 
 				default:
 					throw new InvalidOperationException($"{valueType} is unexpected.");
@@ -162,7 +162,7 @@ namespace JsDataParser.Mapping
 			switch (valueType)
 			{
 				case ValueTypes.Array:
-					return BuildArray(info, valueType);
+					return BuildArray(info);
 
 				case ValueTypes.Boolean:
 					return (from, to) => info.SetValue(to, from.Boolean);
@@ -183,7 +183,7 @@ namespace JsDataParser.Mapping
 					return (from, to) => info.SetValue(to, from.String);
 
 				case ValueTypes.Object:
-					return BuildNestedObject(info, valueType);
+					return BuildNestedObject(info);
 
 				default:
 					throw new InvalidOperationException($"{valueType} is unexpected.");

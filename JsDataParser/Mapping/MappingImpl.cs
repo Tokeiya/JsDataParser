@@ -79,6 +79,7 @@ namespace JsDataParser.Mapping
 		private readonly FieldInfo[] _fields;
 
 
+		//CandidatesはTaypeじゃ話にならん｡Mapper食えるようにしないと
 		public MappingImpl(Type mapToType, params Type[] candidates)
 		{
 			MapToType = mapToType ?? throw new ArgumentNullException(nameof(mapToType));

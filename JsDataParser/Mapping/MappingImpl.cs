@@ -97,6 +97,7 @@ namespace JsDataParser.Mapping
 
 		private Action<ValueEntity, object> BuildNestedObject(PropertyInfo info, ValueType valueType)
 		{
+
 #warning BuildNestedObject_Is_NotImpl
 			throw new NotImplementedException("BuildNestedObject is not implemented");
 		}

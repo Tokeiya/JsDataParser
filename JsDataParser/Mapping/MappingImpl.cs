@@ -30,16 +30,60 @@ namespace JsDataParser.Mapping
 {
 	internal class MappingImpl
 	{
-		public MappingImpl(Type mapTo, params Type[] candidates)
+		private readonly bool _hasDefaultCtor;
+
+		private readonly Dictionary<Type, MappingImpl> _candidates;
+
+		private readonly Dictionary<(string name, ValueTypes type), Action<ValueEntity, object>> _cache
+			= new Dictionary<(string name, ValueTypes type), Action<ValueEntity, object>>();
+
+
+
+		public MappingImpl(Type mapToType, params Type[] candidates)
 		{
-#warning MappingImpl_Is_NotImpl
-			throw new NotImplementedException("MappingImpl is not implemented");
+			MapToType = mapToType ?? throw new ArgumentNullException(nameof(mapToType));
+
+			_candidates = (candidates ?? throw new ArgumentNullException(nameof(candidates)))
+				.ToDictionary(x => x, x => new MappingImpl(x));
+
+			_hasDefaultCtor = mapToType.GetConstructor(Array.Empty<Type>()) == null;
 		}
 
-		public object Map(ObjectLiteralEntity entity)
+		public Type MapToType { get; }
+
+
+		private Action<ValueEntity, object> Build(string identity, ValueTypes valueType)
 		{
-#warning Map_Is_NotImpl
-			throw new NotImplementedException("Map is not implemented");
+#warning Build_Is_NotImpl
+			throw new NotImplementedException("Build is not implemented");
+		}
+
+
+		public void Map(ObjectLiteralEntity entity,ref object mapTo)
+		{
+			if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+			if (mapTo == null)
+			{
+				if (!_hasDefaultCtor) throw new MappingException($"{MapToType.Name} don't have a default ctor.");
+				mapTo = Activator.CreateInstance(MapToType);
+			}
+			else if (!MapToType.IsInstanceOfType(mapTo))
+			{
+				 throw new ArgumentException($"{nameof(mapTo)} is unexpected type.");
+			}
+
+
+			foreach (var elem in entity)
+			{
+				if(!_cache.TryGetValue((elem.Key.Identity.ToLower(),elem.Value.ValueType),out var act))
+				{
+					act = Build(elem.Key.Identity.ToLower(), elem.Value.ValueType);
+					_cache.Add((elem.Key.Identity.ToLower(), elem.Value.ValueType), act);
+				}
+
+				act(elem.Value, mapTo);
+			}
 		}
 	}
 }

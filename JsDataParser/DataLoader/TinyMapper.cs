@@ -23,19 +23,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using JsDataParser.Entities;
+
 // ReSharper disable InconsistentNaming
 
 namespace JsDataParser.DataLoader
 {
-
-
-	public static class TinyMapper<T> where T:new()
+	public static class TinyMapper<T> where T : new()
 	{
 		private static readonly Action<T, ValueEntity> _empty = (_, __) => { };
+
 		private static readonly Dictionary<(string name, ValueTypes type), Action<T, ValueEntity>> _cache =
 			new Dictionary<(string name, ValueTypes type), Action<T, ValueEntity>>();
 
@@ -77,7 +76,6 @@ namespace JsDataParser.DataLoader
 
 
 			for (var i = 0; i < mapTo.Length; i++)
-			{
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Integer:
@@ -87,7 +85,6 @@ namespace JsDataParser.DataLoader
 					default:
 						return false;
 				}
-			}
 
 			return true;
 		}
@@ -96,8 +93,7 @@ namespace JsDataParser.DataLoader
 		{
 			mapTo = new double[mapFrom.Count];
 
-			for (int i = 0; i < mapTo.Length; i++)
-			{
+			for (var i = 0; i < mapTo.Length; i++)
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Real:
@@ -107,7 +103,6 @@ namespace JsDataParser.DataLoader
 					default:
 						return false;
 				}
-			}
 
 			return true;
 		}
@@ -117,8 +112,7 @@ namespace JsDataParser.DataLoader
 		{
 			mapTo = new bool[mapFrom.Count];
 
-			for (int i = 0; i < mapTo.Length; i++)
-			{
+			for (var i = 0; i < mapTo.Length; i++)
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Boolean:
@@ -128,7 +122,6 @@ namespace JsDataParser.DataLoader
 					default:
 						return false;
 				}
-			}
 
 			return true;
 		}
@@ -139,18 +132,17 @@ namespace JsDataParser.DataLoader
 			mapTo = new string[mapFrom.Count];
 
 
-			for (int i = 0; i < mapTo.Length; i++)
-			{
+			for (var i = 0; i < mapTo.Length; i++)
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Function:
 						mapTo[i] = mapFrom[i].Function;
 						break;
-						
+
 					case ValueTypes.String:
 						mapTo[i] = mapFrom[i].String;
 						break;
-						
+
 					case ValueTypes.Identity:
 						mapTo[i] = mapFrom[i].Identity;
 						break;
@@ -158,18 +150,15 @@ namespace JsDataParser.DataLoader
 					default:
 						return false;
 				}
-			}
 
 			return true;
-
 		}
 
 		private static bool TryBuildObjectArray(IReadOnlyList<ValueEntity> mapFrom, out object[] mapTo)
 		{
 			mapTo = new object[mapFrom.Count];
 
-			for (int i = 0; i < mapTo.Length; i++)
-			{
+			for (var i = 0; i < mapTo.Length; i++)
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Array:
@@ -180,7 +169,6 @@ namespace JsDataParser.DataLoader
 						mapTo[i] = mapFrom[i].Object;
 						break;
 				}
-			}
 
 			return true;
 		}
@@ -191,64 +179,42 @@ namespace JsDataParser.DataLoader
 			{
 				case ValueTypes.Array:
 					if (info.FieldType.IsAssignableFrom(typeof(int[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildIntArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 					if (info.FieldType.IsAssignableFrom(typeof(double[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildRealArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 					if (info.FieldType.IsAssignableFrom(typeof(bool[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildBoolArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 
 					//statement order is important.
 					if (info.FieldType.IsAssignableFrom(typeof(object[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildObjectArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
-
-
 
 
 					if (info.FieldType.IsAssignableFrom(typeof(string[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildStringArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 
 					return _empty;
@@ -282,71 +248,51 @@ namespace JsDataParser.DataLoader
 			{
 				case ValueTypes.Array:
 					if (info.PropertyType.IsAssignableFrom(typeof(int[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildIntArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 					if (info.PropertyType.IsAssignableFrom(typeof(double[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildRealArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 					if (info.PropertyType.IsAssignableFrom(typeof(bool[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildBoolArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 
 					//statement order is important.
 					if (info.PropertyType.IsAssignableFrom(typeof(object[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildObjectArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 
 					if (info.PropertyType.IsAssignableFrom(typeof(string[])))
-					{
 						return (to, from) =>
 						{
 							if (TryBuildStringArray(from.Array, out var array))
-							{
 								info.SetValue(to, array);
-							}
 						};
-					}
 
 
 					return _empty;
 
 				case ValueTypes.Boolean:
-					return (to, from) =>info.SetValue(to, from.Boolean);
+					return (to, from) => info.SetValue(to, from.Boolean);
 
 				case ValueTypes.Function:
-					return (to, from) =>info.SetValue(to, from.Function);
+					return (to, from) => info.SetValue(to, from.Function);
 
 				case ValueTypes.Identity:
 					return (to, from) => info.SetValue(to, from.Identity);
@@ -365,7 +311,7 @@ namespace JsDataParser.DataLoader
 			}
 		}
 
-		private static Action<T,ValueEntity> Build(KeyValuePair<IdentifierEntity, ValueEntity> pair)
+		private static Action<T, ValueEntity> Build(KeyValuePair<IdentifierEntity, ValueEntity> pair)
 		{
 			if (pair.Value == null || pair.Key == null) throw new ArgumentException($"{nameof(pair)} contains null value.");
 
@@ -385,9 +331,7 @@ namespace JsDataParser.DataLoader
 			var prop = propCandidates.FirstOrDefault();
 
 			if (prop != null)
-			{
 				return BuildProperty(prop, pair.Value.ValueType);
-			}
 
 			return BuildField(fldCandidates.FirstOrDefault(), pair.Value.ValueType);
 		}
@@ -398,22 +342,24 @@ namespace JsDataParser.DataLoader
 
 			var ret = new T();
 
-			foreach (var pair in entity.Where(x=>x.Key.IdentityType== IdentifierTypes.Identity))
-			{
+			foreach (var pair in entity.Where(x => x.Key.IdentityType == IdentifierTypes.Identity))
 				if (_cache.TryGetValue((pair.Key.Identity.ToLower(), pair.Value.ValueType), out var act))
+				{
 					act(ret, pair.Value);
+				}
 				else
 				{
 					var proc = Build(pair);
 					proc(ret, pair.Value);
 					_cache.Add((pair.Key.Identity.ToLower(), pair.Value.ValueType), proc);
 				}
-			}
 
 			return ret;
 		}
 
 		public static IEnumerable<T> MultiMap(ObjectLiteralEntity rootEntity)
-			=> rootEntity.Values.Where(x => x.ValueType == ValueTypes.Object).Select(elem => SingleMap(elem.NestedObject));
+		{
+			return rootEntity.Values.Where(x => x.ValueType == ValueTypes.Object).Select(elem => SingleMap(elem.NestedObject));
+		}
 	}
 }

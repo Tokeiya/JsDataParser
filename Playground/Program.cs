@@ -21,15 +21,8 @@
  */
 
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using JsDataParser.DataLoader;
-using JsDataParser.Entities;
 
 namespace Playground
 {
@@ -38,23 +31,16 @@ namespace Playground
 		public string Name { get; set; }
 		public string NameJP { get; set; }
 		public string Image { get; set; }
-
 	}
 
 
 	internal class Program
 	{
-
-
 		private static void Main()
 		{
 			var data = DataLoader.LoadRaw(".\\Samples\\sample.txt");
 
 			var ret = TinyMapper<Sample>.SingleMap(data.Values.First().NestedObject);
-
-
-
-
 		}
 	}
 }

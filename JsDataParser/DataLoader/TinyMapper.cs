@@ -387,9 +387,7 @@ namespace JsDataParser.DataLoader
 			return ret;
 		}
 
-		public static IEnumerable<T> MultiMap(ObjectLiteralEntity rootEntity)
-		{
-			return rootEntity.Values.Where(x => x.ValueType == ValueTypes.Object).Select(elem => SingleMap(elem.NestedObject));
-		}
+		public static IEnumerable<KeyValuePair<object,T>> MultiMap(ObjectLiteralEntity rootEntity)
+			=>rootEntity.Select(p => new KeyValuePair<object, T>(p.Key, SingleMap(p.Value.NestedObject)));
 	}
 }

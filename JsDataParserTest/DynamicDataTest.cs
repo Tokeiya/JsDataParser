@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JsDataParser.DataLoader;
 using Xunit;
 
@@ -26,15 +27,39 @@ namespace JsDataParserTest
 
 
 			var actual = loaded[1];
-
 			Assert.NotNull(actual);
 
 
 			Assert.Equal<string>((string) actual.name, "12cm Single Cannon");
+		}
 
-			int hoge = actual.SLOTS[0];
+		[Fact]
+		public void ReadArrayTest()
+		{
+			var data = DataLoader.LoadAsDynamic(".\\Samples\\DynamicMappingSamples.txt");
 
-			Assert.True(true);
+			IReadOnlyList<dynamic> actual = data[1].SLOTS;
+
+			actual.Count.Is(3);
+
+			((int)actual[0]).Is(1);
+			((int)actual[1]).Is(2);
+			((int)actual[2]).Is(3);
+
+
+			actual = data[1].REALS;
+			actual.Count.Is(2);
+
+			((double) actual[0]).Is(1.2);
+			((double)actual[1]).Is(1.5);
+
+			actual = data[1].Misc;
+			actual.Count.Is(4);
+
+			((int) actual[0]).Is(1);
+			((string) actual[1]).Is("a");
+
+
 		}
 	}
 }

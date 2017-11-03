@@ -44,7 +44,9 @@ namespace Playground
 
 			var datum = data[1];
 
-			IReadOnlyList<int> array = datum.SLOTS;
+			IReadOnlyList<dynamic> array = datum.SLOTS;
+
+			Console.WriteLine(array.Cast<int>());
 		}
 	}
 }

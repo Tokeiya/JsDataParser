@@ -109,13 +109,14 @@ namespace JsDataParser.Mapping
 			//Strict
 
 			//Object should be always on top.
-			if (binder.Type == typeof(object))
+
+			if(binder.Type.IsAssignableFrom(typeof(object)))
 			{
 				result = _value.Object;
 				return true;
 			}
 
-			if (binder.Type.IsAssignableFrom(typeof(ValueEntity)))
+			if (binder.Type==typeof(ValueEntity))
 			{
 				result = _value;
 				return true;
@@ -146,9 +147,11 @@ namespace JsDataParser.Mapping
 				return true;
 			}
 
-			if (binder.Type == typeof(IEnumerable) && _value.ValueType == ValueTypes.Array)
+
+
+			if (typeof(IEnumerable<dynamic>).IsAssignableFrom(binder.Type))
 			{
-				result =(IReadOnlyList<DynamicValueMapping>) _value.Array.Select(x => new DynamicValueMapping(x)).ToArray();
+				result = _value.Array.Select(x => new DynamicValueMapping(x)).ToArray();
 				return true;
 			}
 

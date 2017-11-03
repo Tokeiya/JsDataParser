@@ -1,6 +1,6 @@
 {
   0: {
-    name: 'hh'
+    name: ''
   },
   1: {
     name: '12cm Single Cannon',

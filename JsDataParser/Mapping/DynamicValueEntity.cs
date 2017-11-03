@@ -22,7 +22,9 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
@@ -88,6 +90,20 @@ namespace JsDataParser.Mapping
 			throw new InvalidOperationException();
 		}
 
+		public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+		{
+			result = default;
+
+			if (indexes.Length != 1 || !(indexes[0] is int) || _value.ValueType != ValueTypes.Array) return false;
+			// ReSharper disable once PossibleInvalidCastException
+			var idx = (int) indexes[0];
+
+			if (idx < 0 || idx > _value.Array.Count) return false;
+
+			result = new DynamicValueMapping(_value.Array[idx]);
+			return true;
+		}
+
 		public override bool TryConvert(ConvertBinder binder, out object result)
 		{
 			//Strict
@@ -132,7 +148,7 @@ namespace JsDataParser.Mapping
 
 			if (binder.Type == typeof(IEnumerable) && _value.ValueType == ValueTypes.Array)
 			{
-				result = _value.Array;
+				result =(IReadOnlyList<DynamicValueMapping>) _value.Array.Select(x => new DynamicValueMapping(x)).ToArray();
 				return true;
 			}
 

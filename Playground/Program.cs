@@ -21,27 +21,30 @@
  */
 
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using JsDataParser.DataLoader;
 using JsDataParser.Mapping;
 
 namespace Playground
 {
-	public class Sample
-	{
-		public string Name { get; set; }
-		public string NameJP { get; set; }
-		public string Image { get; set; }
-	}
 
 
 	internal class Program
 	{
 		private static void Main()
 		{
-			var data = DataLoader.LoadRaw(".\\Samples\\sample.txt");
+			object[] obj = {10, "hello"};
+			Console.WriteLine(obj[0] is int);
 
-			var ret = TinyMapper<Sample>.SingleMap(data.Values.First().NestedObject);
+
+
+			var data = DataLoader.LoadAsDynamic(".\\Samples\\Sample.txt");
+
+			var datum = data[1];
+
+			IReadOnlyList<int> array = datum.SLOTS;
 		}
 	}
 }

@@ -195,6 +195,9 @@ namespace JsDataParser.Mapping
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Array:
+#warning TryBuildObjectArray_Is_NotImpl
+						throw new NotImplementedException("TryBuildObjectArray is not implemented");
+
 					case ValueTypes.Object:
 						return false;
 

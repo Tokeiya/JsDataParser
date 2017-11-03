@@ -29,7 +29,7 @@ using JsDataParser.Entities;
 
 // ReSharper disable InconsistentNaming
 
-namespace JsDataParser.DataLoader
+namespace JsDataParser.Mapping
 {
 	public static class TinyMapper<T> where T : new()
 	{

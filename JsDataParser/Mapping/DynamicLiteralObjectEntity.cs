@@ -25,14 +25,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using JsDataParser.Entities;
 
-namespace JsDataParser.Entities
+namespace JsDataParser.Mapping
 {
-	internal class DynamicLiteralObjectEntity : DynamicEntity, IDynamicLiteralObjectEntity
+	internal class DynamicLiteralObjectMapping : DynamicMappingObject, IDynamicLiteralObjectEntity
 	{
 		private readonly ObjectLiteralEntity _entity;
 
-		public DynamicLiteralObjectEntity(ObjectLiteralEntity entity) : base(RepresentTypes.Object, DynamicEntityTypes.Object)
+		public DynamicLiteralObjectMapping(ObjectLiteralEntity entity) : base(RepresentTypes.Object, DynamicMappingTypes.Object)
 		{
 			_entity = entity ?? throw new ArgumentNullException(nameof(entity));
 		}
@@ -46,7 +47,7 @@ namespace JsDataParser.Entities
 
 			if (_entity.TryGetValue(key, out var ret))
 			{
-				value = new DynamicValueEntity(ret);
+				value = new DynamicValueMapping(ret);
 				return true;
 			}
 
@@ -56,7 +57,7 @@ namespace JsDataParser.Entities
 
 		public IEnumerator<(object key, object value)> GetEnumerator()
 		{
-			return _entity.Select(x => ((object) new DynamicIdentifierEntity(x.Key), (object) new DynamicValueEntity(x.Value)))
+			return _entity.Select(x => ((object) new DynamicIdentifierMapping(x.Key), (object) new DynamicValueMapping(x.Value)))
 				.GetEnumerator();
 		}
 
@@ -102,11 +103,11 @@ namespace JsDataParser.Entities
 				switch (ret.ValueType)
 				{
 					case ValueTypes.Object:
-						tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
+						tmp = new DynamicLiteralObjectMapping(ret.NestedObject);
 						break;
 
 					default:
-						tmp = new DynamicValueEntity(ret);
+						tmp = new DynamicValueMapping(ret);
 						break;
 				}
 			else
@@ -135,9 +136,9 @@ namespace JsDataParser.Entities
 
 			if (_entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret))
 				if (ret.ValueType == ValueTypes.Object)
-					tmp = new DynamicLiteralObjectEntity(ret.NestedObject);
+					tmp = new DynamicLiteralObjectMapping(ret.NestedObject);
 				else
-					tmp = new DynamicValueEntity(ret);
+					tmp = new DynamicValueMapping(ret);
 			else
 				tmp = default;
 

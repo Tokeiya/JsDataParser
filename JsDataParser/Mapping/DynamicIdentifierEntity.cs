@@ -23,15 +23,16 @@
 
 using System;
 using System.Dynamic;
+using JsDataParser.Entities;
 
-namespace JsDataParser.Entities
+namespace JsDataParser.Mapping
 {
-	internal class DynamicIdentifierEntity : DynamicEntity
+	internal class DynamicIdentifierMapping : DynamicMappingObject
 	{
 		private readonly IdentifierEntity _identity;
 
-		public DynamicIdentifierEntity(IdentifierEntity identity)
-			: base(GetType(identity), DynamicEntityTypes.Identity)
+		public DynamicIdentifierMapping(IdentifierEntity identity)
+			: base(GetType(identity), DynamicMappingTypes.Identity)
 		{
 			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
 		}

@@ -20,12 +20,23 @@
  * 
  */
 
-namespace JsDataParser.Entities
+using System;
+using System.Dynamic;
+using JsDataParser.Entities;
+
+namespace JsDataParser.Mapping
 {
-	public enum DynamicEntityTypes
+	internal abstract class DynamicMappingObject : DynamicObject
 	{
-		Object = 1,
-		Value,
-		Identity
+		protected DynamicMappingObject(RepresentTypes representType, DynamicMappingTypes entityType)
+		{
+			if (!representType.Verify()) throw new ArgumentException($"{representType} is unexpected.");
+			if (!entityType.Verify()) throw new ArgumentException($"{entityType} is unexpected.");
+			RepresentType = representType;
+			EntityType = entityType;
+		}
+
+		public RepresentTypes RepresentType { get; }
+		public DynamicMappingTypes EntityType { get; }
 	}
 }

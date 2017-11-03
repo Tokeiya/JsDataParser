@@ -23,14 +23,15 @@
 using System;
 using System.Collections;
 using System.Dynamic;
+using JsDataParser.Entities;
 
-namespace JsDataParser.Entities
+namespace JsDataParser.Mapping
 {
-	internal class DynamicValueEntity : DynamicEntity
+	internal class DynamicValueMapping : DynamicMappingObject
 	{
 		private readonly ValueEntity _value;
 
-		public DynamicValueEntity(ValueEntity value) : base(GetType(value), DynamicEntityTypes.Value)
+		public DynamicValueMapping(ValueEntity value) : base(GetType(value), DynamicMappingTypes.Value)
 		{
 			_value = value ?? throw new ArgumentNullException(nameof(value));
 		}

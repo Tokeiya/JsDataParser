@@ -23,6 +23,7 @@
 
 using System.Linq;
 using JsDataParser.DataLoader;
+using JsDataParser.Mapping;
 
 namespace Playground
 {

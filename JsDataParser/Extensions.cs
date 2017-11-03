@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JsDataParser.Entities;
+using JsDataParser.Mapping;
 
 // ReSharper disable InconsistentNaming
 
@@ -19,8 +20,8 @@ namespace JsDataParser
 		private static readonly RepresentTypes[] _dynamicTypes =
 			(RepresentTypes[]) Enum.GetValues(typeof(RepresentTypes));
 
-		private static readonly DynamicEntityTypes[] _dynamicEntityTypes =
-			(DynamicEntityTypes[]) Enum.GetValues(typeof(DynamicEntityTypes));
+		private static readonly DynamicMappingTypes[] _dynamicEntityTypes =
+			(DynamicMappingTypes[]) Enum.GetValues(typeof(DynamicMappingTypes));
 
 		public static bool Verify(this IdentifierTypes type)
 		{
@@ -37,7 +38,7 @@ namespace JsDataParser
 			return _dynamicTypes.Any(x => x == type);
 		}
 
-		public static bool Verify(this DynamicEntityTypes type)
+		public static bool Verify(this DynamicMappingTypes type)
 		{
 			return _dynamicEntityTypes.Any(x => x == type);
 		}

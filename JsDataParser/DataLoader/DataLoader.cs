@@ -23,6 +23,7 @@
 using System;
 using System.IO;
 using JsDataParser.Entities;
+using JsDataParser.Mapping;
 using JsDataParser.Parser;
 using Parseq;
 
@@ -73,7 +74,7 @@ namespace JsDataParser.DataLoader
 		{
 			var obj = LoadRaw(reader);
 
-			return new DynamicLiteralObjectEntity(obj);
+			return new DynamicLiteralObjectMapping(obj);
 		}
 	}
 }

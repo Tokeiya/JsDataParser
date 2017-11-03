@@ -21,7 +21,7 @@
  */
 
 
-namespace JsDataParser.Entities
+namespace JsDataParser.Mapping
 {
 	public enum RepresentTypes
 	{

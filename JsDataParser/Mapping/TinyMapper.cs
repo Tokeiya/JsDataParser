@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Reflection;
 using JsDataParser.Entities;
@@ -195,11 +196,12 @@ namespace JsDataParser.Mapping
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Array:
-#warning TryBuildObjectArray_Is_NotImpl
-						throw new NotImplementedException("TryBuildObjectArray is not implemented");
+						mapTo[i]=new DynamicValueMapping(mapFrom[i]);
+						break;
 
 					case ValueTypes.Object:
-						return false;
+						mapTo[i] = new DynamicMappedLiteralObject(mapFrom[i].NestedObject);
+						break;
 
 					default:
 						mapTo[i] = mapFrom[i].Object;
@@ -273,6 +275,9 @@ namespace JsDataParser.Mapping
 				case ValueTypes.Real:
 					return (to, from) => info.SetValue(to, from.Real);
 
+				case ValueTypes.Object:
+					return (to, from) => info.SetValue(to, new DynamicMappedLiteralObject(from.NestedObject));
+
 				default:
 					return _empty;
 			}
@@ -342,6 +347,9 @@ namespace JsDataParser.Mapping
 				case ValueTypes.Real:
 					return (to, from) => info.SetValue(to, from.Real);
 
+				case ValueTypes.Object:
+					return (to, from) => info.SetValue(to, new DynamicMappedLiteralObject(from.NestedObject));
+
 				default:
 					return _empty;
 			}
@@ -350,6 +358,8 @@ namespace JsDataParser.Mapping
 		private static Action<T, ValueEntity> Build(KeyValuePair<IdentifierEntity, ValueEntity> pair)
 		{
 			if (pair.Value == null || pair.Key == null) throw new ArgumentException($"{nameof(pair)} contains null value.");
+
+
 
 			var propCandidates = _properties.Where(x => x.Name.ToLower() == pair.Key.Identity.ToLower())
 				.Where(x => Verify(x.PropertyType, pair.Value.ValueType));

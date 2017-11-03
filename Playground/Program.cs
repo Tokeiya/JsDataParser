@@ -25,14 +25,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JsDataParser.DataLoader;
+using JsDataParser.Entities;
 using JsDataParser.Mapping;
 
 namespace Playground
 {
+	class Mapped
+	{
+		public dynamic Nested { get; set; }
+
+		public IReadOnlyList<dynamic> Misc;
+	}
 
 
 	internal class Program
 	{
+
+
 		private static void Main()
 		{
 			object[] obj = {10, "hello"};
@@ -40,13 +49,10 @@ namespace Playground
 
 
 
-			var data = DataLoader.LoadAsDynamic(".\\Samples\\Sample.txt");
+			var data = DataLoader.LoadRaw(".\\Samples\\Sample.txt");
 
-			var datum = data[1];
+			var result = TinyMapper<Mapped>.SingleMap(data[new IdentifierEntity(1)].NestedObject);
 
-			IReadOnlyList<dynamic> array = datum.SLOTS;
-
-			Console.WriteLine(array.Cast<int>());
 		}
 	}
 }

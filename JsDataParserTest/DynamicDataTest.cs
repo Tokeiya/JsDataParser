@@ -58,6 +58,8 @@ namespace JsDataParserTest
 
 			((int) actual[0]).Is(1);
 			((string) actual[1]).Is("a");
+			((double) actual[2]).Is(42.195);
+
 
 
 		}

@@ -80,7 +80,7 @@ namespace JsDataParser.Mapping
 
 
 		//CandidatesはTaypeじゃ話にならん｡Mapper食えるようにしないと
-		public MappingImpl(Type mapToType, params Type[] candidates)
+		public MappingImpl(Type mapToType, params MappingImpl candidates)
 		{
 			MapToType = mapToType ?? throw new ArgumentNullException(nameof(mapToType));
 

@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using JsDataParser.DataLoader;
+using JsDataParser.Entities;
 using JsDataParser.Mapping;
 using Xunit;
 
@@ -42,8 +45,79 @@ namespace JsDataParserTest
 		public IEnumerable<string> Txts;
 	}
 
+	public class SampleE
+	{
+		public dynamic Nested { get; set; }
+		public dynamic[] Misc { get; set; }
+	}
+
+	public class SampleF
+	{
+		public dynamic Nested;
+		public dynamic[] Misc;
+	}
+
+
 	public class TinyMapperTest
 	{
+		[Fact]
+		public void NestedObjectMappingTest()
+		{
+			var datum = DataLoader.LoadRaw(".\\Samples\\TinyMapTestSample1.txt")[new IdentifierEntity(1)];
+
+			var actualE = TinyMapper<SampleE>.SingleMap(datum.NestedObject);
+			var actualF = TinyMapper<SampleF>.SingleMap(datum.NestedObject);
+
+			((int) actualE.Nested.Hoge).Is(1);
+			((string) actualE.Nested.Piyo).Is("hello");
+
+
+			((int) actualF.Nested.Hoge).Is(1);
+			((string) actualF.Nested.Piyo).Is("hello");
+
+			{
+				var d = actualF.Misc[3];
+
+				((bool) d[0]).IsTrue();
+				((bool) d[1]).IsFalse();
+
+				d = actualF.Misc[3];
+				IReadOnlyList<dynamic> dd = d;
+
+				dd.Count.Is(2);
+			}
+
+			{
+				var d = actualE.Misc[3];
+
+				((bool)d[0]).IsTrue();
+				((bool)d[1]).IsFalse();
+
+				d = actualE.Misc[3];
+				IReadOnlyList<dynamic> dd = d;
+
+				dd.Count.Is(2);
+
+			}
+
+
+			{
+				var d = actualF.Misc[4];
+				((int) d.Foo).Is(42);
+				((string) d.Bar).Is("world");
+			}
+
+			{
+				var d = actualE.Misc[4];
+				((int)d.Foo).Is(42);
+				((string)d.Bar).Is("world");
+			}
+
+
+
+
+		}
+
 		[Fact]
 		public void ArrayFieldMappingTest()
 		{

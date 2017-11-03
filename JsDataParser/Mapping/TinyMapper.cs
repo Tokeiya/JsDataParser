@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Reflection;
 using JsDataParser.Entities;
@@ -403,7 +402,7 @@ namespace JsDataParser.Mapping
 			return ret;
 		}
 
-		public static IEnumerable<KeyValuePair<object,T>> MultiMap(ObjectLiteralEntity rootEntity)
-			=>rootEntity.Select(p => new KeyValuePair<object, T>(p.Key, SingleMap(p.Value.NestedObject)));
+		public static IEnumerable<KeyValuePair<object, T>> MultiMap(ObjectLiteralEntity rootEntity)
+			=> rootEntity.Select(p => new KeyValuePair<object, T>(p.Key.Object, SingleMap(p.Value.NestedObject)));
 	}
 }

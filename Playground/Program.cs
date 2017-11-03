@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
 using JsDataParser.Mapping;
@@ -32,26 +33,31 @@ namespace Playground
 {
 	class Mapped
 	{
-		public dynamic Nested { get; set; }
+		public string Name { get; set; }
+		public string NameJp { get; set; }
+		public string Added { get; set; }
+		public string Type { get; set; }
+		public string BType { get; set; }
+		public int ImproveType { get; set; }
+		public dynamic Improve { get; set; }
+		public int? Fp { get; set; }
+		public int? Acc { get; set; }
+	}
 
-		public IReadOnlyList<dynamic> Misc;
+
+	class Hoge
+	{
+		public dynamic Empty { get; set; }
 	}
 
 
 	internal class Program
 	{
-
-
 		private static void Main()
 		{
-			object[] obj = {10, "hello"};
-			Console.WriteLine(obj[0] is int);
 
 
 
-			var data = DataLoader.LoadRaw(".\\Samples\\Sample.txt");
-
-			var result = TinyMapper<Mapped>.SingleMap(data[new IdentifierEntity(1)].NestedObject);
 
 		}
 	}

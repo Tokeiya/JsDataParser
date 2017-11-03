@@ -156,11 +156,16 @@ namespace JsDataParser.Parser
 					from last in lstProp
 					select Concat(props, last);
 
+				var empty = Combinator.Sequence(Char('{').Ignore(), ignore, Char('}').Ignore())
+					.Select(_ => new ObjectLiteralEntity(Enumerable.Empty<(IdentifierEntity, ValueEntity)>()));
+
 
 				var tmp = from _ in Combinator.Sequence(Char('{').Ignore(), ignore)
 					from props in contents
 					from __ in Combinator.Sequence(ignore, Char('}').Ignore())
 					select new ObjectLiteralEntity(props);
+
+				tmp = Combinator.Choice(tmp, empty);
 
 				objectFixedPoint.FixedParser = tmp;
 				LiteralObject = objectFixedPoint.Parse;

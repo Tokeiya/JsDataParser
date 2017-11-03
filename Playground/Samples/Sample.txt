@@ -1,5 +1,6 @@
 ﻿{
  1: {
+	Empty:{},
 	String:"hello",
 	Integer:10,
 	Real:42.195,

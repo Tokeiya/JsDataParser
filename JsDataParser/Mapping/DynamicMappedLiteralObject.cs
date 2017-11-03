@@ -29,7 +29,7 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-	internal class DynamicMappedLiteralObject : DynamicMappedObject, IDynamicLiteralObjectEntity
+	internal class DynamicMappedLiteralObject : DynamicMappedObject, IDynamicMappedLiteralObject
 	{
 		private readonly ObjectLiteralEntity _entity;
 

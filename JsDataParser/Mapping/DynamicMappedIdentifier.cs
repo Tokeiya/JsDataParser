@@ -131,5 +131,7 @@ namespace JsDataParser.Mapping
 			result = default;
 			return true;
 		}
+
+		public override string ToString() => _identity.Object.ToString();
 	}
 }

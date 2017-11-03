@@ -65,6 +65,9 @@ namespace JsDataParser.Mapping
 				case ValueTypes.Real:
 					return mapTo.IsAssignableFrom(typeof(double));
 
+				case ValueTypes.Object:
+					return mapTo.IsAssignableFrom(typeof(object));
+
 				default:
 					throw new InvalidOperationException($"{mapFrom} is unexpected value");
 			}

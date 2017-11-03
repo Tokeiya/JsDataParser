@@ -59,8 +59,21 @@ namespace JsDataParserTest
 			((int) actual[0]).Is(1);
 			((string) actual[1]).Is("a");
 			((double) actual[2]).Is(42.195);
+		}
 
+		[Fact]
+		public void ReadNestedArrayTest()
+		{
+			var data = DataLoader.LoadAsDynamic(".\\Samples\\DynamicMappingSamples.txt");
 
+			IReadOnlyList<dynamic> actual = data[1].ArrayArray;
+			actual.Count.Is(4);
+
+			actual = actual[2];
+			actual.Count.Is(2);
+
+			((int) actual[0]).Is(3);
+			((int) actual[1]).Is(4);
 
 		}
 	}

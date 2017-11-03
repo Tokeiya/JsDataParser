@@ -13,7 +13,8 @@
 	TXTS:['a','b','c'],
 	REALS:[1.2,1.5],
 	Flags:[true,false],
-	Misc:[1,'a',42.195,114514]
+	Misc:[1,'a',42.195,114514],
+	ArrayArray:[1,2,[3,4],5]
   },
   2: {
 	name: '12.7cm Twin Cannon',

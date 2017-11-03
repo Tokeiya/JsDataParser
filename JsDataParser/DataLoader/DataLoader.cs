@@ -74,7 +74,7 @@ namespace JsDataParser.DataLoader
 		{
 			var obj = LoadRaw(reader);
 
-			return new DynamicLiteralObjectMapping(obj);
+			return new DynamicMappedLiteralObject(obj);
 		}
 	}
 }

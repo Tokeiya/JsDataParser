@@ -20,8 +20,8 @@ namespace JsDataParser
 		private static readonly RepresentTypes[] _dynamicTypes =
 			(RepresentTypes[]) Enum.GetValues(typeof(RepresentTypes));
 
-		private static readonly DynamicMappingTypes[] _dynamicEntityTypes =
-			(DynamicMappingTypes[]) Enum.GetValues(typeof(DynamicMappingTypes));
+		private static readonly DynamicMappedTypes[] _dynamicEntityTypes =
+			(DynamicMappedTypes[]) Enum.GetValues(typeof(DynamicMappedTypes));
 
 		public static bool Verify(this IdentifierTypes type)
 		{
@@ -38,7 +38,7 @@ namespace JsDataParser
 			return _dynamicTypes.Any(x => x == type);
 		}
 
-		public static bool Verify(this DynamicMappingTypes type)
+		public static bool Verify(this DynamicMappedTypes type)
 		{
 			return _dynamicEntityTypes.Any(x => x == type);
 		}

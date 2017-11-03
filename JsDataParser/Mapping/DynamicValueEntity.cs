@@ -27,11 +27,11 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-	internal class DynamicValueMapping : DynamicMappingObject
+	internal class DynamicValueMapping : DynamicMappedObject
 	{
 		private readonly ValueEntity _value;
 
-		public DynamicValueMapping(ValueEntity value) : base(GetType(value), DynamicMappingTypes.Value)
+		public DynamicValueMapping(ValueEntity value) : base(GetType(value), DynamicMappedTypes.Value)
 		{
 			_value = value ?? throw new ArgumentNullException(nameof(value));
 		}

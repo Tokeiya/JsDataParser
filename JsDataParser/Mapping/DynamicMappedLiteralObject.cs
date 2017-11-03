@@ -29,11 +29,11 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-	internal class DynamicLiteralObjectMapping : DynamicMappingObject, IDynamicLiteralObjectEntity
+	internal class DynamicMappedLiteralObject : DynamicMappedObject, IDynamicLiteralObjectEntity
 	{
 		private readonly ObjectLiteralEntity _entity;
 
-		public DynamicLiteralObjectMapping(ObjectLiteralEntity entity) : base(RepresentTypes.Object, DynamicMappingTypes.Object)
+		public DynamicMappedLiteralObject(ObjectLiteralEntity entity) : base(RepresentTypes.Object, DynamicMappedTypes.Object)
 		{
 			_entity = entity ?? throw new ArgumentNullException(nameof(entity));
 		}
@@ -103,7 +103,7 @@ namespace JsDataParser.Mapping
 				switch (ret.ValueType)
 				{
 					case ValueTypes.Object:
-						tmp = new DynamicLiteralObjectMapping(ret.NestedObject);
+						tmp = new DynamicMappedLiteralObject(ret.NestedObject);
 						break;
 
 					default:
@@ -136,7 +136,7 @@ namespace JsDataParser.Mapping
 
 			if (_entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret))
 				if (ret.ValueType == ValueTypes.Object)
-					tmp = new DynamicLiteralObjectMapping(ret.NestedObject);
+					tmp = new DynamicMappedLiteralObject(ret.NestedObject);
 				else
 					tmp = new DynamicValueMapping(ret);
 			else

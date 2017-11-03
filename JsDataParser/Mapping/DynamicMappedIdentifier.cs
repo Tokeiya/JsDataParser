@@ -27,12 +27,12 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-	internal class DynamicIdentifierMapping : DynamicMappingObject
+	internal class DynamicIdentifierMapping : DynamicMappedObject
 	{
 		private readonly IdentifierEntity _identity;
 
 		public DynamicIdentifierMapping(IdentifierEntity identity)
-			: base(GetType(identity), DynamicMappingTypes.Identity)
+			: base(GetType(identity), DynamicMappedTypes.Identity)
 		{
 			_identity = identity ?? throw new ArgumentNullException(nameof(identity));
 		}

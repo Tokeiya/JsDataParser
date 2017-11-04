@@ -123,19 +123,19 @@ namespace JsDataParser.Mapping
 			}
 
 
-			if (binder.Type == typeof(int) && _value.ValueType == ValueTypes.Integer)
+			if ((binder.Type == typeof(int)||binder.Type==typeof(int?)) && _value.ValueType == ValueTypes.Integer)
 			{
 				result = _value.Integer;
 				return true;
 			}
 
-			if (binder.Type == typeof(double) && _value.ValueType == ValueTypes.Real)
+			if ((binder.Type == typeof(double)||binder.Type==typeof(double?)) && _value.ValueType == ValueTypes.Real)
 			{
 				result = _value.Real;
 				return true;
 			}
 
-			if (binder.Type == typeof(bool) && _value.ValueType == ValueTypes.Boolean)
+			if ((binder.Type == typeof(bool)||binder.Type==typeof(bool)) && _value.ValueType == ValueTypes.Boolean)
 			{
 				result = _value.Boolean;
 				return true;
@@ -156,13 +156,13 @@ namespace JsDataParser.Mapping
 			}
 
 			//Implicit
-			if (binder.Type == typeof(double) && _value.ValueType == ValueTypes.Integer)
+			if ((binder.Type == typeof(double)||binder.Type==typeof(double?)) && _value.ValueType == ValueTypes.Integer)
 			{
 				result = (double) _value.Integer;
 				return true;
 			}
 
-			if (binder.Type == typeof(int) && _value.ValueType == ValueTypes.Real)
+			if ((binder.Type == typeof(int)||binder.Type==typeof(int?)) && _value.ValueType == ValueTypes.Real)
 			{
 				result = (int) _value.Real;
 				return true;

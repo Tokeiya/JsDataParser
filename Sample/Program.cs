@@ -16,11 +16,12 @@ namespace Sample
 
 			int accum = 0;
 
-			foreach (var elem in iterator)
-			{
-				dynamic d = elem.value.RNG;
+			var seq = iterator.Select(x => (rng:(int?) x.value.RNG, key:x.key));
 
-				Console.WriteLine($"Key:{elem.key} d:{d}");
+
+			foreach (var elem in seq)
+			{
+				Console.WriteLine(elem);
 			}
 
 			Console.WriteLine(accum);

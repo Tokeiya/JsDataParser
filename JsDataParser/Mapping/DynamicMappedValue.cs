@@ -29,11 +29,11 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-	internal class DynamicValueMapping : DynamicMappedObject
+	internal class DynamicMappedValue : DynamicMappedObject
 	{
 		private readonly ValueEntity _value;
 
-		public DynamicValueMapping(ValueEntity value) : base(GetType(value), DynamicMappedTypes.Value)
+		public DynamicMappedValue(ValueEntity value) : base(GetType(value), DynamicMappedTypes.Value)
 		{
 			_value = value ?? throw new ArgumentNullException(nameof(value));
 		}
@@ -100,7 +100,7 @@ namespace JsDataParser.Mapping
 
 			if (idx < 0 || idx > _value.Array.Count) return false;
 
-			result = new DynamicValueMapping(_value.Array[idx]);
+			result = new DynamicMappedValue(_value.Array[idx]);
 			return true;
 		}
 
@@ -151,7 +151,7 @@ namespace JsDataParser.Mapping
 
 			if (typeof(IEnumerable<dynamic>).IsAssignableFrom(binder.Type))
 			{
-				result = _value.Array.Select(x => new DynamicValueMapping(x)).ToArray();
+				result = _value.Array.Select(x => new DynamicMappedValue(x)).ToArray();
 				return true;
 			}
 

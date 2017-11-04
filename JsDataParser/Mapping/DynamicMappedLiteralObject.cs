@@ -47,7 +47,7 @@ namespace JsDataParser.Mapping
 
 			if (_entity.TryGetValue(key, out var ret))
 			{
-				value = new DynamicValueMapping(ret);
+				value = new DynamicMappedValue(ret);
 				return true;
 			}
 
@@ -60,7 +60,7 @@ namespace JsDataParser.Mapping
 			object select(ValueEntity entity)
 			{
 				if(entity.ValueType== ValueTypes.Object) return new DynamicMappedLiteralObject(entity.NestedObject);
-				else return new DynamicValueMapping(entity);
+				else return new DynamicMappedValue(entity);
 			}
 
 			return _entity
@@ -114,7 +114,7 @@ namespace JsDataParser.Mapping
 						break;
 
 					default:
-						tmp = new DynamicValueMapping(ret);
+						tmp = new DynamicMappedValue(ret);
 						break;
 				}
 			else
@@ -145,7 +145,7 @@ namespace JsDataParser.Mapping
 				if (ret.ValueType == ValueTypes.Object)
 					tmp = new DynamicMappedLiteralObject(ret.NestedObject);
 				else
-					tmp = new DynamicValueMapping(ret);
+					tmp = new DynamicMappedValue(ret);
 			else
 				tmp = default;
 

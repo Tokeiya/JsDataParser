@@ -195,7 +195,7 @@ namespace JsDataParser.Mapping
 				switch (mapFrom[i].ValueType)
 				{
 					case ValueTypes.Array:
-						mapTo[i]=new DynamicValueMapping(mapFrom[i]);
+						mapTo[i]=new DynamicMappedValue(mapFrom[i]);
 						break;
 
 					case ValueTypes.Object:

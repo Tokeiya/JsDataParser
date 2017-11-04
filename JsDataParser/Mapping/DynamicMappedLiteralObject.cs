@@ -57,7 +57,14 @@ namespace JsDataParser.Mapping
 
 		public IEnumerator<(object key, object value)> GetEnumerator()
 		{
-			return _entity.Select(x => ((object) new DynamicIdentifierMapping(x.Key), (object) new DynamicValueMapping(x.Value)))
+			object select(ValueEntity entity)
+			{
+				if(entity.ValueType== ValueTypes.Object) return new DynamicMappedLiteralObject(entity.NestedObject);
+				else return new DynamicValueMapping(entity);
+			}
+
+			return _entity
+				.Select(x => ((object) new DynamicIdentifierMapping(x.Key), select(x.Value)))
 				.GetEnumerator();
 		}
 

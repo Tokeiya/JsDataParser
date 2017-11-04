@@ -14,20 +14,16 @@ namespace Sample
 			//これがさっき言ってた型を固めるすなわちゆるふわなdynamicからIEnumerableに確定させる。
 			IEnumerable<(dynamic key, dynamic value)> iterator = data;
 
+			int accum = 0;
 
 			foreach (var elem in iterator)
 			{
-				int? v = elem.value.RNG;
+				dynamic d = elem.value.RNG;
+
+				Console.WriteLine($"Key:{elem.key} d:{d}");
 			}
 
-			//int?にキャストしないとRNGがそもそも無い時にこけてしまうのでその対策
-			var filter=iterator.Where(x => (((int?) x.value.RNG) ?? 0) == 2);
-
-			foreach (var elem in filter)
-			{
-				Console.WriteLine(elem.key);
-				Console.WriteLine(elem.value.name);
-			}
+			Console.WriteLine(accum);
 
 
 		}

@@ -33,10 +33,10 @@ namespace JsDataParser.Mapping
 			if (!representType.Verify()) throw new ArgumentException($"{representType} is unexpected.");
 			if (!entityType.Verify()) throw new ArgumentException($"{entityType} is unexpected.");
 			RepresentType = representType;
-			EntityType = entityType;
+			MappedType = entityType;
 		}
 
 		public RepresentTypes RepresentType { get; }
-		public DynamicMappedTypes EntityType { get; }
+		public DynamicMappedTypes MappedType { get; }
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JsDataParser.DataLoader;
@@ -18,15 +17,15 @@ namespace Sample
 	public class Ship
 	{
 		public string Name { get; set; }
-	
+
 		public int[] Slots { get; set; }
 	}
 
-	class TinyMapperSample
+	internal class TinyMapperSample
 	{
 		/// <summary>
-		/// すべてのフィールドが無くてもマップ可能です｡
-		/// また､大文字､小文字は無視します｡
+		///     すべてのフィールドが無くてもマップ可能です｡
+		///     また､大文字､小文字は無視します｡
 		/// </summary>
 		public static void NameOnly()
 		{
@@ -38,9 +37,7 @@ namespace Sample
 
 			//Key/Valueになってる｡
 			foreach (var elem in itemData)
-			{
 				Console.WriteLine($"Key:{elem.Key} Name:{elem.Value.Name} Jp:{elem.Value.NameJp}");
-			}
 		}
 
 
@@ -57,10 +54,6 @@ namespace Sample
 					$"Slots:[{ship.Value.Slots.Aggregate(new StringBuilder(" "), (bld, i) => bld.Append(i).Append(','), bld => bld.Remove(bld.Length - 1, 1).ToString())}]");
 				Console.WriteLine();
 			}
-
-
 		}
-
-
 	}
 }

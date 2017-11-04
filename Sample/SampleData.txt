@@ -1,0 +1,16 @@
+﻿{
+  28: {
+    name: 'Type 22 Surface RADAR',
+    nameJP: '22号対水上電探',
+    added: '2013-04-17',
+    type: RADARS,
+    btype: B_RADAR,
+    improveType: 1,
+    improve: {
+      ACCshell: 1.7,
+      ACCnb: 1.6
+    },
+    LOS: 5,
+    ACC: 3
+  }
+}

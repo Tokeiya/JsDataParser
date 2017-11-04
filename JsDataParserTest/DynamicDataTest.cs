@@ -76,5 +76,23 @@ namespace JsDataParserTest
 			((int) actual[1]).Is(4);
 
 		}
+
+		[Fact]
+		public void SumTest()
+		{
+			IEnumerable<(dynamic key, dynamic value)> data = DataLoader.LoadAsDynamic(".\\Samples\\HugeSample.txt");
+
+			data.Select(x=>(int?)x.value.HP).Sum().Is(104144);
+			data.Select(x => (int?) x.value.HPmax).Sum().Is(26628);
+		}
+
+		[Fact]
+		public void SelectManyTest()
+		{
+			IEnumerable<(dynamic key, dynamic value)> data = DataLoader.LoadAsDynamic(".\\Samples\\HugeSample.txt");
+
+			data.SelectMany(x => (IEnumerable<dynamic>) x.value.SLOTS ?? Enumerable.Empty<object>()).Select(x => (int?) x)
+				.Sum().Is(27904);
+		}
 	}
 }

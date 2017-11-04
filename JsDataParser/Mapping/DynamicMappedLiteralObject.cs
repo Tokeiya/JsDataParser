@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using JsDataParser.Entities;
@@ -139,15 +140,24 @@ namespace JsDataParser.Mapping
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
+			object selector(ValueEntity entity)
+			{
+				switch (entity.ValueType)
+				{
+					case ValueTypes.Array:
+						return entity.Array.Select(selector).ToArray();
+
+					case ValueTypes.Object:
+						return new DynamicMappedLiteralObject(entity.NestedObject);
+
+					default:
+						return new DynamicMappedValue(entity);
+				}
+			}
+
 			object tmp;
 
-			if (_entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret))
-				if (ret.ValueType == ValueTypes.Object)
-					tmp = new DynamicMappedLiteralObject(ret.NestedObject);
-				else
-					tmp = new DynamicMappedValue(ret);
-			else
-				tmp = default;
+			tmp = _entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret) ? selector(ret) : default;
 
 			result = tmp;
 			return true;

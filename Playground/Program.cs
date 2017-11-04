@@ -31,32 +31,44 @@ using JsDataParser.Mapping;
 
 namespace Playground
 {
-	class Mapped
+	class Ship
 	{
-		public string Name { get; set; }
-		public string NameJp { get; set; }
-		public string Added { get; set; }
-		public string Type { get; set; }
-		public string BType { get; set; }
-		public int ImproveType { get; set; }
-		public dynamic Improve { get; set; }
-		public int? Fp { get; set; }
-		public int? Acc { get; set; }
+		public int Hp;
+		public int HpMax;
+		public int[] Slots = Array.Empty<int>();
 	}
 
-
-	class Hoge
+	static class Extension
 	{
-		public dynamic Empty { get; set; }
-	}
+		public static void Dump(this object value)
+			=> Console.WriteLine(value);
 
+		public static void DumpAndQuery(this object value, string message = "Press enter to continue.")
+		{
+			Console.WriteLine(value);
+			Console.WriteLine(message);
+			Console.ReadLine();
+		}
+	}
 
 	internal class Program
 	{
+		private const string Path = ".\\Samples\\shipdata.txt";
 		private static void Main()
 		{
+			var raw = DataLoader.LoadRaw(Path);
+			var ships = TinyMapper<Ship>.MultiMap(raw);
 
 
+
+
+			IEnumerable<(dynamic key, dynamic value)> dynamIterator = DataLoader.LoadAsDynamic(Path);
+
+			var hoge = dynamIterator
+				.SelectMany(x => (IEnumerable<dynamic>) x.value.SLOTS??Enumerable.Empty<object>())
+				.Select(x => (int?) x).Sum();
+
+			hoge.DumpAndQuery();
 
 		}
 	}

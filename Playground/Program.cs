@@ -23,25 +23,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using JsDataParser.DataLoader;
 using JsDataParser.Entities;
-using JsDataParser.Mapping;
 
 namespace Playground
 {
-	class Ship
-	{
-		public int Hp;
-		public int HpMax;
-		public int[] Slots = Array.Empty<int>();
-	}
-
-	static class Extension
+	internal static class Extension
 	{
 		public static void Dump(this object value)
-			=> Console.WriteLine(value);
+		{
+			Console.WriteLine(value);
+		}
 
 		public static void DumpAndQuery(this object value, string message = "Press enter to continue.")
 		{
@@ -54,22 +45,59 @@ namespace Playground
 	internal class Program
 	{
 		private const string Path = ".\\Samples\\shipdata.txt";
+
 		private static void Main()
 		{
-			var raw = DataLoader.LoadRaw(Path);
-			var ships = TinyMapper<Ship>.MultiMap(raw);
+			List<(IdentifierEntity, ValueEntity)> list = new List<(IdentifierEntity, ValueEntity)>();
 
+			//12cm Single Cannon
+			var contents = new[]
+			{
+				(new IdentifierEntity("name", true), new ValueEntity("12cm Single Cannon", ValueTypes.String)),
+				(new IdentifierEntity("atype", true), new ValueEntity("A_GUN", ValueTypes.Identity) ),
+				(new IdentifierEntity("FP", true), new ValueEntity("2", ValueTypes.Integer) )
+			};
 
+			var nestedObject = new ObjectLiteralEntity(contents);
 
+			(IdentifierEntity id, ValueEntity value) tmp = (null, null);
+			tmp.id = new IdentifierEntity(1);
+			tmp.value = new ValueEntity(nestedObject);
 
-			IEnumerable<(dynamic key, dynamic value)> dynamIterator = DataLoader.LoadAsDynamic(Path);
+			list.Add(tmp);
 
-			var hoge = dynamIterator
-				.SelectMany(x => (IEnumerable<dynamic>) x.value.SLOTS??Enumerable.Empty<object>())
-				.Select(x => (int?) x).Sum();
+			//12.7cm Twin Cannon
+			contents = new[]
+			{
+				(new IdentifierEntity("name", true), new ValueEntity("12.7cm Twin Cannon", ValueTypes.String)),
+				(new IdentifierEntity("atype", true), new ValueEntity("A_GUN", ValueTypes.Identity) ),
+				(new IdentifierEntity("FP", true), new ValueEntity("2", ValueTypes.Integer) )
+			};
 
-			hoge.DumpAndQuery();
+			nestedObject = new ObjectLiteralEntity(contents);
 
+			tmp.id = new IdentifierEntity(2);
+			tmp.value = new ValueEntity(nestedObject);
+
+			list.Add(tmp);
+
+			//10cm Twin High-Angle Cannon
+			contents = new[]
+			{
+				(new IdentifierEntity("name", true), new ValueEntity("10cm Twin High-Angle Cannon", ValueTypes.String)),
+				(new IdentifierEntity("atype", true), new ValueEntity("A_HAGUN", ValueTypes.Identity) ),
+				(new IdentifierEntity("FP", true), new ValueEntity("2", ValueTypes.Integer) )
+			};
+
+			nestedObject = new ObjectLiteralEntity(contents);
+
+			tmp.id = new IdentifierEntity(2);
+			tmp.value = new ValueEntity(nestedObject);
+
+			list.Add(tmp);
+
+			//こいつがLoadRawと同じ。
+			var rootEntity = new ObjectLiteralEntity(list);
 		}
 	}
 }

@@ -74,7 +74,6 @@ namespace JsDataParserTest
 
 			((int) actual[0]).Is(3);
 			((int) actual[1]).Is(4);
-
 		}
 
 		[Fact]

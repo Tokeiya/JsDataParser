@@ -33,42 +33,19 @@ namespace Playground
 {
 	class Ship
 	{
-		public int Hp;
-		public int HpMax;
-		public int[] Slots = Array.Empty<int>();
+		public string String;
 	}
 
-	static class Extension
-	{
-		public static void Dump(this object value)
-			=> Console.WriteLine(value);
-
-		public static void DumpAndQuery(this object value, string message = "Press enter to continue.")
-		{
-			Console.WriteLine(value);
-			Console.WriteLine(message);
-			Console.ReadLine();
-		}
-	}
 
 	internal class Program
 	{
-		private const string Path = ".\\Samples\\shipdata.txt";
+//		private const string Path = ".\\Samples\\shipdata.txt";
 		private static void Main()
 		{
-			var raw = DataLoader.LoadRaw(Path);
-			var ships = TinyMapper<Ship>.MultiMap(raw);
+			var raw = DataLoader.LoadRaw(".\\Samples\\Sample.txt");
 
+			var ret = TinyMapper<Ship>.SingleMap(raw[new IdentifierEntity(1)].NestedObject);
 
-
-
-			IEnumerable<(dynamic key, dynamic value)> dynamIterator = DataLoader.LoadAsDynamic(Path);
-
-			var hoge = dynamIterator
-				.SelectMany(x => (IEnumerable<dynamic>) x.value.SLOTS??Enumerable.Empty<object>())
-				.Select(x => (int?) x).Sum();
-
-			hoge.DumpAndQuery();
 
 		}
 	}

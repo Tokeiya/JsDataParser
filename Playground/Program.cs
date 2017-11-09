@@ -22,6 +22,7 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -31,22 +32,38 @@ using JsDataParser.Mapping;
 
 namespace Playground
 {
-	class Ship
+
+	public delegate void AssignmentHandler<TMap, in TValue>(ref TMap mapTo, TValue value);
+
+
+	class RefSample
 	{
-		public string String;
+		public int Value { get; set; }
+	}
+
+	struct ValSample
+	{
+		public int Value { get; set; }
 	}
 
 
 	internal class Program
 	{
-//		private const string Path = ".\\Samples\\shipdata.txt";
+		private const string Path = ".\\Samples\\shipdata.txt";
 		private static void Main()
 		{
-			var raw = DataLoader.LoadRaw(".\\Samples\\Sample.txt");
 
-			var ret = TinyMapper<Ship>.SingleMap(raw[new IdentifierEntity(1)].NestedObject);
+			var vSetter = (AssignmentHandler<ValSample,int>)typeof(ValSample).GetProperty("Value").SetMethod
+				.CreateDelegate(typeof(AssignmentHandler<ValSample, int>));
+
+			var rSetter = (AssignmentHandler<RefSample, int>) typeof(RefSample).GetProperty("Value").SetMethod
+				.CreateDelegate(typeof(AssignmentHandler<RefSample, int>));
 
 
 		}
+
+
+
+
 	}
 }

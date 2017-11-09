@@ -3,7 +3,7 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-	[AttributeUsage(AttributeTargets.Property|AttributeTargets.Field,AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property|AttributeTargets.Field,AllowMultiple = false,Inherited = true)]
 	public sealed class MappingFromAttribute:Attribute
 	{
 		public MappingFromAttribute(string mappingFromidentity, bool isIdentity)

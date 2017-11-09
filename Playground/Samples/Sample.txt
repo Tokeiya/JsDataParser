@@ -1,7 +1,7 @@
 ﻿{
  1: {
 	Empty:{},
-	String:null,
+	'String':'Hello',
 	Integer:10,
 	Real:42.195,
 	REALS:[1.2,1.5],

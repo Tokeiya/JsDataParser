@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
 using JsDataParser.Mapping;
@@ -53,11 +54,9 @@ namespace Playground
 		private static void Main()
 		{
 
-			var vSetter = (AssignmentHandler<ValSample,int>)typeof(ValSample).GetProperty("Value").SetMethod
-				.CreateDelegate(typeof(AssignmentHandler<ValSample, int>));
+			var prop = typeof(RefSample).GetProperty("Value");
 
-			var rSetter = (AssignmentHandler<RefSample, int>) typeof(RefSample).GetProperty("Value").SetMethod
-				.CreateDelegate(typeof(AssignmentHandler<RefSample, int>));
+			var attr = prop.GetCustomAttribute<FlagsAttribute>();
 
 
 		}

@@ -82,18 +82,74 @@ namespace JsDataParser.Mapping
 			return TypeMatchResults.NoConvertible;
 		}
 
+		private Action<T, ValueEntity> BuildPropertyArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			PropertyInfo mapTo)
+		{
+#warning BuildPropertyArraySetter_Is_NotImpl
+			throw new NotImplementedException("BuildPropertyArraySetter is not implemented");
+		}
+
 		private Action<T, ValueEntity> BuildPropertySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
 			PropertyInfo mapTo)
 		{
-#warning BuildPropertySetter_Is_NotImpl
-			throw new NotImplementedException("BuildPropertySetter is not implemented");
+			switch (mapFrom.Value.ValueType)
+			{
+				case ValueTypes.String:
+					return (to, from) => mapTo.SetValue(to, from.String);
+
+				case ValueTypes.Function:
+					return (to, from) => mapTo.SetValue(to, from.Function);
+
+				case ValueTypes.Identity:
+					return (to, from) => mapTo.SetValue(to, from.Identity);
+
+				case ValueTypes.Integer:
+					return (to, from) =>
+					{
+						if (from.ValueType == ValueTypes.Integer)
+						{
+							mapTo.SetValue(to, from.Integer);
+						}
+						else
+						{
+							mapTo.SetValue(to, (int) from.Real);
+						}
+					};
+
+				case ValueTypes.Real:
+					return (to, from) =>
+					{
+						if (from.ValueType == ValueTypes.Real)
+						{
+							mapTo.SetValue(to, from.Real);
+						}
+						else
+						{
+							mapTo.SetValue(to, from.Integer);
+						}
+					};
+
+				case ValueTypes.Boolean:
+					return (to, from) => mapTo.SetValue(to, from.Boolean);
+
+				case ValueTypes.Object:
+					return (to, from) => mapTo.SetValue(to, new DynamicMappedLiteralObject(from.NestedObject));
+					
+				case ValueTypes.Array:
+					return BuildPropertyArraySetter(mapFrom, mapTo);
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
+
+
 
 		private Action<T, ValueEntity> BuildFieldSetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
 			FieldInfo mapTo)
 		{
-#warning BuildPropertySetter_Is_NotImpl
-			throw new NotImplementedException("BuildPropertySetter is not implemented");
+#warning BuildFieldSetter_Is_NotImpl
+			throw new NotImplementedException("BuildFieldSetter is not implemented");
 		}
 
 		private bool TryBuildProperty(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,

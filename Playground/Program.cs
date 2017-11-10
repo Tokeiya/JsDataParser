@@ -37,15 +37,6 @@ namespace Playground
 	public delegate void AssignmentHandler<TMap, in TValue>(ref TMap mapTo, TValue value);
 
 
-	class RefSample
-	{
-		public int Value { get; set; }
-	}
-
-	struct ValSample
-	{
-		public int Value { get; set; }
-	}
 
 
 	internal class Program
@@ -54,9 +45,9 @@ namespace Playground
 		private static void Main()
 		{
 
-			var prop = typeof(RefSample).GetProperty("Value");
+			var loader = DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
 
-			var attr = prop.GetCustomAttribute<FlagsAttribute>();
+
 
 
 		}

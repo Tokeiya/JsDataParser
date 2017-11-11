@@ -21,15 +21,20 @@
  */
 
 
+using System;
+using System.Linq;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
 using JsDataParser.Mapping;
 
 namespace Playground
 {
-	internal class ArraySample
+	internal class ShipData
 	{
-		public dynamic[] ComplexArray { get; set; }
+		public string Name;
+		public string NameJp;
+		public int Hp;
+		public int[] Slots;
 	}
 
 
@@ -39,10 +44,21 @@ namespace Playground
 
 		private static void Main()
 		{
-			var raw = DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
-			var mapper = new PeripheralMapper<ArraySample>();
+			var raw = DataLoader.LoadRaw(".\\Samples\\shipdata.txt");
+			var mapper = new PeripheralMapper<ShipData>();
 
-			var hoge = mapper.Map(raw[new IdentifierEntity(3)].NestedObject);
+			var mapped = mapper.Flatmap(raw);
+
+			var result = mapped.ToDictionary(x => x.identity.Integer, x => x.value);
+
+			Console.WriteLine(result.Where(x => x.Value.Slots == null).Count());
+
+
+
+
+
+
+
 		}
 	}
 }

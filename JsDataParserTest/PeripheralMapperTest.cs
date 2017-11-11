@@ -5,6 +5,7 @@ using JsDataParser.Entities;
 using JsDataParser.Mapping;
 using Xunit;
 using Xunit.Abstractions;
+// ReSharper disable InconsistentNaming
 
 namespace JsDataParserTest
 {
@@ -39,6 +40,17 @@ namespace JsDataParserTest
 		public IList<string> StringArray;
 		public object[] EmptyArray { get; set; }
 	}
+
+
+	internal class ShipData
+	{
+		public string Name;
+		public string NameJp;
+		public int Hp;
+		public int[] Slots { get; set; }
+	}
+
+
 
 
 	public class PeripheralMapperTest
@@ -168,5 +180,37 @@ namespace JsDataParserTest
 			actual.StringArray.IsNotNull();
 			actual.StringArray.SequenceEqual(new[] {"hoge", "piyo"}).IsTrue();
 		}
+
+		[Fact]
+		public void FlatMappingTest()
+		{
+			var raw = DataLoader.LoadRaw(".\\Samples\\shipdata.txt");
+
+			var target = new PeripheralMapper<ShipData>();
+
+
+			var actual = target.Flatmap(raw).ToDictionary(x => x.identity.Integer, x => x.value);
+
+			actual.Count.Is(765);
+
+			actual[0].Slots.IsNull();
+
+
+			var pivot = actual[1];
+
+			pivot.Slots.IsNotNull();
+			pivot.Slots.Length.Is(2);
+			pivot.Slots.SequenceEqual(new []{0,0}).IsTrue();
+
+
+			pivot.Name.Is("name3");
+
+
+
+
+
+
+		}
+
 	}
 }

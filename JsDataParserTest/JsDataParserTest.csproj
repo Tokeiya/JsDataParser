@@ -38,6 +38,9 @@
     <None Update="Samples\PeripheralSample.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Samples\shipdata.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Samples\TestItemtype.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

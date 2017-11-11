@@ -17,10 +17,17 @@
 	  },
 	  3:
 	  {
+		'intArray':[1,2,3],
+		StringArray:['hoge','piyo'],
+		EmptyArray:[],
+		BoolArray:[true,false],
 		ComplexArray:[[1,2],{hoge:10,piyo:20}]
 	  },
 	 4: {
 		42.195:marathon,
 	  },
-
+	  5:{
+		Integer:42,
+		Real:42.195
+	  }
 }

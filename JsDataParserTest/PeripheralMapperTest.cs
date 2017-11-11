@@ -50,8 +50,17 @@ namespace JsDataParserTest
 		public int[] Slots { get; set; }
 	}
 
+	internal class Nullable
+	{
+		public int? Integer;
+		public double? Real;
+	}
 
-
+	internal class LongTest
+	{
+		public long Integer;
+		public long Real;
+	}
 
 	public class PeripheralMapperTest
 	{
@@ -125,6 +134,38 @@ namespace JsDataParserTest
 			actual.Array.SequenceEqual(new[] {1, 2, 3}).IsTrue();
 		}
 
+		[Fact]
+		public void NullableTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<Nullable>();
+
+			var actual = target.Map(raw[new IdentifierEntity(5)].NestedObject);
+
+			actual.Integer.IsNotNull();
+			actual.Real.IsNotNull();
+
+			actual.Integer.Is(42);
+			actual.Real.Is(42.195);
+
+			actual = target.Map(raw[new IdentifierEntity(4)].NestedObject);
+
+			actual.Integer.IsNull();
+			actual.Real.IsNull();
+
+		}
+
+
+		[Fact]
+		public void LongTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<LongTest>();
+
+			var actual = target.Map(raw[new IdentifierEntity(5)].NestedObject);
+
+			actual.Integer.Is(42);
+		}
 
 		[Fact]
 		public void MapAttributeTest()
@@ -195,22 +236,16 @@ namespace JsDataParserTest
 
 			actual[0].Slots.IsNull();
 
-
 			var pivot = actual[1];
 
 			pivot.Slots.IsNotNull();
 			pivot.Slots.Length.Is(2);
 			pivot.Slots.SequenceEqual(new []{0,0}).IsTrue();
 
-
 			pivot.Name.Is("name3");
-
-
-
-
-
-
 		}
+
+
 
 	}
 }

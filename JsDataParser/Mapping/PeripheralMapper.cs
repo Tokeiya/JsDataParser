@@ -18,7 +18,40 @@ namespace JsDataParser.Mapping
 		Enumerable
 	}
 
-	public class PeripheralMapper<T> where T : new()
+	public abstract class Periperalmapper
+	{
+		protected Periperalmapper(Type mapToType)
+		{
+			MapToType = mapToType ?? throw new ArgumentNullException(nameof(mapToType));
+		}
+
+		public Type MapToType { get; }
+
+		protected abstract object MapImpl(ObjectLiteralEntity entity);
+
+		public object MapToObject(ObjectLiteralEntity entity)
+		{
+			var ret = MapImpl(entity);
+#if DEBUG
+			if (MapToType.IsValueType)
+			{
+				if (ret == null) throw new MappingException();
+				if (!MapToType.IsAssignableFrom(ret?.GetType())) throw new MappingException();
+
+				return ret;
+			}
+			if (ret == null) return ret;
+			if (!MapToType.IsAssignableFrom(ret?.GetType())) throw new MappingException();
+
+			return ret;
+#else
+			return ret;
+#endif
+		}
+	}
+
+	public class PeripheralMapper<T> : Periperalmapper
+		where T : new()
 	{
 		private readonly Dictionary<(IdentifierEntity identity, ValueTypes valueType), Action<T, ValueEntity>> _cache =
 			new Dictionary<(IdentifierEntity identity, ValueTypes valueType), Action<T, ValueEntity>>();
@@ -26,9 +59,11 @@ namespace JsDataParser.Mapping
 		private readonly Action<T, ValueEntity> _defaultAssignment = (_, __) => { };
 
 		private readonly FieldInfo[] _fields;
+
+		private readonly Dictionary<Type, Periperalmapper> _nestedMapper = new Dictionary<Type, Periperalmapper>();
 		private readonly PropertyInfo[] _properties;
 
-		public PeripheralMapper()
+		public PeripheralMapper() : base(typeof(T))
 		{
 			_properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 			_fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -53,14 +88,15 @@ namespace JsDataParser.Mapping
 			switch (mapFrom)
 			{
 				case ValueTypes.Integer:
-					if (mapTo == typeof(int)) return TypeMatchResults.Equivalent;
-					if (mapTo == typeof(long)) return TypeMatchResults.ImplicitConversion;
-					if (mapTo == typeof(double)) return TypeMatchResults.ImplicitConversion;
+					if (mapTo == typeof(int) || mapTo == typeof(int?)) return TypeMatchResults.Equivalent;
+					if (mapTo == typeof(long) || mapTo == typeof(long?)) return TypeMatchResults.ImplicitConversion;
+					if (mapTo == typeof(double) || mapTo == typeof(double?)) return TypeMatchResults.ImplicitConversion;
 					break;
 
 				case ValueTypes.Real:
-					if (mapTo == typeof(double)) return TypeMatchResults.Equivalent;
-					if (mapTo == typeof(int) || mapTo == typeof(long)) return TypeMatchResults.ExplicitConversion;
+					if (mapTo == typeof(double) || mapTo == typeof(double?)) return TypeMatchResults.Equivalent;
+					if (mapTo == typeof(int) || mapTo == typeof(int?)
+					    || mapTo == typeof(long) || mapTo == typeof(long?)) return TypeMatchResults.ExplicitConversion;
 					break;
 
 				case ValueTypes.Boolean:
@@ -293,6 +329,7 @@ namespace JsDataParser.Mapping
 			return BuildObjectArraySetter(mapFrom, mapTo);
 		}
 
+
 		private Action<T, ValueEntity> BuildSetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
 			PropertyInfo mapTo)
 		{
@@ -317,13 +354,33 @@ namespace JsDataParser.Mapping
 					};
 
 				case ValueTypes.Real:
-					return (to, from) =>
-					{
-						if (from.ValueType == ValueTypes.Real)
-							mapTo.SetValue(to, from.Real);
-						else
-							mapTo.SetValue(to, from.Integer);
-					};
+					if (mapTo.PropertyType == typeof(double))
+						return (to, from) =>
+						{
+							if (from.ValueType == ValueTypes.Real)
+								mapTo.SetValue(to, from.Real);
+							else
+								mapTo.SetValue(to, from.Integer);
+						};
+
+					if (mapTo.PropertyType == typeof(int))
+						return (to, from) =>
+						{
+							if (from.ValueType == ValueTypes.Real)
+								mapTo.SetValue(to, (int) from.Real);
+							else
+								mapTo.SetValue(to, from.Integer);
+						};
+
+					if (mapTo.PropertyType == typeof(long))
+						return (to, from) =>
+						{
+							if (from.ValueType == ValueTypes.Real)
+								mapTo.SetValue(to, (long) from.Real);
+							else
+								mapTo.SetValue(to, from.Integer);
+						};
+					else throw new ArgumentOutOfRangeException();
 
 				case ValueTypes.Boolean:
 					return (to, from) => mapTo.SetValue(to, from.Boolean);
@@ -362,15 +419,37 @@ namespace JsDataParser.Mapping
 						else
 							mapTo.SetValue(to, (int) from.Real);
 					};
-
+				
+					//TODO:Not so good...
 				case ValueTypes.Real:
-					return (to, from) =>
-					{
-						if (from.ValueType == ValueTypes.Real)
-							mapTo.SetValue(to, from.Real);
-						else
-							mapTo.SetValue(to, from.Integer);
-					};
+					if (mapTo.FieldType == typeof(double))
+						return (to, from) =>
+						{
+							if (from.ValueType == ValueTypes.Real)
+								mapTo.SetValue(to, from.Real);
+							else
+								mapTo.SetValue(to, from.Integer);
+						};
+
+					if (mapTo.FieldType == typeof(int))
+						return (to, from) =>
+						{
+							if (from.ValueType == ValueTypes.Real)
+								mapTo.SetValue(to, (int) from.Real);
+							else
+								mapTo.SetValue(to, from.Integer);
+						};
+
+					if (mapTo.FieldType == typeof(long))
+						return (to, from) =>
+						{
+							if (from.ValueType == ValueTypes.Real)
+								mapTo.SetValue(to, (long) from.Real);
+							else
+								mapTo.SetValue(to, from.Integer);
+						};
+					else throw new ArgumentOutOfRangeException();
+
 
 				case ValueTypes.Boolean:
 					return (to, from) => mapTo.SetValue(to, from.Boolean);
@@ -590,6 +669,12 @@ namespace JsDataParser.Mapping
 
 			return ret;
 		}
+
+		protected override object MapImpl(ObjectLiteralEntity entity)
+		{
+			return Map(entity);
+		}
+
 
 		public IEnumerable<(IdentifierEntity identity, T value)> Flatmap(ObjectLiteralEntity root)
 		{

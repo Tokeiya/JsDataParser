@@ -22,36 +22,39 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
 using JsDataParser.Mapping;
 
 namespace Playground
 {
-	internal class ShipData
+	internal class LongTest
 	{
-		public string Name;
-		public string NameJp;
-		public int Hp;
-		public int[] Slots;
+		public long Integer;
+		public long Real;
 	}
+
+
 
 
 	internal class Program
 	{
 		private const string Path = ".\\Samples\\shipdata.txt";
 
+
+
 		private static void Main()
 		{
-			var raw = DataLoader.LoadRaw(".\\Samples\\shipdata.txt");
-			var mapper = new PeripheralMapper<ShipData>();
+			var raw = DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
+			var target = new PeripheralMapper<LongTest>();
 
-			var mapped = mapper.Flatmap(raw);
 
-			var result = mapped.ToDictionary(x => x.identity.Integer, x => x.value);
+			var ret = target.Map(raw[new IdentifierEntity(5)].NestedObject);
 
-			Console.WriteLine(result.Where(x => x.Value.Slots == null).Count());
+
 
 
 

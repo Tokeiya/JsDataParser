@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
@@ -36,7 +37,13 @@ namespace JsDataParserTest
 	class ArraySample
 	{
 		[MappingFrom("intArray", false)] public int[] Array;
+		public IList<string> StringArray;
+		public object[] EmptyArray { get; set; }
+		public IEnumerable<bool> BoolArray;
+		public dynamic[] ComplexArray;
 	}
+
+
 
 	public class PeripheralMapperTest
 	{
@@ -93,7 +100,7 @@ namespace JsDataParserTest
 		}
 
 		[Fact]
-		public void ArrayTest()
+		public void IntArrayTest()
 		{
 			var raw = Load();
 			var target = new PeripheralMapper<ArraySample>();
@@ -101,6 +108,65 @@ namespace JsDataParserTest
 			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
 
 			actual.Array.IsNotNull();
+			actual.Array.SequenceEqual(new[] { 1,2,3}).IsTrue();
+		}
+
+		[Fact]
+		public void StringArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.StringArray.IsNotNull();
+			actual.StringArray.SequenceEqual(new[] {"hoge", "piyo"}).IsTrue();
+		}
+
+		[Fact]
+		public void EmptyArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.EmptyArray.IsNotNull();
+			actual.EmptyArray.Length.Is(0);
+		}
+
+		[Fact]
+		public void BooleanArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.BoolArray.IsNotNull();
+			actual.BoolArray.SequenceEqual(new[] {true, false}).IsTrue();
+		}
+
+		[Fact]
+		public void ComplexArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.ComplexArray.Length.Is(2);
+
+			var tmp = (object[]) actual.ComplexArray[0];
+
+			tmp.SequenceEqual(new object[]{1,2}).IsTrue();
+
+			var element = actual.ComplexArray[1];
+
+			Assert.NotNull(element);
+
+			Assert.Equal(10, (int) element.hoge);
+			Assert.Equal(20, (int) element.piyo);
 
 		}
 

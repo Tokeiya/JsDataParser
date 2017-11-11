@@ -40,7 +40,7 @@ namespace JsDataParser.Mapping
 			    || mapTo == typeof(bool[]) || mapTo == typeof(string[])
 			    || mapTo == typeof(object[])) return TypeMatchResults.Array;
 
-			if (mapTo.IsAssignableFrom(typeof(IEnumerable))) return TypeMatchResults.Enumerable;
+			if (typeof(IEnumerable).IsAssignableFrom(mapTo)) return TypeMatchResults.Enumerable;
 
 			return TypeMatchResults.NoConvertible;
 		}
@@ -90,7 +90,7 @@ namespace JsDataParser.Mapping
 			for (int i = 0; i < ret.Length; i++)
 			{
 				if (list[i].ValueType == ValueTypes.Array) ret[i] = ArrayAssignmentProc(list[i].Array);
-				if (list[i].ValueType == ValueTypes.Object) ret[i] = new DynamicMappedLiteralObject(list[i].NestedObject);
+				else if (list[i].ValueType == ValueTypes.Object) ret[i] = new DynamicMappedLiteralObject(list[i].NestedObject);
 				else ret[i] = list[i].Object;
 			}
 

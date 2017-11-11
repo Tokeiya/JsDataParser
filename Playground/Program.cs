@@ -34,9 +34,10 @@ using JsDataParser.Mapping;
 namespace Playground
 {
 
+
 	class ArraySample
 	{
-		[MappingFrom("intArray", false)] public int[] Array;
+		public dynamic[] ComplexArray { get; set; }
 	}
 
 

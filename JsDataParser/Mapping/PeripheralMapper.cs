@@ -83,14 +83,239 @@ namespace JsDataParser.Mapping
 			return TypeMatchResults.NoConvertible;
 		}
 
-		private Action<T, ValueEntity> BuildPropertyArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
-			PropertyInfo mapTo)
+		private object[] ArrayAssignmentProc(IReadOnlyList<ValueEntity> list)
 		{
-#warning BuildPropertyArraySetter_Is_NotImpl
-			throw new NotImplementedException("BuildPropertyArraySetter is not implemented");
+			var ret = new object[list.Count];
+
+			for (int i = 0; i < ret.Length; i++)
+			{
+				if (list[i].ValueType == ValueTypes.Array) ret[i] = ArrayAssignmentProc(list[i].Array);
+				if (list[i].ValueType == ValueTypes.Object) ret[i] = new DynamicMappedLiteralObject(list[i].NestedObject);
+				else ret[i] = list[i].Object;
+			}
+
+			return ret;
 		}
 
-		private Action<T, ValueEntity> BuildPropertySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+
+		public Action<T, ValueEntity> BuildObjectArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			PropertyInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var ret = ArrayAssignmentProc(from.Array);
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+
+		public Action<T, ValueEntity> BuildObjectArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			FieldInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var ret = ArrayAssignmentProc(from.Array);
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+		public Action<T, ValueEntity> BuildBooleanArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			FieldInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var tmp = from.Array;
+				var ret = new bool[tmp.Count];
+
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (tmp[i].ValueType == ValueTypes.Boolean) ret[i] = tmp[i].Boolean;
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+
+		}
+
+
+
+		public Action<T, ValueEntity> BuildBooleanArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			PropertyInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var tmp = from.Array;
+				var ret = new bool[tmp.Count];
+
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (tmp[i].ValueType == ValueTypes.Boolean) ret[i] = tmp[i].Boolean;
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+
+		}
+
+		public Action<T, ValueEntity> BuildStringArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			PropertyInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var tmp = from.Array;
+				var ret = new string[tmp.Count];
+
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (tmp[i].ValueType == ValueTypes.String) ret[i] = tmp[i].String;
+					else if (tmp[i].ValueType == ValueTypes.Identity) ret[i] = tmp[i].Identity;
+					else if (tmp[i].ValueType == ValueTypes.Function) ret[i] = tmp[i].Function;
+
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+
+		public Action<T, ValueEntity> BuildStringArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			FieldInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var tmp = from.Array;
+				var ret = new string[tmp.Count];
+
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (tmp[i].ValueType == ValueTypes.String) ret[i] = tmp[i].String;
+					else if (tmp[i].ValueType == ValueTypes.Identity) ret[i] = tmp[i].Identity;
+					else if (tmp[i].ValueType == ValueTypes.Function) ret[i] = tmp[i].Function;
+
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+		public Action<T, ValueEntity> BuildRealArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			FieldInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var ret = new double[from.Array.Count];
+				var tmp = from.Array;
+
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (tmp[i].ValueType == ValueTypes.Real) ret[i] = tmp[i].Real;
+					else if (tmp[i].ValueType == ValueTypes.Integer) ret[i] = tmp[i].Integer;
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+
+		public Action<T, ValueEntity> BuildRealArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			PropertyInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var ret = new double[from.Array.Count];
+				var tmp = from.Array;
+
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (tmp[i].ValueType == ValueTypes.Real) ret[i] = tmp[i].Real;
+					else if (tmp[i].ValueType == ValueTypes.Integer) ret[i] = tmp[i].Integer;
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+		public Action<T, ValueEntity> BuildIntArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			PropertyInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var ret = new int[from.Array.Count];
+				var fromArray = from.Array;
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (fromArray[i].ValueType == ValueTypes.Integer) ret[i] = fromArray[i].Integer;
+					else if (fromArray[i].ValueType == ValueTypes.Real) ret[i] = (int)fromArray[i].Real;
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+		public Action<T, ValueEntity> BuildIntArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			FieldInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var ret = new int[from.Array.Count];
+				var fromArray = from.Array;
+				for (int i = 0; i < ret.Length; i++)
+				{
+					if (fromArray[i].ValueType == ValueTypes.Integer) ret[i] = fromArray[i].Integer;
+					else if (fromArray[i].ValueType == ValueTypes.Real) ret[i] = (int) fromArray[i].Real;
+					else return;
+				}
+
+				mapTo.SetValue(to, ret);
+			};
+		}
+
+
+
+		private Action<T, ValueEntity> BuildArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			FieldInfo mapTo)
+		{
+			if (typeof(IEnumerable<int>).IsAssignableFrom(mapTo.FieldType))
+				return BuildIntArraySetter(mapFrom, mapTo);
+
+			if (typeof(IEnumerable<double>).IsAssignableFrom(mapTo.FieldType))
+				return BuildRealArraySetter(mapFrom, mapTo);
+
+			if (typeof(IEnumerable<string>).IsAssignableFrom(mapTo.FieldType))
+				return BuildStringArraySetter(mapFrom, mapTo);
+
+			if (typeof(IEnumerable<bool>).IsAssignableFrom(mapTo.FieldType))
+				return BuildBooleanArraySetter(mapFrom, mapTo);
+
+			return BuildObjectArraySetter(mapFrom, mapTo);
+		}
+
+		private Action<T, ValueEntity> BuildArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			PropertyInfo mapTo)
+		{
+			if (typeof(IEnumerable<int>).IsAssignableFrom(mapTo.PropertyType))
+				return BuildIntArraySetter(mapFrom, mapTo);
+
+			if (typeof(IEnumerable<double>).IsAssignableFrom(mapTo.PropertyType))
+				return BuildRealArraySetter(mapFrom, mapTo);
+
+			if (typeof(IEnumerable<string>).IsAssignableFrom(mapTo.PropertyType))
+				return BuildStringArraySetter(mapFrom, mapTo);
+
+			if (typeof(IEnumerable<bool>).IsAssignableFrom(mapTo.PropertyType))
+				return BuildBooleanArraySetter(mapFrom, mapTo);
+
+			return BuildObjectArraySetter(mapFrom, mapTo);
+		}
+
+		private Action<T, ValueEntity> BuildSetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
 			PropertyInfo mapTo)
 		{
 			switch (mapFrom.Value.ValueType)
@@ -137,7 +362,7 @@ namespace JsDataParser.Mapping
 					return (to, from) => mapTo.SetValue(to, new DynamicMappedLiteralObject(from.NestedObject));
 					
 				case ValueTypes.Array:
-					return BuildPropertyArraySetter(mapFrom, mapTo);
+					return BuildArraySetter(mapFrom, mapTo);
 
 				default:
 					throw new ArgumentOutOfRangeException();
@@ -146,11 +371,59 @@ namespace JsDataParser.Mapping
 
 
 
-		private Action<T, ValueEntity> BuildFieldSetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+		private Action<T, ValueEntity> BuildSetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
 			FieldInfo mapTo)
 		{
-#warning BuildFieldSetter_Is_NotImpl
-			throw new NotImplementedException("BuildFieldSetter is not implemented");
+			switch (mapFrom.Value.ValueType)
+			{
+				case ValueTypes.String:
+					return (to, from) => mapTo.SetValue(to, from.String);
+
+				case ValueTypes.Function:
+					return (to, from) => mapTo.SetValue(to, from.Function);
+
+				case ValueTypes.Identity:
+					return (to, from) => mapTo.SetValue(to, from.Identity);
+
+				case ValueTypes.Integer:
+					return (to, from) =>
+					{
+						if (from.ValueType == ValueTypes.Integer)
+						{
+							mapTo.SetValue(to, from.Integer);
+						}
+						else
+						{
+							mapTo.SetValue(to, (int)from.Real);
+						}
+					};
+
+				case ValueTypes.Real:
+					return (to, from) =>
+					{
+						if (from.ValueType == ValueTypes.Real)
+						{
+							mapTo.SetValue(to, from.Real);
+						}
+						else
+						{
+							mapTo.SetValue(to, from.Integer);
+						}
+					};
+
+				case ValueTypes.Boolean:
+					return (to, from) => mapTo.SetValue(to, from.Boolean);
+
+				case ValueTypes.Object:
+					return (to, from) => mapTo.SetValue(to, new DynamicMappedLiteralObject(from.NestedObject));
+
+				case ValueTypes.Array:
+					return BuildArraySetter(mapFrom, mapTo);
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+
 		}
 
 		private bool TryBuildProperty(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
@@ -161,7 +434,7 @@ namespace JsDataParser.Mapping
 
 			if (cnt == 1)
 			{
-				setter = BuildPropertySetter(mapFrom, candidates.First(rec => rec.check == result).prop);
+				setter = BuildSetter(mapFrom, candidates.First(rec => rec.check == result).prop);
 				return true;
 			}
 
@@ -180,7 +453,7 @@ namespace JsDataParser.Mapping
 
 			if (cnt == 1)
 			{
-				setter = BuildFieldSetter(mapFrom, candidates.First(rec => rec.check == result).field);
+				setter = BuildSetter(mapFrom, candidates.First(rec => rec.check == result).field);
 				return true;
 			}
 

@@ -24,9 +24,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace JsDataParser.Entities
 {
+	[DebuggerStepThrough]
 	public class ObjectLiteralEntity : IReadOnlyDictionary<IdentifierEntity, ValueEntity>
 	{
 		private readonly Dictionary<IdentifierEntity, ValueEntity> _values = new Dictionary<IdentifierEntity, ValueEntity>();

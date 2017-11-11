@@ -34,7 +34,10 @@ using JsDataParser.Mapping;
 namespace Playground
 {
 
-	public delegate void AssignmentHandler<TMap, in TValue>(ref TMap mapTo, TValue value);
+	class ArraySample
+	{
+		[MappingFrom("intArray", false)] public int[] Array;
+	}
 
 
 
@@ -44,10 +47,10 @@ namespace Playground
 		private const string Path = ".\\Samples\\shipdata.txt";
 		private static void Main()
 		{
+			var raw = DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
+			var mapper = new PeripheralMapper<ArraySample>();
 
-			var loader = DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
-
-
+			var hoge = mapper.Map(raw[new IdentifierEntity(3)].NestedObject);
 
 
 		}

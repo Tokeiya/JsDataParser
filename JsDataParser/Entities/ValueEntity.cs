@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace JsDataParser.Entities
 {
+	[DebuggerStepThrough]
 	public class ValueEntity
 	{
 		private readonly ValueEntity[] _array;

@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace JsDataParserTest
 {
-	public class TxtLiteral
+	public class SampleClass
 	{
 		[MappingFrom("txtLiteral",false)]
 		public string txtLiteral { get; set; }
@@ -28,9 +28,14 @@ namespace JsDataParserTest
 	{
 		public string nameJp { get; set; }
 
-		[MappingFrom("nameJp",true)]
+		[MappingFrom("nameJP", true)]
 		public string name { get; set; }
 
+	}
+
+	class ArraySample
+	{
+		[MappingFrom("intArray", false)] public int[] Array;
 	}
 
 	public class PeripheralMapperTest
@@ -47,7 +52,7 @@ namespace JsDataParserTest
 		public void MapAttributeTest()
 		{
 			var raw = Load();
-			var target = new PeripheralMapper<TxtLiteral>();
+			var target = new PeripheralMapper<SampleClass>();
 
 			var actual = target.Map(raw[new IdentifierEntity(1)].NestedObject);
 
@@ -60,7 +65,7 @@ namespace JsDataParserTest
 		public void MappingIntLiteral()
 		{
 			var raw = Load();
-			var target = new PeripheralMapper<TxtLiteral>();
+			var target = new PeripheralMapper<SampleClass>();
 
 			var actual = target.Map(raw[new IdentifierEntity(1)].NestedObject);
 
@@ -87,7 +92,17 @@ namespace JsDataParserTest
 			
 		}
 
+		[Fact]
+		public void ArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
 
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.Array.IsNotNull();
+
+		}
 
 
 	}

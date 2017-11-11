@@ -74,7 +74,8 @@ namespace JsDataParser.Mapping
 					break;
 
 				case ValueTypes.Array:
-					break;
+					return CheckArrayMatch(mapFrom, mapTo);
+
 				default:
 					throw new ArgumentOutOfRangeException(nameof(mapFrom), mapFrom, null);
 			}
@@ -235,7 +236,7 @@ namespace JsDataParser.Mapping
 				return false;
 			}
 
-			var name = mapFrom.Value.Identity.ToLower();
+			var name = mapFrom.Key.Identity.ToLower();
 			var dummy = new IdentifierEntity(114514);
 
 			var candidates = _properties.Where(prop => prop.Name.ToLower() == name)

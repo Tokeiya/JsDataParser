@@ -1,4 +1,15 @@
-﻿{
+﻿ //comment
+ 
+ {
+ //comment
+	 1: {
+		nameJP: '10cm連装高角砲',
+		'txtLiteral':'hello',
+		42:114514,
+		41.195:marathon,
+		true:-1,
+		false:0
+	  },
 	 2: {
 		nameJP: '10cm連装高角砲',
 		'txtLiteral':'hello',
@@ -10,5 +21,8 @@
 	  3:
 	  {
 		'intArray':[1,2,3]
-	  }
+	  },
+	  	 4: {
+		nameJP: '10cm連装高角砲',
+	  },
 }

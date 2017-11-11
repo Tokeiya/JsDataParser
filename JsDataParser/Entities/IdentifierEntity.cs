@@ -28,6 +28,7 @@ using System.Globalization;
 
 namespace JsDataParser.Entities
 {
+	[DebuggerStepThrough]
 	public class IdentifierEntity : IEquatable<IdentifierEntity>
 	{
 		private readonly bool _boolValue;

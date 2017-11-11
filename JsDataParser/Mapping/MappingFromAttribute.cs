@@ -3,8 +3,8 @@ using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {
-	[AttributeUsage(AttributeTargets.Property|AttributeTargets.Field,AllowMultiple = false,Inherited = true)]
-	public sealed class MappingFromAttribute:Attribute
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+	public sealed class MappingFromAttribute : Attribute
 	{
 		public MappingFromAttribute(string mappingFromidentity, bool isIdentity)
 		{
@@ -14,17 +14,22 @@ namespace JsDataParser.Mapping
 		}
 
 		public MappingFromAttribute(int key)
-			=> MappingFromIdentifier = new IdentifierEntity(key);
+		{
+			MappingFromIdentifier = new IdentifierEntity(key);
+		}
 
 
 		public MappingFromAttribute(double key)
-			=> MappingFromIdentifier = new IdentifierEntity(key);
+		{
+			MappingFromIdentifier = new IdentifierEntity(key);
+		}
 
 		public MappingFromAttribute(bool key)
-			=> MappingFromIdentifier = new IdentifierEntity(key);
+		{
+			MappingFromIdentifier = new IdentifierEntity(key);
+		}
 
 
 		public IdentifierEntity MappingFromIdentifier { get; }
-
 	}
 }

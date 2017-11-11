@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -110,32 +109,32 @@ namespace JsDataParser.Mapping
 
 			//Object should be always on top.
 
-			if(binder.Type.IsAssignableFrom(typeof(object)))
+			if (binder.Type.IsAssignableFrom(typeof(object)))
 			{
 				result = _value.Object;
 				return true;
 			}
 
-			if (binder.Type==typeof(ValueEntity))
+			if (binder.Type == typeof(ValueEntity))
 			{
 				result = _value;
 				return true;
 			}
 
 
-			if ((binder.Type == typeof(int)||binder.Type==typeof(int?)) && _value.ValueType == ValueTypes.Integer)
+			if ((binder.Type == typeof(int) || binder.Type == typeof(int?)) && _value.ValueType == ValueTypes.Integer)
 			{
 				result = _value.Integer;
 				return true;
 			}
 
-			if ((binder.Type == typeof(double)||binder.Type==typeof(double?)) && _value.ValueType == ValueTypes.Real)
+			if ((binder.Type == typeof(double) || binder.Type == typeof(double?)) && _value.ValueType == ValueTypes.Real)
 			{
 				result = _value.Real;
 				return true;
 			}
 
-			if ((binder.Type == typeof(bool)||binder.Type==typeof(bool)) && _value.ValueType == ValueTypes.Boolean)
+			if ((binder.Type == typeof(bool) || binder.Type == typeof(bool)) && _value.ValueType == ValueTypes.Boolean)
 			{
 				result = _value.Boolean;
 				return true;
@@ -148,7 +147,6 @@ namespace JsDataParser.Mapping
 			}
 
 
-
 			if (typeof(IEnumerable<dynamic>).IsAssignableFrom(binder.Type))
 			{
 				result = _value.Array.Select(x => new DynamicMappedValue(x)).ToArray();
@@ -156,13 +154,13 @@ namespace JsDataParser.Mapping
 			}
 
 			//Implicit
-			if ((binder.Type == typeof(double)||binder.Type==typeof(double?)) && _value.ValueType == ValueTypes.Integer)
+			if ((binder.Type == typeof(double) || binder.Type == typeof(double?)) && _value.ValueType == ValueTypes.Integer)
 			{
 				result = (double) _value.Integer;
 				return true;
 			}
 
-			if ((binder.Type == typeof(int)||binder.Type==typeof(int?)) && _value.ValueType == ValueTypes.Real)
+			if ((binder.Type == typeof(int) || binder.Type == typeof(int?)) && _value.ValueType == ValueTypes.Real)
 			{
 				result = (int) _value.Real;
 				return true;

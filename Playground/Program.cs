@@ -21,43 +21,28 @@
  */
 
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
 using JsDataParser.Mapping;
 
 namespace Playground
 {
-
-
-	class ArraySample
+	internal class ArraySample
 	{
 		public dynamic[] ComplexArray { get; set; }
 	}
 
 
-
-
 	internal class Program
 	{
 		private const string Path = ".\\Samples\\shipdata.txt";
+
 		private static void Main()
 		{
 			var raw = DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
 			var mapper = new PeripheralMapper<ArraySample>();
 
 			var hoge = mapper.Map(raw[new IdentifierEntity(3)].NestedObject);
-
-
 		}
-
-
-
-
 	}
 }

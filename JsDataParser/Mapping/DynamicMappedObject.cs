@@ -22,7 +22,6 @@
 
 using System;
 using System.Dynamic;
-using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
 {

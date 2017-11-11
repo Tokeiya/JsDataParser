@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JsDataParser.DataLoader;
 using Xunit;
@@ -21,19 +20,6 @@ namespace JsDataParserTest
 		}
 
 		[Fact]
-		public void ReadScalarTest()
-		{
-			var loaded = DataLoader.LoadAsDynamic(".\\Samples\\DynamicMappingSamples.txt");
-
-
-			var actual = loaded[1];
-			Assert.NotNull(actual);
-
-
-			Assert.Equal<string>((string) actual.name, "12cm Single Cannon");
-		}
-
-		[Fact]
 		public void ReadArrayTest()
 		{
 			var data = DataLoader.LoadAsDynamic(".\\Samples\\DynamicMappingSamples.txt");
@@ -42,16 +28,16 @@ namespace JsDataParserTest
 
 			actual.Count.Is(3);
 
-			((int)actual[0]).Is(1);
-			((int)actual[1]).Is(2);
-			((int)actual[2]).Is(3);
+			((int) actual[0]).Is(1);
+			((int) actual[1]).Is(2);
+			((int) actual[2]).Is(3);
 
 
 			actual = data[1].REALS;
 			actual.Count.Is(2);
 
 			((double) actual[0]).Is(1.2);
-			((double)actual[1]).Is(1.5);
+			((double) actual[1]).Is(1.5);
 
 			actual = data[1].Misc;
 			actual.Count.Is(4);
@@ -77,12 +63,16 @@ namespace JsDataParserTest
 		}
 
 		[Fact]
-		public void SumTest()
+		public void ReadScalarTest()
 		{
-			IEnumerable<(dynamic key, dynamic value)> data = DataLoader.LoadAsDynamic(".\\Samples\\HugeSample.txt");
+			var loaded = DataLoader.LoadAsDynamic(".\\Samples\\DynamicMappingSamples.txt");
 
-			data.Select(x=>(int?)x.value.HP).Sum().Is(104144);
-			data.Select(x => (int?) x.value.HPmax).Sum().Is(26628);
+
+			var actual = loaded[1];
+			Assert.NotNull(actual);
+
+
+			Assert.Equal<string>((string) actual.name, "12cm Single Cannon");
 		}
 
 		[Fact]
@@ -92,6 +82,15 @@ namespace JsDataParserTest
 
 			data.SelectMany(x => (IEnumerable<dynamic>) x.value.SLOTS ?? Enumerable.Empty<object>()).Select(x => (int?) x)
 				.Sum().Is(27904);
+		}
+
+		[Fact]
+		public void SumTest()
+		{
+			IEnumerable<(dynamic key, dynamic value)> data = DataLoader.LoadAsDynamic(".\\Samples\\HugeSample.txt");
+
+			data.Select(x => (int?) x.value.HP).Sum().Is(104144);
+			data.Select(x => (int?) x.value.HPmax).Sum().Is(26628);
 		}
 	}
 }

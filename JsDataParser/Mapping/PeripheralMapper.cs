@@ -87,12 +87,10 @@ namespace JsDataParser.Mapping
 		{
 			var ret = new object[list.Count];
 
-			for (int i = 0; i < ret.Length; i++)
-			{
+			for (var i = 0; i < ret.Length; i++)
 				if (list[i].ValueType == ValueTypes.Array) ret[i] = ArrayAssignmentProc(list[i].Array);
 				else if (list[i].ValueType == ValueTypes.Object) ret[i] = new DynamicMappedLiteralObject(list[i].NestedObject);
 				else ret[i] = list[i].Object;
-			}
 
 			return ret;
 		}
@@ -127,17 +125,13 @@ namespace JsDataParser.Mapping
 				var tmp = from.Array;
 				var ret = new bool[tmp.Count];
 
-				for (int i = 0; i < ret.Length; i++)
-				{
+				for (var i = 0; i < ret.Length; i++)
 					if (tmp[i].ValueType == ValueTypes.Boolean) ret[i] = tmp[i].Boolean;
 					else return;
-				}
 
 				mapTo.SetValue(to, ret);
 			};
-
 		}
-
 
 
 		public Action<T, ValueEntity> BuildBooleanArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
@@ -148,15 +142,12 @@ namespace JsDataParser.Mapping
 				var tmp = from.Array;
 				var ret = new bool[tmp.Count];
 
-				for (int i = 0; i < ret.Length; i++)
-				{
+				for (var i = 0; i < ret.Length; i++)
 					if (tmp[i].ValueType == ValueTypes.Boolean) ret[i] = tmp[i].Boolean;
 					else return;
-				}
 
 				mapTo.SetValue(to, ret);
 			};
-
 		}
 
 		public Action<T, ValueEntity> BuildStringArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
@@ -167,14 +158,12 @@ namespace JsDataParser.Mapping
 				var tmp = from.Array;
 				var ret = new string[tmp.Count];
 
-				for (int i = 0; i < ret.Length; i++)
-				{
+				for (var i = 0; i < ret.Length; i++)
 					if (tmp[i].ValueType == ValueTypes.String) ret[i] = tmp[i].String;
 					else if (tmp[i].ValueType == ValueTypes.Identity) ret[i] = tmp[i].Identity;
 					else if (tmp[i].ValueType == ValueTypes.Function) ret[i] = tmp[i].Function;
 
 					else return;
-				}
 
 				mapTo.SetValue(to, ret);
 			};
@@ -189,14 +178,12 @@ namespace JsDataParser.Mapping
 				var tmp = from.Array;
 				var ret = new string[tmp.Count];
 
-				for (int i = 0; i < ret.Length; i++)
-				{
+				for (var i = 0; i < ret.Length; i++)
 					if (tmp[i].ValueType == ValueTypes.String) ret[i] = tmp[i].String;
 					else if (tmp[i].ValueType == ValueTypes.Identity) ret[i] = tmp[i].Identity;
 					else if (tmp[i].ValueType == ValueTypes.Function) ret[i] = tmp[i].Function;
 
 					else return;
-				}
 
 				mapTo.SetValue(to, ret);
 			};
@@ -210,12 +197,10 @@ namespace JsDataParser.Mapping
 				var ret = new double[from.Array.Count];
 				var tmp = from.Array;
 
-				for (int i = 0; i < ret.Length; i++)
-				{
+				for (var i = 0; i < ret.Length; i++)
 					if (tmp[i].ValueType == ValueTypes.Real) ret[i] = tmp[i].Real;
 					else if (tmp[i].ValueType == ValueTypes.Integer) ret[i] = tmp[i].Integer;
 					else return;
-				}
 
 				mapTo.SetValue(to, ret);
 			};
@@ -230,12 +215,10 @@ namespace JsDataParser.Mapping
 				var ret = new double[from.Array.Count];
 				var tmp = from.Array;
 
-				for (int i = 0; i < ret.Length; i++)
-				{
+				for (var i = 0; i < ret.Length; i++)
 					if (tmp[i].ValueType == ValueTypes.Real) ret[i] = tmp[i].Real;
 					else if (tmp[i].ValueType == ValueTypes.Integer) ret[i] = tmp[i].Integer;
 					else return;
-				}
 
 				mapTo.SetValue(to, ret);
 			};
@@ -248,35 +231,30 @@ namespace JsDataParser.Mapping
 			{
 				var ret = new int[from.Array.Count];
 				var fromArray = from.Array;
-				for (int i = 0; i < ret.Length; i++)
-				{
-					if (fromArray[i].ValueType == ValueTypes.Integer) ret[i] = fromArray[i].Integer;
-					else if (fromArray[i].ValueType == ValueTypes.Real) ret[i] = (int)fromArray[i].Real;
-					else return;
-				}
-
-				mapTo.SetValue(to, ret);
-			};
-		}
-
-		public Action<T, ValueEntity> BuildIntArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
-			FieldInfo mapTo)
-		{
-			return (to, from) =>
-			{
-				var ret = new int[from.Array.Count];
-				var fromArray = from.Array;
-				for (int i = 0; i < ret.Length; i++)
-				{
+				for (var i = 0; i < ret.Length; i++)
 					if (fromArray[i].ValueType == ValueTypes.Integer) ret[i] = fromArray[i].Integer;
 					else if (fromArray[i].ValueType == ValueTypes.Real) ret[i] = (int) fromArray[i].Real;
 					else return;
-				}
 
 				mapTo.SetValue(to, ret);
 			};
 		}
 
+		public Action<T, ValueEntity> BuildIntArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
+			FieldInfo mapTo)
+		{
+			return (to, from) =>
+			{
+				var ret = new int[from.Array.Count];
+				var fromArray = from.Array;
+				for (var i = 0; i < ret.Length; i++)
+					if (fromArray[i].ValueType == ValueTypes.Integer) ret[i] = fromArray[i].Integer;
+					else if (fromArray[i].ValueType == ValueTypes.Real) ret[i] = (int) fromArray[i].Real;
+					else return;
+
+				mapTo.SetValue(to, ret);
+			};
+		}
 
 
 		private Action<T, ValueEntity> BuildArraySetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
@@ -333,26 +311,18 @@ namespace JsDataParser.Mapping
 					return (to, from) =>
 					{
 						if (from.ValueType == ValueTypes.Integer)
-						{
 							mapTo.SetValue(to, from.Integer);
-						}
 						else
-						{
 							mapTo.SetValue(to, (int) from.Real);
-						}
 					};
 
 				case ValueTypes.Real:
 					return (to, from) =>
 					{
 						if (from.ValueType == ValueTypes.Real)
-						{
 							mapTo.SetValue(to, from.Real);
-						}
 						else
-						{
 							mapTo.SetValue(to, from.Integer);
-						}
 					};
 
 				case ValueTypes.Boolean:
@@ -360,7 +330,7 @@ namespace JsDataParser.Mapping
 
 				case ValueTypes.Object:
 					return (to, from) => mapTo.SetValue(to, new DynamicMappedLiteralObject(from.NestedObject));
-					
+
 				case ValueTypes.Array:
 					return BuildArraySetter(mapFrom, mapTo);
 
@@ -368,7 +338,6 @@ namespace JsDataParser.Mapping
 					throw new ArgumentOutOfRangeException();
 			}
 		}
-
 
 
 		private Action<T, ValueEntity> BuildSetter(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,
@@ -389,26 +358,18 @@ namespace JsDataParser.Mapping
 					return (to, from) =>
 					{
 						if (from.ValueType == ValueTypes.Integer)
-						{
 							mapTo.SetValue(to, from.Integer);
-						}
 						else
-						{
-							mapTo.SetValue(to, (int)from.Real);
-						}
+							mapTo.SetValue(to, (int) from.Real);
 					};
 
 				case ValueTypes.Real:
 					return (to, from) =>
 					{
 						if (from.ValueType == ValueTypes.Real)
-						{
 							mapTo.SetValue(to, from.Real);
-						}
 						else
-						{
 							mapTo.SetValue(to, from.Integer);
-						}
 					};
 
 				case ValueTypes.Boolean:
@@ -423,7 +384,6 @@ namespace JsDataParser.Mapping
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-
 		}
 
 		private bool TryBuildProperty(KeyValuePair<IdentifierEntity, ValueEntity> mapFrom,

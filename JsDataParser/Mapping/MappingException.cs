@@ -22,30 +22,23 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace JsDataParser.Mapping
 {
-	public class MappingException:Exception
+	public class MappingException : Exception
 	{
 		public MappingException(string message)
 			: base(message)
 		{
-			
 		}
 
-		public MappingException() : base()
+		public MappingException()
 		{
-			
 		}
 
-		public MappingException(string message, Exception innerException) 
+		public MappingException(string message, Exception innerException)
 			: base(message, innerException)
 		{
-			
 		}
 	}
-
-
 }

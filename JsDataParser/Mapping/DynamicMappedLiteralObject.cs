@@ -23,7 +23,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using JsDataParser.Entities;
@@ -60,8 +59,8 @@ namespace JsDataParser.Mapping
 		{
 			object select(ValueEntity entity)
 			{
-				if(entity.ValueType== ValueTypes.Object) return new DynamicMappedLiteralObject(entity.NestedObject);
-				else return new DynamicMappedValue(entity);
+				if (entity.ValueType == ValueTypes.Object) return new DynamicMappedLiteralObject(entity.NestedObject);
+				return new DynamicMappedValue(entity);
 			}
 
 			return _entity

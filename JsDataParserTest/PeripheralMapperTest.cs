@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using JsDataParser.DataLoader;
 using JsDataParser.Entities;
 using JsDataParser.Mapping;
@@ -12,7 +10,7 @@ namespace JsDataParserTest
 {
 	public class SampleClass
 	{
-		[MappingFrom("txtLiteral",false)]
+		[MappingFrom("txtLiteral", false)]
 		public string txtLiteral { get; set; }
 
 		[MappingFrom(42)]
@@ -25,34 +23,95 @@ namespace JsDataParserTest
 		public string realValue { get; set; }
 	}
 
-	class OrderSample
+	internal class OrderSample
 	{
 		public string nameJp { get; set; }
 
 		[MappingFrom("nameJP", true)]
 		public string name { get; set; }
-
 	}
 
-	class ArraySample
+	internal class ArraySample
 	{
 		[MappingFrom("intArray", false)] public int[] Array;
-		public IList<string> StringArray;
-		public object[] EmptyArray { get; set; }
 		public IEnumerable<bool> BoolArray;
 		public dynamic[] ComplexArray;
+		public IList<string> StringArray;
+		public object[] EmptyArray { get; set; }
 	}
-
 
 
 	public class PeripheralMapperTest
 	{
+		public PeripheralMapperTest(ITestOutputHelper output)
+		{
+			_output = output;
+		}
+
 		private readonly ITestOutputHelper _output;
 
-		public PeripheralMapperTest(ITestOutputHelper output) => _output = output;
-
 		private ObjectLiteralEntity Load()
-			=> DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
+		{
+			return DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
+		}
+
+		[Fact]
+		public void BooleanArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.BoolArray.IsNotNull();
+			actual.BoolArray.SequenceEqual(new[] {true, false}).IsTrue();
+		}
+
+		[Fact]
+		public void ComplexArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.ComplexArray.Length.Is(2);
+
+			var tmp = (object[]) actual.ComplexArray[0];
+
+			tmp.SequenceEqual(new object[] {1, 2}).IsTrue();
+
+			var element = actual.ComplexArray[1];
+
+			Assert.NotNull(element);
+
+			Assert.Equal(10, (int) element.hoge);
+			Assert.Equal(20, (int) element.piyo);
+		}
+
+		[Fact]
+		public void EmptyArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.EmptyArray.IsNotNull();
+			actual.EmptyArray.Length.Is(0);
+		}
+
+		[Fact]
+		public void IntArrayTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<ArraySample>();
+
+			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
+
+			actual.Array.IsNotNull();
+			actual.Array.SequenceEqual(new[] {1, 2, 3}).IsTrue();
+		}
 
 
 		[Fact]
@@ -96,19 +155,6 @@ namespace JsDataParserTest
 
 			actual.name.Is("10cm連装高角砲");
 			actual.nameJp.IsNull();
-			
-		}
-
-		[Fact]
-		public void IntArrayTest()
-		{
-			var raw = Load();
-			var target = new PeripheralMapper<ArraySample>();
-
-			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
-
-			actual.Array.IsNotNull();
-			actual.Array.SequenceEqual(new[] { 1,2,3}).IsTrue();
 		}
 
 		[Fact]
@@ -122,54 +168,5 @@ namespace JsDataParserTest
 			actual.StringArray.IsNotNull();
 			actual.StringArray.SequenceEqual(new[] {"hoge", "piyo"}).IsTrue();
 		}
-
-		[Fact]
-		public void EmptyArrayTest()
-		{
-			var raw = Load();
-			var target = new PeripheralMapper<ArraySample>();
-
-			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
-
-			actual.EmptyArray.IsNotNull();
-			actual.EmptyArray.Length.Is(0);
-		}
-
-		[Fact]
-		public void BooleanArrayTest()
-		{
-			var raw = Load();
-			var target = new PeripheralMapper<ArraySample>();
-
-			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
-
-			actual.BoolArray.IsNotNull();
-			actual.BoolArray.SequenceEqual(new[] {true, false}).IsTrue();
-		}
-
-		[Fact]
-		public void ComplexArrayTest()
-		{
-			var raw = Load();
-			var target = new PeripheralMapper<ArraySample>();
-
-			var actual = target.Map(raw[new IdentifierEntity(3)].NestedObject);
-
-			actual.ComplexArray.Length.Is(2);
-
-			var tmp = (object[]) actual.ComplexArray[0];
-
-			tmp.SequenceEqual(new object[]{1,2}).IsTrue();
-
-			var element = actual.ComplexArray[1];
-
-			Assert.NotNull(element);
-
-			Assert.Equal(10, (int) element.hoge);
-			Assert.Equal(20, (int) element.piyo);
-
-		}
-
-
 	}
 }

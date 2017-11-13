@@ -354,7 +354,8 @@ namespace JsDataParser.Mapping
 					};
 
 				case ValueTypes.Real:
-					if (mapTo.PropertyType == typeof(double))
+					if (mapTo.PropertyType == typeof(double)||
+						mapTo.PropertyType==typeof(double?))
 						return (to, from) =>
 						{
 							if (from.ValueType == ValueTypes.Real)
@@ -363,7 +364,8 @@ namespace JsDataParser.Mapping
 								mapTo.SetValue(to, from.Integer);
 						};
 
-					if (mapTo.PropertyType == typeof(int))
+					if (mapTo.PropertyType == typeof(int)||
+						mapTo.PropertyType==typeof(int?))
 						return (to, from) =>
 						{
 							if (from.ValueType == ValueTypes.Real)
@@ -372,7 +374,8 @@ namespace JsDataParser.Mapping
 								mapTo.SetValue(to, from.Integer);
 						};
 
-					if (mapTo.PropertyType == typeof(long))
+					if (mapTo.PropertyType == typeof(long)||
+						mapTo.PropertyType==typeof(long?))
 						return (to, from) =>
 						{
 							if (from.ValueType == ValueTypes.Real)
@@ -422,7 +425,8 @@ namespace JsDataParser.Mapping
 				
 					//TODO:Not so good...
 				case ValueTypes.Real:
-					if (mapTo.FieldType == typeof(double))
+					if (mapTo.FieldType == typeof(double)||
+						mapTo.FieldType==typeof(double?))
 						return (to, from) =>
 						{
 							if (from.ValueType == ValueTypes.Real)
@@ -431,7 +435,8 @@ namespace JsDataParser.Mapping
 								mapTo.SetValue(to, from.Integer);
 						};
 
-					if (mapTo.FieldType == typeof(int))
+					if (mapTo.FieldType == typeof(int)||
+						mapTo.FieldType==typeof(int?))
 						return (to, from) =>
 						{
 							if (from.ValueType == ValueTypes.Real)
@@ -440,7 +445,8 @@ namespace JsDataParser.Mapping
 								mapTo.SetValue(to, from.Integer);
 						};
 
-					if (mapTo.FieldType == typeof(long))
+					if (mapTo.FieldType == typeof(long)||
+						mapTo.FieldType==typeof(long?))
 						return (to, from) =>
 						{
 							if (from.ValueType == ValueTypes.Real)

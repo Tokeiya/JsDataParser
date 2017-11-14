@@ -150,8 +150,6 @@ namespace JsDataParser.Entities
 			}
 		}
 
-		public dynamic Dynamic => Object;
-
 		public object Object
 		{
 			get

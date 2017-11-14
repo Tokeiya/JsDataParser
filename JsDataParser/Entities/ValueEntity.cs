@@ -183,7 +183,5 @@ namespace JsDataParser.Entities
 				return _nestedObject;
 			}
 		}
-
-		public dynamic Dynamic => Object;
 	}
 }

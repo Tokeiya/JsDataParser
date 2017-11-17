@@ -22,6 +22,9 @@
 
 
 using System;
+using System.Linq;
+using JsDataParser.DataLoader;
+using JsDataParser.Mapping;
 
 namespace Playground
 {
@@ -44,6 +47,14 @@ namespace Playground
 		}
 	}
 
+	class ItemType
+	{
+		public string Name { get; set; }
+		public int Image { get; set; }
+		public dynamic Improve { get; set; }
+		public string[] CanEquip { get; set; }
+	}
+
 
 	internal class Program
 	{
@@ -52,6 +63,19 @@ namespace Playground
 
 		private static void Main()
 		{
+			var raw = DataLoader.LoadCollectionRaw(Path);
+
+			Console.WriteLine(raw[0].index.Identity);
+			Console.WriteLine(raw[0].index.Index.Identity);
+
+			var mapper = new PeripheralMapper<ItemType>();
+
+			var ret = raw.Select(x => (index:x.index.Identity, value:mapper.Map(x.value))).ToArray();
+
+			Console.WriteLine(ret[0].value.Improve.ACCnb);
+
 		}
+
+		
 	}
 }

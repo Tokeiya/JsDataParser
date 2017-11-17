@@ -21,9 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
 using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
@@ -73,103 +70,39 @@ namespace JsDataParser.Mapping
 			}
 		}
 
-		public override bool TryGetMember(GetMemberBinder binder, out object result)
-		{
-			if (binder.Name.ToLower() == "function" && _value.ValueType == ValueTypes.Function)
-			{
-				result = _value.Function;
-				return true;
-			}
+		public string Function => _value.Function;
+		public string Identity => _value.Identity;
 
-			if (binder.Name.ToLower() == "identity" && _value.ValueType == ValueTypes.Identity)
-			{
-				result = _value.Identity;
-				return true;
-			}
-			throw new InvalidOperationException();
+		public dynamic this[int index] => new DynamicMappedValue(_value.Array[index]);
+
+		public static implicit operator ValueEntity(DynamicMappedValue obj) => obj?._value;
+
+		public static implicit operator int(DynamicMappedValue obj)
+		{
+			if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+			if (obj._value.ValueType == ValueTypes.Real) return (int) obj._value.Real;
+
+			 return obj._value.Integer;
 		}
 
-		public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+
+
+		public static implicit operator double(DynamicMappedValue obj)
 		{
-			result = default;
+			if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-			if (indexes.Length != 1 || !(indexes[0] is int) || _value.ValueType != ValueTypes.Array) return false;
-			// ReSharper disable once PossibleInvalidCastException
-			var idx = (int) indexes[0];
-
-			if (idx < 0 || idx > _value.Array.Count) return false;
-
-			result = new DynamicMappedValue(_value.Array[idx]);
-			return true;
+			if (obj._value.ValueType == ValueTypes.Integer) return obj._value.Integer;
+			return obj._value.Real;
 		}
 
-		public override bool TryConvert(ConvertBinder binder, out object result)
-		{
-			//Strict
+		public static implicit operator bool(DynamicMappedValue obj)
+			=> obj?._value.Boolean ?? throw new ArgumentNullException(nameof(obj));
 
-			//Object should be always on top.
-
-			if (binder.Type.IsAssignableFrom(typeof(object)))
-			{
-				result = _value.Object;
-				return true;
-			}
-
-			if (binder.Type == typeof(ValueEntity))
-			{
-				result = _value;
-				return true;
-			}
+		public static implicit operator string(DynamicMappedValue obj)
+			=> obj?._value.String ?? throw new ArgumentNullException(nameof(obj));
 
 
-			if ((binder.Type == typeof(int) || binder.Type == typeof(int?)) && _value.ValueType == ValueTypes.Integer)
-			{
-				result = _value.Integer;
-				return true;
-			}
-
-			if ((binder.Type == typeof(double) || binder.Type == typeof(double?)) && _value.ValueType == ValueTypes.Real)
-			{
-				result = _value.Real;
-				return true;
-			}
-
-			if ((binder.Type == typeof(bool) || binder.Type == typeof(bool)) && _value.ValueType == ValueTypes.Boolean)
-			{
-				result = _value.Boolean;
-				return true;
-			}
-
-			if (binder.Type == typeof(string) && _value.ValueType == ValueTypes.String)
-			{
-				result = _value.String;
-				return true;
-			}
-
-
-			if (typeof(IEnumerable<dynamic>).IsAssignableFrom(binder.Type))
-			{
-				result = _value.Array.Select(x => new DynamicMappedValue(x)).ToArray();
-				return true;
-			}
-
-			//Implicit
-			if ((binder.Type == typeof(double) || binder.Type == typeof(double?)) && _value.ValueType == ValueTypes.Integer)
-			{
-				result = (double) _value.Integer;
-				return true;
-			}
-
-			if ((binder.Type == typeof(int) || binder.Type == typeof(int?)) && _value.ValueType == ValueTypes.Real)
-			{
-				result = (int) _value.Real;
-				return true;
-			}
-
-
-			result = default;
-			return false;
-		}
 
 		public override string ToString()
 		{

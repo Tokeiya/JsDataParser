@@ -69,61 +69,49 @@ namespace JsDataParser.Mapping
 		}
 
 
-		IEnumerator IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+
+		public dynamic this[object index]
 		{
-			return GetEnumerator();
-		}
-
-		public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
-		{
-			if (indexes.Length != 1) throw new InvalidOperationException();
-
-			IdentifierEntity entity;
-
-			var idx = indexes[0];
-
-			switch (idx)
+			get
 			{
-				case double d:
-					entity = new IdentifierEntity(d);
-					break;
+				if (index == null) throw new NullReferenceException($"{nameof(index)} is null");
+				IdentifierEntity entity;
 
-				case int i:
-					entity = new IdentifierEntity(i);
-					break;
-
-				case bool b:
-					entity = new IdentifierEntity(b);
-					break;
-
-				case string s:
-					entity = new IdentifierEntity(s, false);
-					break;
-
-				default:
-					throw new InvalidOperationException();
-			}
-
-			object tmp;
-
-			if (_entity.TryGetValue(entity, out var ret))
-				switch (ret.ValueType)
+				switch (index)
 				{
-					case ValueTypes.Object:
-						tmp = new DynamicMappedLiteralObject(ret.NestedObject);
+					case double d:
+						entity = new IdentifierEntity(d);
+						break;
+
+					case int i:
+						entity = new IdentifierEntity(i);
+						break;
+
+					case bool b:
+						entity = new IdentifierEntity(b);
+						break;
+
+					case string s:
+						entity = new IdentifierEntity(s, false);
 						break;
 
 					default:
-						tmp = new DynamicMappedValue(ret);
-						break;
+						throw new InconsistencyException();
 				}
-			else
-				tmp = default;
 
+				if (_entity.TryGetValue(entity, out var ret))
+				{
+					return ret.ValueType == ValueTypes.Object
+						? (object)new DynamicMappedLiteralObject(ret.NestedObject)
+						: new DynamicMappedValue(ret);
+				}
 
-			result = tmp;
-			return true;
+				return default;
+			}
 		}
+
 
 		public override bool TryConvert(ConvertBinder binder, out object result)
 		{
@@ -136,6 +124,8 @@ namespace JsDataParser.Mapping
 			result = default;
 			return false;
 		}
+
+		public static implicit operator ObjectLiteralEntity(DynamicMappedLiteralObject obj) => obj?._entity;
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{

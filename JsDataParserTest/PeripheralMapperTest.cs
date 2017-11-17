@@ -5,6 +5,7 @@ using JsDataParser.Entities;
 using JsDataParser.Mapping;
 using Xunit;
 using Xunit.Abstractions;
+
 // ReSharper disable InconsistentNaming
 
 namespace JsDataParserTest
@@ -44,9 +45,9 @@ namespace JsDataParserTest
 
 	internal class ShipData
 	{
+		public int Hp;
 		public string Name;
 		public string NameJp;
-		public int Hp;
 		public int[] Slots { get; set; }
 	}
 
@@ -123,6 +124,29 @@ namespace JsDataParserTest
 		}
 
 		[Fact]
+		public void FlatMappingTest()
+		{
+			var raw = DataLoader.LoadRaw(".\\Samples\\shipdata.txt");
+
+			var target = new PeripheralMapper<ShipData>();
+
+
+			var actual = target.Flatmap(raw).ToDictionary(x => x.identity.Integer, x => x.value);
+
+			actual.Count.Is(765);
+
+			actual[0].Slots.IsNull();
+
+			var pivot = actual[1];
+
+			pivot.Slots.IsNotNull();
+			pivot.Slots.Length.Is(2);
+			pivot.Slots.SequenceEqual(new[] {0, 0}).IsTrue();
+
+			pivot.Name.Is("name3");
+		}
+
+		[Fact]
 		public void IntArrayTest()
 		{
 			var raw = Load();
@@ -132,27 +156,6 @@ namespace JsDataParserTest
 
 			actual.Array.IsNotNull();
 			actual.Array.SequenceEqual(new[] {1, 2, 3}).IsTrue();
-		}
-
-		[Fact]
-		public void NullableTest()
-		{
-			var raw = Load();
-			var target = new PeripheralMapper<Nullable>();
-
-			var actual = target.Map(raw[new IdentifierEntity(5)].NestedObject);
-
-			actual.Integer.IsNotNull();
-			actual.Real.IsNotNull();
-
-			actual.Integer.Is(42);
-			actual.Real.Is(42.195);
-
-			actual = target.Map(raw[new IdentifierEntity(4)].NestedObject);
-
-			actual.Integer.IsNull();
-			actual.Real.IsNull();
-
 		}
 
 
@@ -211,6 +214,26 @@ namespace JsDataParserTest
 		}
 
 		[Fact]
+		public void NullableTest()
+		{
+			var raw = Load();
+			var target = new PeripheralMapper<Nullable>();
+
+			var actual = target.Map(raw[new IdentifierEntity(5)].NestedObject);
+
+			actual.Integer.IsNotNull();
+			actual.Real.IsNotNull();
+
+			actual.Integer.Is(42);
+			actual.Real.Is(42.195);
+
+			actual = target.Map(raw[new IdentifierEntity(4)].NestedObject);
+
+			actual.Integer.IsNull();
+			actual.Real.IsNull();
+		}
+
+		[Fact]
 		public void StringArrayTest()
 		{
 			var raw = Load();
@@ -221,31 +244,5 @@ namespace JsDataParserTest
 			actual.StringArray.IsNotNull();
 			actual.StringArray.SequenceEqual(new[] {"hoge", "piyo"}).IsTrue();
 		}
-
-		[Fact]
-		public void FlatMappingTest()
-		{
-			var raw = DataLoader.LoadRaw(".\\Samples\\shipdata.txt");
-
-			var target = new PeripheralMapper<ShipData>();
-
-
-			var actual = target.Flatmap(raw).ToDictionary(x => x.identity.Integer, x => x.value);
-
-			actual.Count.Is(765);
-
-			actual[0].Slots.IsNull();
-
-			var pivot = actual[1];
-
-			pivot.Slots.IsNotNull();
-			pivot.Slots.Length.Is(2);
-			pivot.Slots.SequenceEqual(new []{0,0}).IsTrue();
-
-			pivot.Name.Is("name3");
-		}
-
-
-
 	}
 }

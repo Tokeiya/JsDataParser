@@ -22,46 +22,36 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using JsDataParser.DataLoader;
-using JsDataParser.Entities;
-using JsDataParser.Mapping;
 
 namespace Playground
 {
-	internal class LongTest
+	internal static class Extends
 	{
-		public long Integer;
-		public long Real;
+		public static void Dump(this object source)
+		{
+			if (string.IsNullOrWhiteSpace(source?.ToString() ?? ""))
+				Console.WriteLine("Empty");
+			else
+				Console.WriteLine(source);
+		}
 	}
 
-
+	internal class Dumper
+	{
+		public void Dump()
+		{
+			Console.WriteLine("Dump called.");
+		}
+	}
 
 
 	internal class Program
 	{
-		private const string Path = ".\\Samples\\shipdata.txt";
-
+		private const string Path = ".\\Samples\\itemtype.txt";
 
 
 		private static void Main()
 		{
-			var raw = DataLoader.LoadRaw(".\\Samples\\PeripheralSample.txt");
-			var target = new PeripheralMapper<LongTest>();
-
-
-			var ret = target.Map(raw[new IdentifierEntity(5)].NestedObject);
-
-
-
-
-
-
-
-
-
 		}
 	}
 }

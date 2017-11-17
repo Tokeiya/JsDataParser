@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JsDataParser.Entities;
 using JsDataParser.Parser;
@@ -134,6 +135,23 @@ namespace JsDataParserTest
 			Identifier.AreSuccess("'hello'", new IdentifierEntity("hello", IdentifierTypes.String));
 			Identifier.AreSuccess("CONST", new IdentifierEntity("CONST", IdentifierTypes.Identity));
 			Identifier.AreSuccess("11.:", new IdentifierEntity("11", IdentifierTypes.Real));
+		}
+
+		[Fact]
+		public void IndexedAssginmentTest()
+		{
+			string source;
+			using (var rdr = new StreamReader(".\\Samples\\itemtype.txt"))
+			{
+				source = rdr.ReadToEnd();
+			}
+
+			IEnumerable<(IndexedIdentiferEntity index, ObjectLiteralEntity value)> actual = null;
+
+			CollectionAssignment.Run(source.AsStream())
+				.Case((_, __) => Assert.True(false), (_, x) => actual = x);
+
+			actual.Count().Is(54);
 		}
 
 		[Fact]

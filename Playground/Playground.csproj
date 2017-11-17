@@ -25,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="SeedCreate.Groceries">
+      <HintPath>..\..\..\SeedCreateGroceries\DotNetStandard\SeedCreate.Groceries\bin\Release\netstandard2.0\SeedCreate.Groceries.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Samples\PeripheralSample.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

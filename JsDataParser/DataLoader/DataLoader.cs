@@ -22,6 +22,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using JsDataParser.Entities;
 using JsDataParser.Mapping;
 using JsDataParser.Parser;
@@ -62,6 +63,38 @@ namespace JsDataParser.DataLoader
 			return ret;
 		}
 
+		public static (IndexedIdentiferEntity index, ObjectLiteralEntity value)[] LoadCollectionRaw(TextReader reader)
+		{
+			if (reader == null) throw new ArgumentNullException(nameof(reader));
+
+			(IndexedIdentiferEntity index, ObjectLiteralEntity value)[] ret = null;
+
+			ObjectParser.CollectionAssignment.Run(reader.AsStream())
+				.Case(
+					(stream, message) =>
+					{
+						var lineNum = stream.Current.HasValue ? stream.Current.Value.Item1.Line : -1;
+						var col = stream.Current.HasValue ? stream.Current.Value.Item1.Column : -1;
+
+						throw new LoadException(lineNum, col, message);
+					}
+					,
+					(_, cap) => ret = cap.ToArray()
+				);
+
+			return ret;
+		}
+
+		public static (IndexedIdentiferEntity index, ObjectLiteralEntity value)[] LoadCollectionRaw(string path)
+		{
+			if (path == null) throw new ArgumentNullException(nameof(path));
+
+			using (var rdr = new StreamReader(path))
+			{
+				return LoadCollectionRaw(rdr);
+			}
+		}
+
 		public static dynamic LoadAsDynamic(string path)
 		{
 			using (var rdr = new StreamReader(path))
@@ -75,6 +108,21 @@ namespace JsDataParser.DataLoader
 			var obj = LoadRaw(reader);
 
 			return new DynamicMappedLiteralObject(obj);
+		}
+
+		public static (IndexedIdentiferEntity index, dynamic value)[] LoadCollectionAsDynamic(TextReader reader)
+		{
+			var raw = LoadCollectionRaw(reader);
+
+			return raw.Select(x => (x.index, (object) x.value)).ToArray();
+		}
+
+		public static (IndexedIdentiferEntity index, dynamic value)[] LoadCollectionAsDynamic(string path)
+		{
+			using (var rdr = new StreamReader(path ?? throw new ArgumentNullException(nameof(path))))
+			{
+				return LoadCollectionAsDynamic(rdr);
+			}
 		}
 	}
 }

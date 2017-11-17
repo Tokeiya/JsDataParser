@@ -39,6 +39,9 @@ namespace JsDataParser.Parser
 		public static readonly Parser<char, (IdentifierEntity identifier, ValueEntity value)> Property;
 		public static readonly Parser<char, ObjectLiteralEntity> LiteralObject;
 
+		public static readonly Parser<char, IEnumerable<(IndexedIdentiferEntity identity, ObjectLiteralEntity value)>>
+			CollectionAssignment;
+
 
 		static ObjectParser()
 		{
@@ -169,6 +172,27 @@ namespace JsDataParser.Parser
 
 				objectFixedPoint.FixedParser = tmp;
 				LiteralObject = objectFixedPoint.Parse;
+			}
+
+			//CollectionAssignment
+			{
+				var id = from identity in LiteralParser.IdentifierName
+					from _ in Combinator.Sequence(ignore, Char('[').Ignore(), ignore)
+					from index in Identifier
+					from __ in Combinator.Sequence(ignore, Char(']').Ignore(), ignore, Char('=').Ignore(), ignore)
+					select new IndexedIdentiferEntity(identity, index);
+
+				var value = from literalObject in LiteralObject
+					from _ in Combinator.Sequence(ignore, Char(';').Ignore(), ignore)
+					select literalObject;
+
+				var tmp = from idxIdentity in id
+					from valueEntity in value
+					select (idxIdentity, valueEntity);
+
+
+				CollectionAssignment = from values in tmp.Many0()
+					select values;
 			}
 		}
 

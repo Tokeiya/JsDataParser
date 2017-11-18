@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsDataParser", "JsDataParse
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsDataParserTest", "JsDataParserTest\JsDataParserTest.csproj", "{CCFA87AE-0B69-4040-B145-5C39C1E37988}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassBuilder", "ClassBuilder\ClassBuilder.csproj", "{8F60000F-36F7-4808-A267-D1BF7978F337}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{CCFA87AE-0B69-4040-B145-5C39C1E37988}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCFA87AE-0B69-4040-B145-5C39C1E37988}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{CCFA87AE-0B69-4040-B145-5C39C1E37988}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{8F60000F-36F7-4808-A267-D1BF7978F337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F60000F-36F7-4808-A267-D1BF7978F337}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F60000F-36F7-4808-A267-D1BF7978F337}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F60000F-36F7-4808-A267-D1BF7978F337}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

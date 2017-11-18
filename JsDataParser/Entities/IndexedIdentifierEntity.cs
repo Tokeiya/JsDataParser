@@ -27,10 +27,8 @@ using System.Collections.Generic;
 
 namespace JsDataParser.Entities
 {
-	// Token: 0x0200005A RID: 90
 	public class IndexedIdentiferEntity : IEquatable<IndexedIdentiferEntity>
 	{
-		// Token: 0x0600022B RID: 555 RVA: 0x00009CBC File Offset: 0x00007EBC
 		public IndexedIdentiferEntity(IEnumerable<char> identity, IdentifierEntity index)
 		{
 			if (identity == null) throw new ArgumentNullException(nameof(identity));

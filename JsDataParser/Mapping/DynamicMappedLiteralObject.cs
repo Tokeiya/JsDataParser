@@ -146,7 +146,9 @@ namespace JsDataParser.Mapping
 
 			object tmp;
 
-			tmp = _entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret) ? selector(ret) : default;
+			tmp = _entity.TryGetValue(new IdentifierEntity(binder.Name, true), out var ret)
+				? selector(ret)
+				: default;
 
 			result = tmp;
 			return true;

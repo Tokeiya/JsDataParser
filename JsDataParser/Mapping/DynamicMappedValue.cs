@@ -21,6 +21,9 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using JsDataParser.Entities;
 
 namespace JsDataParser.Mapping
@@ -73,7 +76,6 @@ namespace JsDataParser.Mapping
 		public string Function => _value.Function;
 		public string Identity => _value.Identity;
 
-		public dynamic this[int index] => new DynamicMappedValue(_value.Array[index]);
 
 		public static implicit operator ValueEntity(DynamicMappedValue obj) => obj?._value;
 

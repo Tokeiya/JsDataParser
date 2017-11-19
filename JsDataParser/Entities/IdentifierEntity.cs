@@ -31,33 +31,30 @@ namespace JsDataParser.Entities
 	[DebuggerStepThrough]
 	public class IdentifierEntity : IEquatable<IdentifierEntity>
 	{
-		private readonly bool _boolValue;
-		private readonly int _intValue;
-		private readonly double _realValue;
-		private readonly string _stringValue;
+		private readonly object _entity;
 
 
 		public IdentifierEntity(int integer)
 		{
-			_intValue = integer;
+			_entity = integer;
 			IdentityType = IdentifierTypes.Integer;
 		}
 
 		public IdentifierEntity(double real)
 		{
-			_realValue = real;
+			_entity = real;
 			IdentityType = IdentifierTypes.Real;
 		}
 
 		public IdentifierEntity(bool boolean)
 		{
-			_boolValue = boolean;
+			_entity = boolean;
 			IdentityType = IdentifierTypes.Boolean;
 		}
 
 		public IdentifierEntity(string value, bool isConstant)
 		{
-			_stringValue = value ?? throw new ArgumentNullException(nameof(value));
+			_entity = value ?? throw new ArgumentNullException(nameof(value));
 
 			IdentityType = isConstant ? IdentifierTypes.Identity : IdentifierTypes.String;
 		}
@@ -73,20 +70,20 @@ namespace JsDataParser.Entities
 			switch (identityType)
 			{
 				case IdentifierTypes.Boolean:
-					_boolValue = bool.Parse(source.BuildString());
+					_entity = bool.Parse(source.BuildString());
 					break;
 
 				case IdentifierTypes.Integer:
-					_intValue = int.Parse(source.BuildString());
+					_entity = int.Parse(source.BuildString());
 					break;
 
 				case IdentifierTypes.Real:
-					_realValue = double.Parse(source.BuildString(), NumberStyles.Float);
+					_entity = double.Parse(source.BuildString(), NumberStyles.Float);
 					break;
 
 				case IdentifierTypes.String:
 				case IdentifierTypes.Identity:
-					_stringValue = source.BuildString();
+					_entity = source.BuildString();
 					break;
 
 
@@ -102,7 +99,7 @@ namespace JsDataParser.Entities
 				if (IdentityType != IdentifierTypes.Integer)
 					throw new InvalidOperationException($"This instance isn't a Integer identity.");
 
-				return _intValue;
+				return (int)_entity;
 			}
 		}
 
@@ -113,7 +110,7 @@ namespace JsDataParser.Entities
 				if (IdentityType != IdentifierTypes.Real)
 					throw new InvalidOperationException($"This instance isn't a Real identity.");
 
-				return _realValue;
+				return (double)_entity;
 			}
 		}
 
@@ -124,7 +121,7 @@ namespace JsDataParser.Entities
 				if (IdentityType != IdentifierTypes.Boolean)
 					throw new InvalidOperationException($"This instance isn't Boolean identity.");
 
-				return _boolValue;
+				return (bool)_entity;
 			}
 		}
 
@@ -135,7 +132,7 @@ namespace JsDataParser.Entities
 				if (IdentityType != IdentifierTypes.String)
 					throw new InvalidOperationException("This instance is't String identity");
 
-				return _stringValue;
+				return (string)_entity;
 			}
 		}
 
@@ -146,37 +143,11 @@ namespace JsDataParser.Entities
 				if (IdentityType != IdentifierTypes.Identity)
 					throw new InvalidOperationException("This instance isn't identity.");
 
-				return _stringValue;
+				return (string) _entity;
 			}
 		}
 
-		public object Object
-		{
-			get
-			{
-				switch (IdentityType)
-				{
-					case IdentifierTypes.Identity:
-					case IdentifierTypes.String:
-						return _stringValue;
-
-					case IdentifierTypes.Boolean:
-						return _boolValue;
-
-					case IdentifierTypes.Integer:
-						return _intValue;
-
-					case IdentifierTypes.Real:
-						return _realValue;
-
-					default:
-						break;
-				}
-
-				Trace.Assert(false);
-				return default;
-			}
-		}
+		public object Object => _entity;
 
 
 		public IdentifierTypes IdentityType { get; }
@@ -191,25 +162,23 @@ namespace JsDataParser.Entities
 			switch (IdentityType)
 			{
 				case IdentifierTypes.Boolean:
-					return _boolValue == other._boolValue;
+					return Boolean == other.Boolean;
 
 				case IdentifierTypes.String:
+					return String == other.String;
+
 				case IdentifierTypes.Identity:
-					return _stringValue == other._stringValue;
+					return Identity == other.Identity;
 
 				case IdentifierTypes.Integer:
-					return _intValue == other._intValue;
+					return Integer == other.Integer;
 
 				case IdentifierTypes.Real:
-					return Math.Abs(_realValue - other._realValue) < double.Epsilon;
+					return Math.Abs(Real - other.Real) < double.Epsilon;
 
 				default:
-					Trace.Assert(false, $"{IdentityType} is unexpected.");
-					break;
+					throw new InconsistencyException($"{IdentityType} is unexpected.");
 			}
-
-			Trace.Assert(false);
-			return false;
 		}
 
 		public override bool Equals(object obj)
@@ -228,25 +197,27 @@ namespace JsDataParser.Entities
 				switch (IdentityType)
 				{
 					case IdentifierTypes.Boolean:
-						tmp = _boolValue.GetHashCode();
+						tmp = Boolean.GetHashCode();
 						break;
 
 					case IdentifierTypes.Identity:
+						tmp = Identity.GetHashCode();
+						break;
+
 					case IdentifierTypes.String:
-						tmp = _stringValue.GetHashCode();
+						tmp = String.GetHashCode();
 						break;
 
 					case IdentifierTypes.Integer:
-						tmp = _intValue.GetHashCode();
+						tmp = Integer.GetHashCode();
 						break;
 
 					case IdentifierTypes.Real:
-						tmp = _realValue.GetHashCode();
+						tmp = Real.GetHashCode();
 						break;
 
 					default:
-						Trace.Assert(false);
-						break;
+						throw new InconsistencyException($"{IdentityType} is unexpected.");
 				}
 
 				return (tmp * 397) ^ (int) IdentityType;

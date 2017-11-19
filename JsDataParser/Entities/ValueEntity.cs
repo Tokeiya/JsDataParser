@@ -7,19 +7,13 @@ namespace JsDataParser.Entities
 	[DebuggerStepThrough]
 	public class ValueEntity
 	{
-		private readonly ValueEntity[] _array;
-		private readonly bool _boolValue;
-		private readonly int _integerValue;
-		private readonly ObjectLiteralEntity _nestedObject;
-		private readonly double _realValue;
-		private readonly string _textValue;
-
+		private readonly object _value;	
 
 		public ValueEntity(ObjectLiteralEntity nestedObject)
 		{
-			_nestedObject = nestedObject ?? throw new ArgumentNullException(nameof(nestedObject));
+			_value = nestedObject ?? throw new ArgumentNullException(nameof(nestedObject));
 			ValueType = ValueTypes.Object;
-			_nestedObject = nestedObject;
+			_value = nestedObject;
 		}
 
 		public ValueEntity(IEnumerable<char> value, ValueTypes valueType)
@@ -30,21 +24,21 @@ namespace JsDataParser.Entities
 			switch (valueType)
 			{
 				case ValueTypes.Boolean:
-					_boolValue = bool.Parse(value.BuildString());
+					_value = bool.Parse(value.BuildString());
 					break;
 
 				case ValueTypes.Identity:
 				case ValueTypes.String:
 				case ValueTypes.Function:
-					_textValue = value.BuildString();
+					_value = value.BuildString();
 					break;
 
 				case ValueTypes.Integer:
-					_integerValue = int.Parse(value.BuildString());
+					_value = int.Parse(value.BuildString());
 					break;
 
 				case ValueTypes.Real:
-					_realValue = double.Parse(value.BuildString());
+					_value = double.Parse(value.BuildString());
 					break;
 
 				default:
@@ -66,7 +60,7 @@ namespace JsDataParser.Entities
 				buffer.Add(elem);
 			}
 
-			_array = buffer.ToArray();
+			_value = buffer.ToArray();
 
 			ValueType = ValueTypes.Array;
 		}
@@ -80,24 +74,14 @@ namespace JsDataParser.Entities
 				switch (ValueType)
 				{
 					case ValueTypes.Array:
-						return _array;
-
 					case ValueTypes.Boolean:
-						return _boolValue;
-
 					case ValueTypes.Identity:
 					case ValueTypes.Function:
 					case ValueTypes.String:
-						return _textValue;
-
 					case ValueTypes.Real:
-						return _realValue;
-
 					case ValueTypes.Integer:
-						return _integerValue;
-
 					case ValueTypes.Object:
-						return _nestedObject;
+						return _value;
 
 					default:
 						throw new InvalidOperationException();
@@ -110,7 +94,7 @@ namespace JsDataParser.Entities
 			get
 			{
 				if (ValueType != ValueTypes.Boolean) throw new InvalidOperationException("This instance isn't boolean entity.");
-				return _boolValue;
+				return (bool)_value;
 			}
 		}
 
@@ -121,7 +105,7 @@ namespace JsDataParser.Entities
 			{
 				if (ValueType != ValueTypes.String) throw new InvalidOperationException("This instance isn't string entity.");
 
-				return _textValue;
+				return (string)_value;
 			}
 		}
 
@@ -130,7 +114,7 @@ namespace JsDataParser.Entities
 			get
 			{
 				if (ValueType != ValueTypes.Function) throw new InvalidOperationException("This instance isn't function entity.");
-				return _textValue;
+				return (string)_value;
 			}
 		}
 
@@ -141,7 +125,7 @@ namespace JsDataParser.Entities
 				if (ValueType != ValueTypes.Identity)
 					throw new InvalidOperationException("This instance isn't constant entity.");
 
-				return _textValue;
+				return (string)_value;
 			}
 		}
 
@@ -151,7 +135,7 @@ namespace JsDataParser.Entities
 			get
 			{
 				if (ValueType != ValueTypes.Integer) throw new InvalidOperationException("This instance isn't integer entity.");
-				return _integerValue;
+				return (int) _value;
 			}
 		}
 
@@ -160,7 +144,7 @@ namespace JsDataParser.Entities
 			get
 			{
 				if (ValueType != ValueTypes.Real) throw new InvalidOperationException("Tis instance isn't real entity.");
-				return _realValue;
+				return (double) _value;
 			}
 		}
 
@@ -169,7 +153,7 @@ namespace JsDataParser.Entities
 			get
 			{
 				if (ValueType != ValueTypes.Array) throw new InvalidOperationException("This instance isn't array entity.");
-				return _array;
+				return (ValueEntity[]) _value;
 			}
 		}
 
@@ -180,7 +164,7 @@ namespace JsDataParser.Entities
 				if (ValueType != ValueTypes.Object)
 					throw new InvalidOperationException("This instance isn't nested object entity.");
 
-				return _nestedObject;
+				return (ObjectLiteralEntity) _value;
 			}
 		}
 	}
